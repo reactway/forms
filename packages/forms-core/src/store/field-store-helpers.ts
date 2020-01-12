@@ -1,4 +1,4 @@
-import { FieldState, FieldStateData, FieldStatus, InitialFieldState } from "../contracts/form-state";
+import { FieldState, FieldStateData, FieldStatus, InitialFieldState } from "../contracts/field-state";
 import { Draft } from "immer";
 import { Dictionary } from "../contracts/helpers";
 import { assertFieldIsDefined, getFieldNameFromId } from "./helpers";

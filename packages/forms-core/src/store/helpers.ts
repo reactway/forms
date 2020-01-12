@@ -1,5 +1,5 @@
 import { SEPARATOR } from "./constants";
-import { FieldState, FieldStatus, InputFieldData } from "../contracts/form-state";
+import { FieldState, FieldStatus, InputFieldData } from "../contracts/field-state";
 import { JsonValue } from "../contracts/helpers";
 
 export function generateFieldId(name: string, parentId: string | undefined): string {

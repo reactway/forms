@@ -1,6 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { Format, Parse } from "@reactway/forms-core";
-import { FormContext, useModifier } from "@reactway/forms";
+import { useModifier } from "@reactway/forms";
 
 export enum Modification {
     Uppercase,

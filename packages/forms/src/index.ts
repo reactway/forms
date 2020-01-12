@@ -5,7 +5,7 @@ export * from "./fields/radio-group";
 export * from "./fields/radio";
 export * from "./modifiers/base";
 export * from "./helpers/is";
-export * from "./helpers/change-lifecycle";
+export * from "./helpers/input-field";
 export * from "./permanent";
 export * from "./form-context";
 export * from "./use-field";

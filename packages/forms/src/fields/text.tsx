@@ -10,7 +10,7 @@ import {
 
 import { FormContext } from "../form-context";
 import { useField } from "../use-field";
-import { getRenderValue, changeFieldValue } from "../helpers/change-lifecycle";
+import { getRenderValue, changeFieldValue } from "../helpers/input-field";
 
 export interface Cursor {
     selectionStart: number;

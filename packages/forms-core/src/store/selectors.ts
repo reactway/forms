@@ -1,5 +1,5 @@
 import { SEPARATOR } from "./constants";
-import { FieldState } from "../contracts/form-state";
+import { FieldState } from "../contracts/field-state";
 
 // TODO: Do we need recursion here?
 export function selectField(state: FieldState<any, any>, fieldId: string | undefined): FieldState<any, any> | undefined {
