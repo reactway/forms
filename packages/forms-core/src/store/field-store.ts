@@ -1,7 +1,7 @@
 import { TinyEmitter } from "@reactway/tiny-emitter";
 import produce, { Draft } from "immer";
 
-import { FieldState } from "../contracts/form-state";
+import { FieldState } from "../contracts/field-state";
 import { Dictionary } from "../contracts/helpers";
 import { FieldStoreHelpers, fieldStoreHelpers } from "./field-store-helpers";
 

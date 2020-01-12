@@ -1,6 +1,6 @@
 import { TinyEmitter } from "@reactway/tiny-emitter";
 import { Dictionary } from "../contracts/helpers";
-import { FormState } from "../contracts/form-state";
+import { FormState } from "../contracts/field-state";
 import { FieldStore } from "./field-store";
 
 export class StoresRegistry extends TinyEmitter {
