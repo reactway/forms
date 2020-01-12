@@ -14,9 +14,9 @@ export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue,
     readonly fields: Readonly<Dictionary<FieldState<unknown, any>>>;
 }
 
-export interface FieldValue<TValue, TState extends FieldState<any, any>> {
-    getValue: (fieldState: TState) => TValue;
-    setValue: (fieldState: TState, value: TValue) => void;
+export interface FieldValue<TValue, TFieldState extends FieldState<any, any>> {
+    getValue: (fieldState: TFieldState) => TValue;
+    setValue: (fieldState: TFieldState, value: TValue) => void;
 }
 
 export interface FieldStatus {

@@ -1,6 +1,6 @@
 import React, { useContext, useCallback } from "react";
-import { selectField, assertFieldIsDefined, InputFieldState, InputFieldData } from "@reactway/forms-core";
-import { FormContext, isInputFieldState, TextFieldState } from "@reactway/forms";
+import { selectField, assertFieldIsDefined } from "@reactway/forms-core";
+import { FormContext, TextFieldState } from "@reactway/forms";
 
 export interface TestButtonProps {
     fieldId: string;
@@ -9,7 +9,6 @@ export interface TestButtonProps {
 export const TestButton = (props: TestButtonProps): JSX.Element => {
     const { store } = useContext(FormContext);
     const { fieldId } = props;
-    console.info("TestButton", fieldId, store);
 
     const onClick = useCallback(() => {
         store.update(draft => {
