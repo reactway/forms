@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Format, Parse } from "@reactway/forms-core";
 import { useModifier } from "@reactway/forms";
 
@@ -45,7 +45,12 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
         [modification]
     );
 
-    useModifier<string, string>(format, parse);
+    const [modifier, setModifier] = useState({ format, parse });
 
+    useModifier<string, string>(modifier);
+
+    useEffect(() => {
+        setModifier({ format, parse });
+    }, [format, parse]);
     return null;
 };

@@ -34,7 +34,9 @@ const App: React.FC = () => {
                             </label>
                             <label>
                                 Last name:
-                                <Text name="lastName" initialValue="Smith" />
+                                <Text name="lastName" initialValue="Smith">
+                                    <CustomModifier modification={!toggle ? Modification.Lowercase : Modification.Uppercase} />
+                                </Text>
                             </label>
                         </Group>
                         <button type="submit">Submit</button>

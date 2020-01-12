@@ -1,10 +1,10 @@
 import { useContext, useEffect } from "react";
-import { Modifier, selectField, FieldState } from "@reactway/forms-core";
+import { selectField, FieldState, Validator } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 import { isInputFieldState } from "./helpers/is";
 import { changeFieldValue } from "./helpers/input-field";
 
-export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValue, TRenderValue>): void {
+export function useValidator<TValue>(validator: Validator<TValue>): void {
     const { parentId, store } = useContext(FormContext);
 
     useEffect(() => {
@@ -17,19 +17,12 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
             const inputFieldState = fieldState as any;
 
             if (!isInputFieldState(inputFieldState)) {
-                throw new Error("Modifier provided for non-input field.");
+                throw new Error("Validator provided for non-input field.");
             }
 
-            // TODO: Should the last modifier win?
-            // TODO: Or should we error-out and set the modifier to undefined during the props update?
-            // if (inputFieldState.modifier != null) {
-            //     // TODO: <CombinedModifier /> component or sth.
-            //     throw new Error("Multiple modifiers are not supported. Use <CombinedModifier /> component.");
-            // }
+            inputFieldState.data.validator = validator;
 
-            inputFieldState.data.modifier = modifier;
-
-            // Initial value update is needed to kick off the modifier mechanism.
+            // Initial value update is needed to kick off the validation mechanism.
             changeFieldValue<FieldState<any, any>>(
                 draft,
                 helpers,
@@ -37,7 +30,7 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
                 inputFieldState.data.transientValue ?? inputFieldState.data.currentValue
             );
         });
-    }, [store, parentId, modifier]);
+    }, [store, parentId, validator]);
 
     useEffect(() => {
         return () => {
@@ -47,10 +40,10 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
 
                 if (!isInputFieldState(inputFieldState)) {
                     // Should never happen
-                    throw new Error(`Modifier is being removed from non-input field ${parentId}.`);
+                    throw new Error(`Validator is being removed from non-input field ${parentId}.`);
                 }
 
-                inputFieldState.data.modifier = undefined;
+                inputFieldState.data.validator = undefined;
             });
         };
     }, [parentId, store]);

@@ -1,6 +1,7 @@
 import { Draft } from "immer";
 import { Dictionary, JsonValue, NestedDictionary } from "./helpers";
 import { Modifier } from "./modifiers";
+import { Validator } from "./validators";
 
 // TODO: THydrationValue example with DraftJS: TValue = DraftJsState, THydrationValue = object.
 // TODO: Add Hydration.
@@ -35,6 +36,8 @@ export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
     transientValue?: TRenderValue;
 
     modifier?: Modifier<TValue, TRenderValue>;
+
+    validator?: Validator<TValue>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

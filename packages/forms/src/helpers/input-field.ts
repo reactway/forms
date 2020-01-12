@@ -11,7 +11,7 @@ import {
 import { FieldStore } from "@reactway/forms-core";
 import { FieldStoreHelpers } from "@reactway/forms-core";
 
-export function changeFieldValue<TFieldState extends InputFieldState<any>>(
+export function changeFieldValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
     draft: FieldState<any, any>,
     helpers: FieldStoreHelpers,
     fieldId: string,
@@ -32,6 +32,14 @@ export function changeFieldValue<TFieldState extends InputFieldState<any>>(
             status.touched = true;
             status.pristine = false;
         });
+
+        const validator = data.validator;
+        if (validator == null || !validator.shouldValidate(data.currentValue)) {
+            return;
+        }
+
+        const validationResult = validator.validate(data.currentValue);
+        // TODO: Where do we put the validation result?
     });
 }
 
