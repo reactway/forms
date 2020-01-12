@@ -7,6 +7,9 @@ export const FormStore = (): JSX.Element | null => {
     const [storeState, setStoreState] = useState(store.getState());
 
     useEffect(() => {
+        // The listener is added asynchronously, thus a manual initial update is needed.
+        setStoreState(store.getState());
+
         return store.addListener(() => {
             setStoreState(store.getState());
         });

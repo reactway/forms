@@ -1,7 +1,8 @@
 import { useContext, useEffect } from "react";
-import { Modifier, selectField, Format, Parse } from "@reactway/forms-core";
+import { Modifier, selectField, Format, Parse, FieldState } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 import { isInputFieldState } from "./helpers/is";
+import { changeFieldValue } from "./helpers/change-lifecycle";
 
 export function useModifier<TValue, TRenderValue = any>(
     format: Modifier<TValue, TRenderValue>["format"],
@@ -10,8 +11,11 @@ export function useModifier<TValue, TRenderValue = any>(
     const { parentId, store } = useContext(FormContext);
 
     useEffect(() => {
-        console.log("Setting modifier for ", parentId);
-        store.update(draft => {
+        if (parentId == null) {
+            return;
+        }
+
+        store.update((draft, helpers) => {
             const fieldState = selectField(draft, parentId);
             const inputFieldState = fieldState as any;
 
@@ -32,21 +36,25 @@ export function useModifier<TValue, TRenderValue = any>(
             };
             inputFieldState.data.modifier = modifier;
 
-            console.log("Parent id:", parentId);
-            console.log("Modifier:", modifier);
+            // Initial value update is needed to kick off the modifier mechanism.
+            changeFieldValue<FieldState<any, any>>(
+                draft,
+                helpers,
+                parentId,
+                inputFieldState.data.transientValue ?? inputFieldState.data.currentValue
+            );
         });
     }, [format, parse, store, parentId]);
 
     useEffect(() => {
         return () => {
-            console.log("Removing modifier for ", parentId);
             store.update(draft => {
                 const fieldState = selectField(draft, parentId);
                 const inputFieldState = fieldState as any;
 
                 if (!isInputFieldState(inputFieldState)) {
                     // Should never happen
-                    throw new Error("Modifier being removed from non-input field.");
+                    throw new Error(`Modifier is being removed from non-input field ${parentId}.`);
                 }
 
                 inputFieldState.data.modifier = undefined;
