@@ -1,0 +1,20 @@
+{
+    "typescript.tsdk": "packages/forms-core/node_modules/typescript/lib",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/*.lerna_backup": true,
+        "**/package-lock.json": true,
+        "**/tsconfig.tsbuildinfo": true
+    },
+    "cSpell.words": ["immer", "reactway"],
+    "eslint.workingDirectories": [
+        "./packages/forms-core",
+        "./packages/forms",
+        "./apps/demo",
+    ]
+}

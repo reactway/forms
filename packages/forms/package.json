@@ -1,0 +1,33 @@
+{
+    "name": "@reactway/forms",
+    "version": "5.0.0-alpha",
+    "description": "React forms.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -b .",
+        "test": "eslint \"src/**/*.ts*\"",
+        "watch": "tsc -b . -w"
+    },
+    "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
+    "license": "MIT",
+    "dependencies": {
+        "@reactway/eslint-config": "^1.0.1",
+        "@reactway/forms-core": "5.0.0-alpha",
+        "@types/shortid": "^0.0.29",
+        "immer": "^5.1.0",
+        "prettier": "^1.19.1",
+        "shortid": "^2.2.15"
+    },
+    "devDependencies": {
+        "@reactway/eslint-config": "1.0.1",
+        "@types/jest": "^24.0.25",
+        "@types/node": "^13.1.2",
+        "@types/react": "^16.9.17",
+        "eslint": "^6.8.0",
+        "jest": "^24.9.0",
+        "prettier": "^1.19.1",
+        "ts-jest": "^24.2.0",
+        "typescript": "^3.7.4"
+    }
+}

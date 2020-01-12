@@ -1,0 +1,27 @@
+input {
+    display: block;
+}
+
+label {
+    padding-bottom: 5px;
+    display: block;
+}
+
+button {
+    margin-right: 5px;
+}
+
+.form-debug-container {
+    display: flex;
+    flex-direction: row;
+
+    .form-container {
+        flex: 1;
+    }
+
+    .form-store-container {
+        flex: 1;
+
+        font-size: 70%;
+    }
+}

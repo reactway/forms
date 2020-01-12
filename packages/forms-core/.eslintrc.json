@@ -1,0 +1,9 @@
+{
+    "extends": ["@reactway"],
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+    },
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    }
+}

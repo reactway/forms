@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig-lib.json",
+    "compilerOptions": {
+        "lib": ["dom", "es6", "es2015.iterable"],
+        "rootDir": "src",
+        "outDir": "dist"
+    },
+    "references": [
+        {
+            "path": "../../packages/forms"
+        },
+        {
+            "path": "../../packages/forms-core"
+        }
+    ],
+    "exclude": ["tools", "dist"]
+}
