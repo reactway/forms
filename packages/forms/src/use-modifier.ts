@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { Modifier, selectField, Format, Parse, FieldState } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 import { isInputFieldState } from "./helpers/is";
-import { changeFieldValue } from "./helpers/change-lifecycle";
+import { changeFieldValue } from "./helpers/input-field";
 
 export function useModifier<TValue, TRenderValue = any>(
     format: Modifier<TValue, TRenderValue>["format"],
