@@ -11,6 +11,7 @@ import { TestButton } from "./test-button";
 import { FormStore } from "./form-store";
 
 import "./app.scss";
+import { LengthValidator } from "./length-validator";
 
 const App: React.FC = () => {
     const [toggle, setToggle] = useState(false);
@@ -29,6 +30,7 @@ const App: React.FC = () => {
                             <label>
                                 First name:
                                 <Text name="firstName" initialValue="John">
+                                    <LengthValidator />
                                     <CustomModifier modification={toggle ? Modification.Lowercase : Modification.Uppercase} />
                                 </Text>
                             </label>

@@ -6,7 +6,8 @@ import {
     assertFieldIsDefined,
     InputFieldData,
     InputFieldState,
-    FieldState
+    FieldState,
+    ValidationResult
 } from "@reactway/forms-core";
 import { FieldStore } from "@reactway/forms-core";
 import { FieldStoreHelpers } from "@reactway/forms-core";
@@ -32,14 +33,6 @@ export function changeFieldValue<TFieldState extends InputFieldState<InputFieldD
             status.touched = true;
             status.pristine = false;
         });
-
-        const validator = data.validator;
-        if (validator == null || !validator.shouldValidate(data.currentValue)) {
-            return;
-        }
-
-        const validationResult = validator.validate(data.currentValue);
-        // TODO: Where do we put the validation result?
     });
 }
 

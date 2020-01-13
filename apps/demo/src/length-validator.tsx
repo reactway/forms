@@ -1,30 +1,38 @@
-import { useValidator } from "@reactway/forms/src";
 import { useCallback } from "react";
-import { ValidationResult } from "@reactway/forms-core/src";
+import { useValidator } from "@reactway/forms";
+import { ValidatorResult } from "@reactway/forms-core";
 
 export interface LengthValidatorMessages {
     tooShort: string;
     tooLong: string;
 }
 
-export interface LengthValidatorProps {
-    min: number;
+export type LengthValidatorProps = {
+    min?: number;
     max?: number;
-    messages: LengthValidatorMessages;
-}
+    errorMessages?: LengthValidatorMessages;
+};
 
-export const LengthValidator: React.FC<LengthValidatorProps> = (props): null => {
-    const { min, max, messages } = props;
+export const LengthValidator = (props: LengthValidatorProps): null => {
+    const {
+        min = 0,
+        max,
+        errorMessages = {
+            tooShort: "The value is too short.",
+            tooLong: "The value is too long."
+        }
+    } = props;
+
     const validate = useCallback(
-        (value: string): ValidationResult => {
+        (value: string): ValidatorResult => {
             if (value.length < min) {
-                return messages.tooShort;
+                return errorMessages.tooShort;
             }
             if (max != null && value.length > max) {
-                return messages.tooLong;
+                return errorMessages.tooLong;
             }
         },
-        [messages, max, min]
+        [errorMessages, max, min]
     );
 
     useValidator<string>({
@@ -34,12 +42,4 @@ export const LengthValidator: React.FC<LengthValidatorProps> = (props): null => 
         validate: validate
     });
     return null;
-};
-
-LengthValidator.defaultProps = {
-    min: 0,
-    messages: {
-        tooShort: "The value is too short.",
-        tooLong: "The value is too long."
-    }
 };

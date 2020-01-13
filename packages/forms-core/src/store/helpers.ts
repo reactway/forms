@@ -98,7 +98,7 @@ export function getFieldNameFromId(fieldId: string): string {
 }
 
 export function assertFieldIsDefined<T>(field: T, fieldId?: string): asserts field is NonNullable<T> {
-    if (field === undefined || field === null) {
-        throw new Error(`Field ${fieldId != null ? `'${fieldId}'` : ""} does not exist in given state.`);
+    if (field == null) {
+        throw new Error(`Field '${fieldId}' does not exist in a given state.`);
     }
 }

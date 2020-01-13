@@ -32,7 +32,10 @@ const initialFormState = (formId: string): FormState => ({
     setValue: () => {
         throw new Error("Not implemented.");
     },
-    status: getDefaultStatuses()
+    status: getDefaultStatuses(),
+    validation: {
+        results: []
+    }
 });
 
 export const Form: React.FC<FormProps> = props => {

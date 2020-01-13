@@ -1,16 +1,22 @@
-import { FieldState, FieldStateData, FieldStatus, InitialFieldState } from "../contracts/field-state";
 import { Draft } from "immer";
+import shortid from "shortid";
+import { formsLogger } from "../logger";
+import { FieldState, FieldStateData, FieldStatus, InitialFieldState, FieldValidator } from "../contracts/field-state";
 import { Dictionary } from "../contracts/helpers";
+import { Validator } from "../contracts/validators";
 import { assertFieldIsDefined, getFieldNameFromId } from "./helpers";
 import { selectField, selectFieldParent } from "./selectors";
-import { formsLogger } from "../logger";
 
 export interface FieldStoreHelpers {
     selectField(fieldId: string): FieldState<any, any> | undefined;
     updateFieldData<TFieldState extends FieldState<any, any>>(fieldId: string, updater: (data: FieldStateData<TFieldState>) => void): void;
     updateFieldStatus(fieldId: string, updater: (status: FieldStatus) => void): void;
+
     registerField<TFieldState extends FieldState<any, any>>(id: string, initialFieldState: InitialFieldState<TFieldState>): void;
     unregisterField(id: string): void;
+
+    registerValidator(fieldId: string, validator: Validator<any>): string;
+    unregisterValidator(fieldId: string, validatorId: string): void;
 
     focusField(fieldId: string): void;
     blurField(fieldId: string): void;
@@ -110,6 +116,44 @@ function blurField(helpers: FieldStoreHelpers, fieldId: string): void {
     });
 }
 
+function registerValidator(helpers: FieldStoreHelpers, fieldId: string, validator: Validator<any>): string {
+    const fieldState = helpers.selectField(fieldId);
+
+    assertFieldIsDefined(fieldState, fieldId);
+
+    if (fieldState.validation.validators == null) {
+        fieldState.validation.validators = [];
+    }
+
+    const id = shortid.generate();
+
+    const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
+    modifiableValidators.push({
+        ...validator,
+        id: id
+    });
+
+    return id;
+}
+
+function unregisterValidator(helpers: FieldStoreHelpers, fieldId: string, validatorId: string): void {
+    const fieldState = helpers.selectField(fieldId);
+
+    assertFieldIsDefined(fieldState, fieldId);
+
+    if (fieldState.validation.validators == null) {
+        fieldState.validation.validators = [];
+    }
+
+    const validatorIndex = fieldState.validation.validators.findIndex(validator => validator.id === validatorId);
+    if (validatorIndex === -1) {
+        return;
+    }
+
+    const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
+    modifiableValidators.splice(validatorIndex, 1);
+}
+
 // TODO: Draft with readonly `status`
 export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCache: Dictionary<FieldState<any, any>>): FieldStoreHelpers {
     const cachedSelectField: FieldStoreHelpers["selectField"] = fieldId => {
@@ -128,7 +172,7 @@ export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCach
     const helpers: FieldStoreHelpers = {
         selectField: cachedSelectField,
         updateFieldData: (fieldId, updater) => {
-            const fieldState = cachedSelectField(fieldId);
+            const fieldState = helpers.selectField(fieldId);
 
             assertFieldIsDefined(fieldState, fieldId);
 
@@ -137,6 +181,7 @@ export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCach
         updateFieldStatus: (fieldId, updater) => {
             updateFieldStatus(draft, fieldId, updater);
         },
+
         registerField: (id, initialFieldState) => {
             registerField(draft, id, initialFieldState);
         },
@@ -144,6 +189,14 @@ export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCach
             unregisterField(draft, id);
             fieldsCache[id] = undefined;
         },
+
+        registerValidator: (fieldId, validator) => {
+            return registerValidator(helpers, fieldId, validator);
+        },
+        unregisterValidator: (fieldId, validatorId) => {
+            unregisterValidator(helpers, fieldId, validatorId);
+        },
+
         focusField: fieldId => {
             focusField(helpers, fieldId);
         },

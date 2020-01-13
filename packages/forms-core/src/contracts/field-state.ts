@@ -1,7 +1,7 @@
 import { Draft } from "immer";
 import { Dictionary, JsonValue, NestedDictionary } from "./helpers";
 import { Modifier } from "./modifiers";
-import { Validator } from "./validators";
+import { Validator, ValidationResult } from "./validators";
 
 // TODO: THydrationValue example with DraftJS: TValue = DraftJsState, THydrationValue = object.
 // TODO: Add Hydration.
@@ -11,6 +11,7 @@ export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue,
 
     readonly data: TData;
     readonly status: FieldStatus;
+    readonly validation: FieldValidation<TValue>;
 
     readonly fields: Readonly<Dictionary<FieldState<unknown, any>>>;
 }
@@ -29,6 +30,17 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
+export interface FieldValidation<TValue> {
+    results: ReadonlyArray<ValidationResult>;
+    validators: ReadonlyArray<FieldValidator<TValue>>;
+    // TODO: Status + Date or just Date?
+    validationStarted?: Date;
+}
+
+export interface FieldValidator<TValue> extends Validator<TValue> {
+    id: string;
+}
+
 export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
     currentValue: TValue;
     initialValue: TValue;
@@ -36,8 +48,6 @@ export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
     transientValue?: TRenderValue;
 
     modifier?: Modifier<TValue, TRenderValue>;
-
-    validator?: Validator<TValue>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
