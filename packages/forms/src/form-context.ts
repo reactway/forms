@@ -14,7 +14,8 @@ export const StubStore = new FieldStore<FieldState<any, any>>(() => ({
     setValue: () => {},
     status: getDefaultStatuses(),
     validation: {
-        results: []
+        results: [],
+        validators: []
     }
 }));
 

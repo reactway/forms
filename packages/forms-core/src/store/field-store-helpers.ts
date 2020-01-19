@@ -6,9 +6,13 @@ import { Dictionary } from "../contracts/helpers";
 import { Validator } from "../contracts/validators";
 import { assertFieldIsDefined, getFieldNameFromId } from "./helpers";
 import { selectField, selectFieldParent } from "./selectors";
+import { FieldStore } from "./field-store";
 
 export interface FieldStoreHelpers {
     selectField(fieldId: string): FieldState<any, any> | undefined;
+}
+
+export interface UpdateFieldStoreHelpers extends FieldStoreHelpers {
     updateFieldData<TFieldState extends FieldState<any, any>>(fieldId: string, updater: (data: FieldStateData<TFieldState>) => void): void;
     updateFieldStatus(fieldId: string, updater: (status: FieldStatus) => void): void;
 
@@ -20,6 +24,8 @@ export interface FieldStoreHelpers {
 
     focusField(fieldId: string): void;
     blurField(fieldId: string): void;
+
+    enqueueUpdate: FieldStore<FieldState<any, any>>["update"];
 }
 
 function updateFieldStatus(state: FieldState<any, any>, fieldId: string, updater: (status: FieldStatus) => void): void {
@@ -86,7 +92,7 @@ function unregisterField(state: FieldState<any, any>, id: string): void {
     mutableFields[fieldName] = undefined;
 }
 
-function focusField(helpers: FieldStoreHelpers, fieldId: string): void {
+function focusField(helpers: UpdateFieldStoreHelpers, fieldId: string): void {
     helpers.updateFieldStatus(fieldId, status => {
         if (status.focused) {
             // Field is already focused.
@@ -105,7 +111,7 @@ function focusField(helpers: FieldStoreHelpers, fieldId: string): void {
     });
 }
 
-function blurField(helpers: FieldStoreHelpers, fieldId: string): void {
+function blurField(helpers: UpdateFieldStoreHelpers, fieldId: string): void {
     helpers.updateFieldStatus(fieldId, status => {
         if (!status.focused) {
             // Field is not focused.
@@ -116,7 +122,7 @@ function blurField(helpers: FieldStoreHelpers, fieldId: string): void {
     });
 }
 
-function registerValidator(helpers: FieldStoreHelpers, fieldId: string, validator: Validator<any>): string {
+function registerValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, validator: Validator<any>): string {
     const fieldState = helpers.selectField(fieldId);
 
     assertFieldIsDefined(fieldState, fieldId);
@@ -126,6 +132,7 @@ function registerValidator(helpers: FieldStoreHelpers, fieldId: string, validato
     }
 
     const id = shortid.generate();
+    console.log("Registering validator", id, "for", fieldId);
 
     const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
     modifiableValidators.push({
@@ -136,7 +143,7 @@ function registerValidator(helpers: FieldStoreHelpers, fieldId: string, validato
     return id;
 }
 
-function unregisterValidator(helpers: FieldStoreHelpers, fieldId: string, validatorId: string): void {
+function unregisterValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, validatorId: string): void {
     const fieldState = helpers.selectField(fieldId);
 
     assertFieldIsDefined(fieldState, fieldId);
@@ -155,8 +162,12 @@ function unregisterValidator(helpers: FieldStoreHelpers, fieldId: string, valida
 }
 
 // TODO: Draft with readonly `status`
-export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCache: Dictionary<FieldState<any, any>>): FieldStoreHelpers {
-    const cachedSelectField: FieldStoreHelpers["selectField"] = fieldId => {
+export function fieldStoreHelpers(
+    store: FieldStore<FieldState<any, any>>,
+    draft: Draft<FieldState<any, any>>,
+    fieldsCache: Dictionary<FieldState<any, any>>
+): UpdateFieldStoreHelpers {
+    const cachedSelectField: UpdateFieldStoreHelpers["selectField"] = fieldId => {
         const cachedField = fieldsCache[fieldId];
         if (cachedField != null) {
             return cachedField;
@@ -169,7 +180,7 @@ export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCach
         return selectedField;
     };
 
-    const helpers: FieldStoreHelpers = {
+    const helpers: UpdateFieldStoreHelpers = {
         selectField: cachedSelectField,
         updateFieldData: (fieldId, updater) => {
             const fieldState = helpers.selectField(fieldId);
@@ -202,6 +213,9 @@ export function fieldStoreHelpers(draft: Draft<FieldState<any, any>>, fieldsCach
         },
         blurField: fieldId => {
             blurField(helpers, fieldId);
+        },
+        enqueueUpdate: updater => {
+            setTimeout(() => store.update(updater), 0);
         }
     };
     return helpers;

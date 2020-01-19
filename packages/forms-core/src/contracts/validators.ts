@@ -10,14 +10,16 @@ export interface Validator<TValue> {
     shouldValidate: (value: TValue) => boolean;
 }
 
-export type ValidatorResult = Promise<void> | undefined | ValidationResult | string | Array<ValidationResult | string>;
+export type ValidationResultOrString = ValidationResult | string;
+
+export type ValidatorResult = Promise<ValidationResultOrString[]> | ValidationResultOrString[] | undefined;
 
 export interface ValidationResult {
     message: string;
     type: ValidationResultType;
 
     // 2017-05-08 Told you so.
-    origin?: FieldErrorOrigin;
+    origin?: ValidationResultOrigin;
     code?: string;
 }
 
@@ -26,7 +28,7 @@ export enum ValidationResultType {
     Warning
 }
 
-export enum FieldErrorOrigin {
+export enum ValidationResultOrigin {
     Unknown = 0,
     Validation = 1,
     FormSubmit = 2

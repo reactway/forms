@@ -6,18 +6,19 @@ import {
     assertFieldIsDefined,
     InputFieldData,
     InputFieldState,
-    FieldState,
-    ValidationResult
+    FieldState
 } from "@reactway/forms-core";
 import { FieldStore } from "@reactway/forms-core";
-import { FieldStoreHelpers } from "@reactway/forms-core";
+import { UpdateFieldStoreHelpers } from "@reactway/forms-core";
+import { validateField } from "./validation";
 
 export function changeFieldValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
     draft: FieldState<any, any>,
-    helpers: FieldStoreHelpers,
+    helpers: UpdateFieldStoreHelpers,
     fieldId: string,
     nextValue: FieldStateValue<TFieldState>
 ): void {
+    console.group("Updating field", fieldId);
     helpers.updateFieldData<TFieldState>(fieldId, data => {
         if (data.modifier == null) {
             data.currentValue = nextValue;
@@ -34,6 +35,12 @@ export function changeFieldValue<TFieldState extends InputFieldState<InputFieldD
             status.pristine = false;
         });
     });
+
+    console.log("Starting validation");
+    // No need to wait for it.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    validateField(draft, helpers, fieldId);
+    console.groupEnd();
 }
 
 export function getRenderValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(

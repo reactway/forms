@@ -1,12 +1,19 @@
 import { SEPARATOR } from "./constants";
 import { FieldState, FieldStatus, InputFieldData } from "../contracts/field-state";
 import { JsonValue } from "../contracts/helpers";
+import { selectField } from "./selectors";
 
 export function generateFieldId(name: string, parentId: string | undefined): string {
     if (parentId == null) {
         return name;
     }
     return `${parentId}${SEPARATOR}${name}`;
+}
+
+export function assertFieldIsDefined<T>(field: T, fieldId?: string): asserts field is NonNullable<T> {
+    if (field == null) {
+        throw new Error(`Field '${fieldId}' does not exist in a given state.`);
+    }
 }
 
 // export function dehydrateField(state: FieldState<any, any> | FormState): NestedDictionary<JsonValue> {
@@ -84,8 +91,17 @@ export function getDefaultFieldData<TValue, TRenderValue>(
     };
 }
 
-export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(store: TFieldState): object {
-    return store.getValue(store);
+export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState): {};
+export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState, fieldId: string): any;
+export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState, fieldId?: string): any {
+    if (fieldId == null) {
+        return state.getValue(state);
+    }
+
+    const fieldState = selectField(state, fieldId);
+    assertFieldIsDefined(fieldState, fieldId);
+
+    return fieldState.getValue(fieldState);
 }
 
 export function getFieldNameFromId(fieldId: string): string {
@@ -95,10 +111,4 @@ export function getFieldNameFromId(fieldId: string): string {
     }
 
     return fieldId.slice(lastSeparatorIndex + SEPARATOR.length);
-}
-
-export function assertFieldIsDefined<T>(field: T, fieldId?: string): asserts field is NonNullable<T> {
-    if (field == null) {
-        throw new Error(`Field '${fieldId}' does not exist in a given state.`);
-    }
 }

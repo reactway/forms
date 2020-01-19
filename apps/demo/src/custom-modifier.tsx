@@ -37,7 +37,7 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
                     };
                 case Modification.Uppercase:
                     return {
-                        currentValue: value.toUpperCase(),
+                        currentValue: value.toUpperCase().replace("%", ""),
                         transientValue: undefined
                     };
             }

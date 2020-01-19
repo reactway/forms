@@ -1,6 +1,7 @@
-import { useCallback } from "react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useCallback, useMemo } from "react";
 import { useValidator } from "@reactway/forms";
-import { ValidatorResult } from "@reactway/forms-core";
+import { ValidatorResult, Validator } from "@reactway/forms-core";
 
 export interface LengthValidatorMessages {
     tooShort: string;
@@ -9,37 +10,44 @@ export interface LengthValidatorMessages {
 
 export type LengthValidatorProps = {
     min?: number;
-    max?: number;
+    max: number;
     errorMessages?: LengthValidatorMessages;
 };
 
-export const LengthValidator = (props: LengthValidatorProps): null => {
-    const {
-        min = 0,
-        max,
-        errorMessages = {
-            tooShort: "The value is too short.",
-            tooLong: "The value is too long."
-        }
-    } = props;
+const defaultErrorMessages = {
+    tooShort: "The value is too short.",
+    tooLong: "The value is too long."
+};
 
-    const validate = useCallback(
-        (value: string): ValidatorResult => {
-            if (value.length < min) {
-                return errorMessages.tooShort;
+let count = 0;
+export const LengthValidator = (props: LengthValidatorProps): null => {
+    console.log("LengthValidator render");
+    if (count++ >= 100) {
+        console.log("More than 100 renders.");
+        return null;
+    }
+
+    const { min = 0, max, errorMessages = defaultErrorMessages } = props;
+
+    const validator = useMemo<Validator<string>>(
+        () => ({
+            shouldValidate: value => {
+                console.log("Should validate.", value != null && value.length > 0);
+                return value != null && value.length > 0;
+            },
+            validate: (value: string): ValidatorResult => {
+                console.log("validating");
+                if (value.length < min) {
+                    return [errorMessages.tooShort];
+                }
+                if (max != null && value.length > max) {
+                    return [errorMessages.tooLong];
+                }
             }
-            if (max != null && value.length > max) {
-                return errorMessages.tooLong;
-            }
-        },
+        }),
         [errorMessages, max, min]
     );
 
-    useValidator<string>({
-        shouldValidate: value => {
-            return value != null && value.length > 0;
-        },
-        validate: validate
-    });
+    useValidator<string>(validator);
     return null;
 };

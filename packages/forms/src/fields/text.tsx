@@ -34,23 +34,16 @@ export interface TextProps {
 const initialFieldState = (name: string, defaultValue: string, initialValue: string | undefined): InitialFieldState<TextFieldState> => ({
     name: name,
     data: getDefaultFieldData<string, string>(defaultValue, initialValue),
-    // modifier: {
-    //     format: (currentValue, _transientValue) => {
-    //         return currentValue.toUpperCase();
-    //     },
-    //     parse: value => {
-    //         return {
-    //             currentValue: value.toLowerCase(),
-    //             transientValue: undefined
-    //         };
-    //     }
-    // },
     getValue: state => state.data.currentValue,
-    setValue: (_state, _value) => {
+    setValue: (state, value) => {
         // Should not only set the value, but also trigger validation and possibly parsing of the set value.
-        throw new Error("Not implemented");
+        state.data.currentValue = value;
     },
-    status: getDefaultStatuses()
+    status: getDefaultStatuses(),
+    validation: {
+        results: [],
+        validators: []
+    }
 });
 
 export const Text = (props: React.PropsWithChildren<TextProps>): React.ReactElement => {
@@ -150,6 +143,7 @@ export const Text = (props: React.PropsWithChildren<TextProps>): React.ReactElem
                             data.selectionDirection = undefined;
                         });
                     });
+                    
                 }}
             />
             <FormContext.Provider value={{ store: store, parentId: fieldState.id, permanent }}>{props.children}</FormContext.Provider>

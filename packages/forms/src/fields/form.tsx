@@ -34,7 +34,8 @@ const initialFormState = (formId: string): FormState => ({
     },
     status: getDefaultStatuses(),
     validation: {
-        results: []
+        results: [],
+        validators: []
     }
 });
 
