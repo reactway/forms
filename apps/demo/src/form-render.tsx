@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import { FormContext } from "@reactway/forms";
 import { FieldState } from "@reactway/forms-core/src";
 
@@ -7,7 +7,7 @@ interface FormRenderProps {
 }
 
 export const FormRender = (props: FormRenderProps): JSX.Element | null => {
-    const { store, parentId } = useContext(FormContext);
+    const { store } = useContext(FormContext);
     const [storeState, setStoreState] = useState(store.getState());
 
     useEffect(() => {
@@ -23,6 +23,5 @@ export const FormRender = (props: FormRenderProps): JSX.Element | null => {
         return null;
     }
 
-    console.log("Rendering children...");
     return props.children(storeState);
 };

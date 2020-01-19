@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useCallback, useState, useEffect } from "react";
 import { Format, Parse } from "@reactway/forms-core";
 import { useModifier } from "@reactway/forms";
@@ -16,7 +17,7 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
     const { modification } = props;
 
     const format = useCallback<Format<string, string>>(
-        (currentValue, _transientValue) => {
+        currentValue => {
             switch (modification) {
                 case Modification.Lowercase:
                     return currentValue.toLowerCase();

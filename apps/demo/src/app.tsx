@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import { StateInspector } from "reinspect";
 import ReactDOM from "react-dom";
 import { Text, Form, Group, FormProps } from "@reactway/forms";
-import { getFieldValue, selectField, assertFieldIsDefined } from "@reactway/forms-core";
+import { getFieldValue, selectField } from "@reactway/forms-core";
 
 import { DebugContainer } from "./debug-container";
 
 import { CustomModifier, Modification } from "./custom-modifier";
 import { TestButton } from "./test-button";
-import { FormStore } from "./form-store";
-
-import "./app.scss";
 import { LengthValidator } from "./length-validator";
 import { FormRender } from "./form-render";
+
+import "./app.scss";
 
 const App: React.FC = () => {
     const [toggle, setToggle] = useState(false);
