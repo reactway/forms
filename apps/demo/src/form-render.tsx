@@ -1,6 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 import { FormContext } from "@reactway/forms";
-import { FieldState } from "@reactway/forms-core/src";
+import { FieldState } from "@reactway/forms-core";
 
 interface FormRenderProps {
     children: (state: FieldState<any, any>) => JSX.Element | null;
