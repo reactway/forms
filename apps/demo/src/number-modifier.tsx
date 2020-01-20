@@ -26,7 +26,7 @@ export function parseNumber(value: string, decimalSeparator: string, thousandsSe
     }
 
     // TODO: Use given separator.
-    const regex = new RegExp("^[-0-9.,]+", "g");
+    const regex = new RegExp("[-0-9.,]+", "g");
 
     const matches = value.match(regex);
 
