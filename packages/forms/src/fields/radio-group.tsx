@@ -22,7 +22,11 @@ export const RadioGroup: React.FC<RadioGroupProps> = props => {
         setValue: () => {
             throw new Error();
         },
-        status: getDefaultStatuses()
+        status: getDefaultStatuses(),
+        validation: {
+            results: [],
+            validators: []
+        }
     }));
 
     return (

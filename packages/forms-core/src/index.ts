@@ -7,5 +7,6 @@ export * from "./store/selectors";
 export * from "./contracts/field-state";
 export * from "./contracts/helpers";
 export * from "./contracts/modifiers";
+export * from "./contracts/validators";
 
 export * from "./logger";

@@ -9,11 +9,12 @@ import {
     FieldState
 } from "@reactway/forms-core";
 import { FieldStore } from "@reactway/forms-core";
-import { FieldStoreHelpers } from "@reactway/forms-core";
+import { UpdateFieldStoreHelpers } from "@reactway/forms-core";
+import { validateField } from "./validation";
 
-export function changeFieldValue<TFieldState extends InputFieldState<any>>(
+export function changeFieldValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
     draft: FieldState<any, any>,
-    helpers: FieldStoreHelpers,
+    helpers: UpdateFieldStoreHelpers,
     fieldId: string,
     nextValue: FieldStateValue<TFieldState>
 ): void {
@@ -33,6 +34,10 @@ export function changeFieldValue<TFieldState extends InputFieldState<any>>(
             status.pristine = false;
         });
     });
+
+    // No need to wait for it.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    validateField(draft, helpers, fieldId);
 }
 
 export function getRenderValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
@@ -42,7 +47,7 @@ export function getRenderValue<TFieldState extends InputFieldState<InputFieldDat
         return fieldState.data.transientValue ?? fieldState.data.currentValue;
     }
 
-    return fieldState.data.modifier.format(fieldState.data.currentValue, fieldState.data.transientValue);
+    return fieldState.data.modifier.format(fieldState.data.currentValue);
 }
 
 // TODO: Does this function is valuable at all?

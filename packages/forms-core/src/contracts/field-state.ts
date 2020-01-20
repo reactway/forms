@@ -1,6 +1,7 @@
 import { Draft } from "immer";
 import { Dictionary, JsonValue, NestedDictionary } from "./helpers";
 import { Modifier } from "./modifiers";
+import { Validator, ValidationResult } from "./validators";
 
 // TODO: THydrationValue example with DraftJS: TValue = DraftJsState, THydrationValue = object.
 // TODO: Add Hydration.
@@ -10,6 +11,7 @@ export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue,
 
     readonly data: TData;
     readonly status: FieldStatus;
+    readonly validation: FieldValidation<TValue>;
 
     readonly fields: Readonly<Dictionary<FieldState<unknown, any>>>;
 }
@@ -26,6 +28,17 @@ export interface FieldStatus {
     disabled: boolean;
     readonly: boolean;
     permanent: boolean;
+}
+
+export interface FieldValidation<TValue> {
+    results: ReadonlyArray<ValidationResult>;
+    validators: ReadonlyArray<FieldValidator<TValue>>;
+    // TODO: Status + Date or just Date?
+    validationStarted?: Date;
+}
+
+export interface FieldValidator<TValue> extends Validator<TValue> {
+    id: string;
 }
 
 export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {

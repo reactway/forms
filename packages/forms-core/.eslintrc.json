@@ -1,7 +1,14 @@
 {
     "extends": ["@reactway"],
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/array-type": [
+            "error",
+            {
+                "default": "array-simple",
+                "readonly": "generic"
+            }
+        ]
     },
     "parserOptions": {
         "project": "./tsconfig.json"

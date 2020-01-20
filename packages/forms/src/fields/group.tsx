@@ -28,10 +28,24 @@ export const Group: React.FC<GroupProps> = props => {
 
             return data;
         },
-        setValue: () => {
-            throw new Error();
+        setValue: (state, value) => {
+            for (const key of Object.keys(value)) {
+                const field = state.fields[key];
+
+                if (field == null) {
+                    continue;
+                }
+
+                const newFieldValue = value[key];
+
+                field.setValue(field, newFieldValue);
+            }
         },
-        status: getDefaultStatuses()
+        status: getDefaultStatuses(),
+        validation: {
+            results: [],
+            validators: []
+        }
     }));
 
     return (

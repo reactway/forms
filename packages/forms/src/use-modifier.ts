@@ -1,13 +1,10 @@
 import { useContext, useEffect } from "react";
-import { Modifier, selectField, Format, Parse, FieldState } from "@reactway/forms-core";
+import { Modifier, selectField, FieldState } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 import { isInputFieldState } from "./helpers/is";
 import { changeFieldValue } from "./helpers/input-field";
 
-export function useModifier<TValue, TRenderValue = any>(
-    format: Modifier<TValue, TRenderValue>["format"],
-    parse: Modifier<TValue, TRenderValue>["parse"]
-): void {
+export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValue, TRenderValue>): void {
     const { parentId, store } = useContext(FormContext);
 
     useEffect(() => {
@@ -30,10 +27,6 @@ export function useModifier<TValue, TRenderValue = any>(
             //     throw new Error("Multiple modifiers are not supported. Use <CombinedModifier /> component.");
             // }
 
-            const modifier = {
-                format: format as Format<unknown, unknown>,
-                parse: parse as Parse<unknown, unknown>
-            };
             inputFieldState.data.modifier = modifier;
 
             // Initial value update is needed to kick off the modifier mechanism.
@@ -44,7 +37,7 @@ export function useModifier<TValue, TRenderValue = any>(
                 inputFieldState.data.transientValue ?? inputFieldState.data.currentValue
             );
         });
-    }, [format, parse, store, parentId]);
+    }, [store, parentId, modifier]);
 
     useEffect(() => {
         return () => {

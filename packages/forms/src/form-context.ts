@@ -8,9 +8,15 @@ export const StubStore = new FieldStore<FieldState<any, any>>(() => ({
     name: STUB_ID,
     data: {},
     fields: {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     getValue: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     setValue: () => {},
-    status: getDefaultStatuses()
+    status: getDefaultStatuses(),
+    validation: {
+        results: [],
+        validators: []
+    }
 }));
 
 export interface FormContextData {

@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+/* eslint-disable no-console */
+import { useCallback, useState, useEffect } from "react";
 import { Format, Parse } from "@reactway/forms-core";
 import { useModifier } from "@reactway/forms";
 
@@ -16,7 +17,7 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
     const { modification } = props;
 
     const format = useCallback<Format<string, string>>(
-        (currentValue, _transientValue) => {
+        currentValue => {
             switch (modification) {
                 case Modification.Lowercase:
                     return currentValue.toLowerCase();
@@ -37,7 +38,7 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
                     };
                 case Modification.Uppercase:
                     return {
-                        currentValue: value.toUpperCase(),
+                        currentValue: value.toUpperCase().replace("%", ""),
                         transientValue: undefined
                     };
             }
@@ -45,7 +46,12 @@ export const CustomModifier = (props: CustomModifierProps<string, string>): null
         [modification]
     );
 
-    useModifier<string, string>(format, parse);
+    const [modifier, setModifier] = useState({ format, parse });
 
+    useModifier<string, string>(modifier);
+
+    useEffect(() => {
+        setModifier({ format, parse });
+    }, [format, parse]);
     return null;
 };

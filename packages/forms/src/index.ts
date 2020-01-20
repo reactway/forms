@@ -10,6 +10,7 @@ export * from "./permanent";
 export * from "./form-context";
 export * from "./use-field";
 export * from "./use-modifier";
+export * from "./use-validator";
 
 // TODO: Possibly remove before production.
 export * from "./form-context-test";

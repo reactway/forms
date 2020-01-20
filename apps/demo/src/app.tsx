@@ -1,14 +1,17 @@
+import "./string-helpers";
 import React, { useState } from "react";
 import { StateInspector } from "reinspect";
 import ReactDOM from "react-dom";
 import { Text, Form, Group, FormProps } from "@reactway/forms";
-import { getFieldValue } from "@reactway/forms-core";
+import { getFieldValue, selectField } from "@reactway/forms-core";
 
 import { DebugContainer } from "./debug-container";
 
 import { CustomModifier, Modification } from "./custom-modifier";
 import { TestButton } from "./test-button";
-import { FormStore } from "./form-store";
+import { LengthValidator } from "./length-validator";
+import { FormRender } from "./form-render";
+import { parseNumber } from "./number-modifier";
 
 import "./app.scss";
 
@@ -29,12 +32,51 @@ const App: React.FC = () => {
                             <label>
                                 First name:
                                 <Text name="firstName" initialValue="John">
-                                    <CustomModifier modification={toggle ? Modification.Lowercase : Modification.Uppercase} />
+                                    <LengthValidator min={3} max={10} />
+                                    {toggle ? <CustomModifier modification={Modification.Uppercase} /> : null}
                                 </Text>
+                                <FormRender>
+                                    {state => {
+                                        const fieldState = selectField(state, "person.firstName");
+
+                                        if (fieldState == null) {
+                                            return null;
+                                        }
+
+                                        const validationResults = fieldState.validation.results;
+
+                                        if (validationResults.length === 0) {
+                                            return null;
+                                        }
+
+                                        return (
+                                            <>
+                                                {validationResults.map((x, index) => (
+                                                    <span key={`person.firstName-validation-results-${index}`}>{x.message}</span>
+                                                ))}
+                                            </>
+                                        );
+                                    }}
+                                </FormRender>
+                                <FormRender>
+                                    {state => {
+                                        const fieldState = selectField(state, "person.firstName");
+
+                                        if (fieldState == null) {
+                                            return null;
+                                        }
+
+                                        const fieldValue = fieldState.getValue(fieldState);
+
+                                        return <div>{parseNumber(fieldValue, ".", ",", false)}</div>;
+                                    }}
+                                </FormRender>
                             </label>
                             <label>
                                 Last name:
-                                <Text name="lastName" initialValue="Smith" />
+                                <Text name="lastName" initialValue="Smith">
+                                    <CustomModifier modification={!toggle ? Modification.Lowercase : Modification.Uppercase} />
+                                </Text>
                             </label>
                         </Group>
                         <button type="submit">Submit</button>
@@ -44,9 +86,7 @@ const App: React.FC = () => {
                         <TestButton fieldId={"person.firstName"} />
                     </div>
 
-                    <div className="form-store-container">
-                        <FormStore />
-                    </div>
+                    {/* <div className="form-store-container"><FormStore /></div> */}
                 </div>
                 <DebugContainer />
             </Form>
