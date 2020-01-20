@@ -22,7 +22,6 @@ const defaultErrorMessages = {
 
 let count = 0;
 export const LengthValidator = (props: LengthValidatorProps): null => {
-    console.log("LengthValidator render");
     /* eslint-disable react-hooks/rules-of-hooks */
     // Conditional hooks scream without this...
     if (count++ >= 100) {
@@ -35,17 +34,13 @@ export const LengthValidator = (props: LengthValidatorProps): null => {
     const validator = useMemo<Validator<string>>(() => {
         return {
             shouldValidate: value => {
-                console.log("Should validate.", value != null && value.length > 0);
                 return value != null && value.length > 0;
             },
             validate: (value: string): ValidatorResult => {
-                console.log("Validating...");
                 if (value.length < min) {
-                    console.log("Too short.");
                     return [errorMessages.tooShort];
                 }
                 if (max != null && value.length > max) {
-                    console.log("Too long.");
                     return [errorMessages.tooLong];
                 }
             }

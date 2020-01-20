@@ -1,3 +1,4 @@
+import "./string-helpers";
 import React, { useState } from "react";
 import { StateInspector } from "reinspect";
 import ReactDOM from "react-dom";
@@ -10,6 +11,7 @@ import { CustomModifier, Modification } from "./custom-modifier";
 import { TestButton } from "./test-button";
 import { LengthValidator } from "./length-validator";
 import { FormRender } from "./form-render";
+import { parseNumber } from "./number-modifier";
 
 import "./app.scss";
 
@@ -54,6 +56,19 @@ const App: React.FC = () => {
                                                 ))}
                                             </>
                                         );
+                                    }}
+                                </FormRender>
+                                <FormRender>
+                                    {state => {
+                                        const fieldState = selectField(state, "person.firstName");
+
+                                        if (fieldState == null) {
+                                            return null;
+                                        }
+
+                                        const fieldValue = fieldState.getValue(fieldState);
+
+                                        return <div>{parseNumber(fieldValue, ".", ",", false)}</div>;
                                     }}
                                 </FormRender>
                             </label>

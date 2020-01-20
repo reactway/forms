@@ -47,7 +47,7 @@ export function getRenderValue<TFieldState extends InputFieldState<InputFieldDat
         return fieldState.data.transientValue ?? fieldState.data.currentValue;
     }
 
-    return fieldState.data.modifier.format(fieldState.data.currentValue, fieldState.data.transientValue);
+    return fieldState.data.modifier.format(fieldState.data.currentValue);
 }
 
 // TODO: Does this function is valuable at all?
