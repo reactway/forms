@@ -29,10 +29,8 @@ export function useValidator<TValue>(validator: Validator<TValue>): void {
         }
 
         store.update((draft, helpers) => {
-            console.group("Initial validation.");
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             validateField(draft, helpers, parentId);
-            console.groupEnd();
         });
     }, [parentId, store]);
 }

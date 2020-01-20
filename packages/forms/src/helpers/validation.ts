@@ -59,8 +59,6 @@ export async function validateField(draft: FieldState<any, any>, helpers: Update
 
     const validators = fieldState.validation.validators;
 
-    console.log("Total validators:", validators.length);
-
     if (validators.length === 0) {
         return;
     }
@@ -71,8 +69,6 @@ export async function validateField(draft: FieldState<any, any>, helpers: Update
     const validationStarted = new Date();
     fieldState.validation.validationStarted = validationStarted;
     fieldState.validation.results = [];
-
-    console.log(Object.assign({}, fieldState));
 
     let validatorsCount = 0;
     for (const validator of validators) {

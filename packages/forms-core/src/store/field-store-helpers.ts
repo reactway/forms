@@ -132,7 +132,6 @@ function registerValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, va
     }
 
     const id = shortid.generate();
-    console.log("Registering validator", id, "for", fieldId);
 
     const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
     modifiableValidators.push({
