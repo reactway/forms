@@ -43,11 +43,12 @@ export function changeFieldValue<TFieldState extends InputFieldState<InputFieldD
 export function getRenderValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
     fieldState: TFieldState
 ): FieldStateRenderValue<TFieldState> {
+    const currentValue = fieldState.data.transientValue ?? fieldState.data.currentValue;
     if (fieldState.data.modifier == null) {
-        return fieldState.data.transientValue ?? fieldState.data.currentValue;
+        return currentValue;
     }
 
-    return fieldState.data.modifier.format(fieldState.data.currentValue);
+    return fieldState.data.modifier.format(currentValue);
 }
 
 // TODO: Does this function is valuable at all?

@@ -8,6 +8,12 @@ export const PercentageModifier = (): null => {
     }, []);
 
     const parse = useCallback<Parse<number, number>>(value => {
+        // TODO: After implementing "first transient value wins" check if this is still needed.
+        if (typeof value !== "number") {
+            return {
+                currentValue: 0
+            };
+        }
         return {
             currentValue: value * 100
         };

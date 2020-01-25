@@ -11,9 +11,10 @@ import { CustomModifier, Modification } from "./custom-modifier";
 import { TestButton } from "./test-button";
 import { LengthValidator } from "./length-validator";
 import { FormRender } from "./form-render";
-import { parseNumber } from "./number-modifier";
+import { parseNumber, NumberModifier } from "./number-modifier";
 
 import "./app.scss";
+import { PercentageModifier } from "./percentage-modifier";
 
 const App: React.FC = () => {
     const [toggle, setToggle] = useState(false);
@@ -31,9 +32,10 @@ const App: React.FC = () => {
                         <Group name="person">
                             <label>
                                 First name:
-                                <Text name="firstName" initialValue="John">
-                                    <LengthValidator min={3} max={10} />
-                                    {toggle ? <CustomModifier modification={Modification.Uppercase} /> : null}
+                                <Text name="firstName" initialValue="123.45">
+                                    {/* <LengthValidator min={3} max={10} /> */}
+                                    {/* {toggle ? <CustomModifier modification={Modification.Uppercase} /> : null} */}
+                                    <NumberModifier />
                                 </Text>
                                 <FormRender>
                                     {state => {
@@ -68,7 +70,12 @@ const App: React.FC = () => {
 
                                         const fieldValue = fieldState.getValue(fieldState);
 
-                                        return <div>{parseNumber(fieldValue, ".", ",", false)}</div>;
+                                        return (
+                                            <div>
+                                                <pre>{JSON.stringify(parseNumber(fieldValue, ".", ","), null, 4)}</pre>
+                                                <pre>{JSON.stringify(fieldState, null, 4)}</pre>
+                                            </div>
+                                        );
                                     }}
                                 </FormRender>
                             </label>

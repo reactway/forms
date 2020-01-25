@@ -30,12 +30,13 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
             inputFieldState.data.modifier = modifier;
 
             // Initial value update is needed to kick off the modifier mechanism.
-            changeFieldValue<FieldState<any, any>>(
-                draft,
-                helpers,
-                parentId,
-                inputFieldState.data.transientValue ?? inputFieldState.data.currentValue
-            );
+            // TODO: Not sure whether this is the *right* approach, because transientValue and currentValue types can be different.
+            // changeFieldValue<FieldState<any, any>>(
+            //     draft,
+            //     helpers,
+            //     parentId,
+            //     inputFieldState.data.transientValue ?? inputFieldState.data.currentValue
+            // );
         });
     }, [store, parentId, modifier]);
 
