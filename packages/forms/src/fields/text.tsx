@@ -143,7 +143,6 @@ export const Text = (props: React.PropsWithChildren<TextProps>): React.ReactElem
                             data.selectionDirection = undefined;
                         });
                     });
-                    
                 }}
             />
             <FormContext.Provider value={{ store: store, parentId: fieldState.id, permanent }}>{props.children}</FormContext.Provider>
