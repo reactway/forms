@@ -32,8 +32,8 @@ export function useField<TFieldState extends FieldState<any, any>>(
                     throw new Error(`transientValue cannot be specified during field registration.`);
                 }
 
-                if (inputState.data.modifier != null) {
-                    const parseResult = inputState.data.modifier.parse(data.currentValue);
+                if (inputState.data.modifiers != null) {
+                    const parseResult = inputState.data.modifiers.parse(data.currentValue);
 
                     data.currentValue = parseResult.currentValue;
                     data.transientValue = parseResult.transientValue;

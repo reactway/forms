@@ -87,12 +87,11 @@ export function getDefaultFieldData<TValue, TRenderValue>(
         defaultValue,
         initialValue,
         currentValue,
-        transientValue
+        transientValue,
+        modifiers: []
     };
 }
 
-export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState): {};
-export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState, fieldId: string): any;
 export function getFieldValue<TFieldState extends FieldState<any, any> = FieldState<any, any>>(state: TFieldState, fieldId?: string): any {
     if (fieldId == null) {
         return state.getValue(state);

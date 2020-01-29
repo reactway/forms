@@ -2,6 +2,11 @@ import { Draft } from "immer";
 import { Dictionary, JsonValue, NestedDictionary } from "./helpers";
 import { Modifier } from "./modifiers";
 import { Validator, ValidationResult } from "./validators";
+import { UpdateFieldStoreHelpers } from "../store/field-store-helpers";
+
+export interface Mechanism<TId extends string = string, TValue = any, TRenderValue = any> {
+    id: TId;
+}
 
 // TODO: THydrationValue example with DraftJS: TValue = DraftJsState, THydrationValue = object.
 // TODO: Add Hydration.
@@ -12,8 +17,43 @@ export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue,
     readonly data: TData;
     readonly status: FieldStatus;
     readonly validation: FieldValidation<TValue>;
+    readonly mechanisms?: Mechanisms<TValue, InputFieldRenderValue<TData>>;
 
     readonly fields: Readonly<Dictionary<FieldState<unknown, any>>>;
+}
+
+export const ValidationMechanismId = "field-validation" as const;
+export interface ValidationMechanism<TValue> extends Mechanism<typeof ValidationMechanismId, TValue> {
+    validateField(state: FieldState<any, any>, helpers: UpdateFieldStoreHelpers, fieldId: string): Promise<void>;
+}
+
+export const ModifierMechanismId = "field-modifier" as const;
+export interface ModifierMechanism<TValue, TRenderValue> extends Mechanism<typeof ModifierMechanismId, TValue, TRenderValue> {
+    parse(state: FieldState<any, any>, helpers: UpdateFieldStoreHelpers, fieldId: string, nextValue: TValue): void;
+    format(state: FieldState<any, any>, helpers: UpdateFieldStoreHelpers, fieldId: string): TRenderValue;
+}
+
+export const StatusesMechanismId = "field-statuses" as const;
+export interface StatusesMechanism extends Mechanism<typeof StatusesMechanismId> {
+    updateFieldStatus(state: Draft<FieldState<any, any>>, fieldId: string, updater: (status: FieldStatus) => void): void;
+}
+
+export const ResetMechanismId = "field-reset" as const;
+export interface ResetMechanism<TValue> extends Mechanism<typeof ResetMechanismId, TValue> {}
+
+export const ClearMechanismId = "field-clear" as const;
+export interface ClearMechanism<TValue> extends Mechanism<typeof ClearMechanismId, TValue> {}
+
+export const SubmitMechanismId = "field-submit" as const;
+export interface SubmitMechanism<TValue> extends Mechanism<typeof SubmitMechanismId, TValue> {}
+
+export interface Mechanisms<TValue, TRenderValue> {
+    [key: string]: Mechanism<string, TValue, TRenderValue>;
+    [ValidationMechanismId]: ValidationMechanism<TValue>;
+    // [ModifierMechanismId]: ModifierMechanism<TValue, TRenderValue>;
+    // [StatusesMechanismId]: StatusesMechanism;
+    // [ResetMechanismId]: ResetMechanism<TValue>;
+    // [ClearMechanismId]: ClearMechanism<TValue>;
 }
 
 export interface FieldValue<TValue, TFieldState extends FieldState<any, any>> {
@@ -30,15 +70,15 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
+export interface FieldValidator<TValue> extends Validator<TValue> {
+    id: string;
+}
+
 export interface FieldValidation<TValue> {
     results: ReadonlyArray<ValidationResult>;
     validators: ReadonlyArray<FieldValidator<TValue>>;
     // TODO: Status + Date or just Date?
     validationStarted?: Date;
-}
-
-export interface FieldValidator<TValue> extends Validator<TValue> {
-    id: string;
 }
 
 export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
@@ -47,7 +87,7 @@ export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
     defaultValue: TValue;
     transientValue?: TRenderValue;
 
-    modifier?: Modifier<TValue, TRenderValue>;
+    modifiers: Modifier<TValue, TRenderValue>[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

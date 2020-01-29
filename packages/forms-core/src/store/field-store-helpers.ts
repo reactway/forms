@@ -1,7 +1,7 @@
 import { Draft } from "immer";
 import shortid from "shortid";
 import { formsLogger } from "../logger";
-import { FieldState, FieldStateData, FieldStatus, InitialFieldState, FieldValidator } from "../contracts/field-state";
+import { FieldState, FieldStateData, FieldStatus, InitialFieldState, FieldValidator, Mechanism } from "../contracts/field-state";
 import { Dictionary } from "../contracts/helpers";
 import { Validator } from "../contracts/validators";
 import { assertFieldIsDefined, getFieldNameFromId } from "./helpers";
@@ -25,10 +25,15 @@ export interface UpdateFieldStoreHelpers extends FieldStoreHelpers {
     focusField(fieldId: string): void;
     blurField(fieldId: string): void;
 
+    registerMechanism(...mechanisms: Mechanism<string>[]): void;
+    getMechanism<TMechanism extends Mechanism<string>>(
+        mechanismId: TMechanism extends Mechanism<infer TName> ? TName : string
+    ): TMechanism | undefined;
+
     enqueueUpdate: FieldStore<FieldState<any, any>>["update"];
 }
 
-function updateFieldStatus(state: FieldState<any, any>, fieldId: string, updater: (status: FieldStatus) => void): void {
+function updateFieldStatus(state: Draft<FieldState<any, any>>, fieldId: string, updater: (status: FieldStatus) => void): void {
     const fieldState = selectField(state, fieldId);
 
     assertFieldIsDefined(fieldState, fieldId);
@@ -160,27 +165,60 @@ function unregisterValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, 
     modifiableValidators.splice(validatorIndex, 1);
 }
 
-// TODO: Draft with readonly `status`
-export function fieldStoreHelpers(
-    store: FieldStore<FieldState<any, any>>,
-    draft: Draft<FieldState<any, any>>,
-    fieldsCache: Dictionary<FieldState<any, any>>
-): UpdateFieldStoreHelpers {
+function registerMechanism(state: FieldState<any, any>, mechanism: Mechanism<string>): void {
+    if (state.mechanisms == null) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        state.mechanisms = {};
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const mechanisms = state.mechanisms!;
+    if (mechanisms[mechanism.id] != null) {
+        throw new Error(`Mechanism ${mechanism.id} has already been registered.`);
+    }
+
+    mechanisms[mechanism.id] = mechanism;
+}
+
+function getMechanism<TMechanism extends Mechanism<string>>(
+    fieldState: FieldState<any, any>,
+    mechanismId: TMechanism extends Mechanism<infer TName> ? TName : string
+): TMechanism | undefined {
+    if (fieldState.mechanisms == null) {
+        throw new Error("The mechanisms are not registered.");
+    }
+    return fieldState.mechanisms[mechanismId] as TMechanism;
+}
+
+export function constructFieldStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): FieldStoreHelpers {
     const cachedSelectField: UpdateFieldStoreHelpers["selectField"] = fieldId => {
         const cachedField = fieldsCache[fieldId];
         if (cachedField != null) {
             return cachedField;
         }
 
-        const selectedField = selectField(draft, fieldId);
+        const selectedField = selectField(state, fieldId);
         if (selectedField != null) {
             fieldsCache[fieldId] = selectedField;
         }
         return selectedField;
     };
 
+    const helpers: FieldStoreHelpers = {
+        selectField: cachedSelectField
+    };
+    return helpers;
+}
+
+// TODO: Draft with readonly `status`
+export function constructUpdateFieldStoreHelpers(
+    store: FieldStore<FieldState<any, any>>,
+    draft: Draft<FieldState<any, any>>,
+    fieldsCache: Dictionary<FieldState<any, any>>
+): UpdateFieldStoreHelpers {
     const helpers: UpdateFieldStoreHelpers = {
-        selectField: cachedSelectField,
+        ...constructFieldStoreHelpers(draft, fieldsCache),
         updateFieldData: (fieldId, updater) => {
             const fieldState = helpers.selectField(fieldId);
 
@@ -213,6 +251,16 @@ export function fieldStoreHelpers(
         blurField: fieldId => {
             blurField(helpers, fieldId);
         },
+
+        registerMechanism: (...mechanisms) => {
+            for (const mechanism of mechanisms) {
+                registerMechanism(draft, mechanism);
+            }
+        },
+        getMechanism: mechanismId => {
+            return getMechanism(draft, mechanismId);
+        },
+
         enqueueUpdate: updater => {
             setTimeout(() => store.update(updater), 0);
         }

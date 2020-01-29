@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Modifier, selectField, FieldState } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 import { isInputFieldState } from "./helpers/is";
@@ -27,7 +27,7 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
             //     throw new Error("Multiple modifiers are not supported. Use <CombinedModifier /> component.");
             // }
 
-            inputFieldState.data.modifier = modifier;
+            inputFieldState.data.modifiers.push(modifier);
 
             // Initial value update is needed to kick off the modifier mechanism.
             // TODO: Not sure whether this is the *right* approach, because transientValue and currentValue types can be different.
@@ -51,8 +51,12 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
                     throw new Error(`Modifier is being removed from non-input field ${parentId}.`);
                 }
 
-                inputFieldState.data.modifier = undefined;
+                const modifierIndex = inputFieldState.data.modifiers.findIndex(x => x === modifier);
+                if (modifierIndex === -1) {
+                    return;
+                }
+                inputFieldState.data.modifiers.splice(modifierIndex, 1);
             });
         };
-    }, [parentId, store]);
+    }, [modifier, parentId, store]);
 }

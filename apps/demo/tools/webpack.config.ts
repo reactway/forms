@@ -43,6 +43,7 @@ const configToExport = new Builder(__dirname, {
         title: "React Forms Demo",
         template: require("html-webpack-template"),
         baseHref: publicPath,
+        favicon: "./src/assets/favicon-128.png",
         meta: [
             {
                 charset: "UTF-8"
@@ -63,6 +64,10 @@ const configToExport = new Builder(__dirname, {
             react: path.resolve("./node_modules/react"),
             "react-dom": path.resolve("./node_modules/react-dom")
         };
+
+        if (config.plugins == null) {
+            config.plugins = [];
+        }
 
         return config;
     })

@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
-import { Validator } from "@reactway/forms-core";
+import { Validator, ValidationMechanism } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
-import { validateField } from "./helpers/validation";
 
 export function useValidator<TValue>(validator: Validator<TValue>): void {
     const { parentId, store } = useContext(FormContext);
@@ -29,8 +28,8 @@ export function useValidator<TValue>(validator: Validator<TValue>): void {
         }
 
         store.update((draft, helpers) => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            validateField(draft, helpers, parentId);
+            const validation = helpers.getMechanism<ValidationMechanism<TValue>>("field-validation");
+            validation?.validateField(draft, helpers, parentId);
         });
     }, [parentId, store]);
 }

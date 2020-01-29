@@ -6,7 +6,10 @@ import {
     assertFieldIsDefined,
     InputFieldData,
     InputFieldState,
-    FieldState
+    FieldState,
+    getMechanism,
+    ValidationMechanism,
+    ValidationMechanismId
 } from "@reactway/forms-core";
 import { FieldStore } from "@reactway/forms-core";
 import { UpdateFieldStoreHelpers } from "@reactway/forms-core";
@@ -38,24 +41,28 @@ export function changeFieldValue<TFieldState extends InputFieldState<InputFieldD
     // No need to wait for it.
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateField(draft, helpers, fieldId);
+    const validation = getMechanism<ValidationMechanism<any>>(draft, "field-value-validation");
+    validation?.validate(draft, fieldId);
 }
 
 export function getRenderValue<TFieldState extends InputFieldState<InputFieldData<any, any>>>(
     fieldState: TFieldState
 ): FieldStateRenderValue<TFieldState> {
     const currentValue = fieldState.data.transientValue ?? fieldState.data.currentValue;
-    if (fieldState.data.modifier == null) {
+    if (fieldState.data.modifiers == null) {
         return currentValue;
     }
 
-    return fieldState.data.modifier.format(currentValue);
+    const a = fieldState.mechanisms?.[ValidationMechanismId].id;
+
+    return fieldState.data.modifiers.format(currentValue);
 }
 
-// TODO: Does this function is valuable at all?
-export function getRenderValueFromFormStore(store: FieldStore<FormState>, fieldId: string): unknown {
-    const fieldState = selectField(store.getState(), fieldId);
+// TODO: Is this function valuable at all?
+// export function getRenderValueFromFormStore(store: FieldStore<FormState>, fieldId: string): unknown {
+//     const fieldState = selectField(store.getState(), fieldId);
 
-    assertFieldIsDefined(fieldState, fieldId);
+//     assertFieldIsDefined(fieldState, fieldId);
 
-    return getRenderValue(fieldState);
-}
+//     return getRenderValue(fieldState);
+// }
