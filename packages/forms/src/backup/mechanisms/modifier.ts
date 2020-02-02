@@ -1,5 +1,5 @@
 import {
-    ModifierMechanism,
+    ModifierUpdater,
     InputFieldState,
     InputFieldData,
     UpdateFieldStoreHelpers,
@@ -10,7 +10,7 @@ import {
 } from "@reactway/forms-core";
 import { isInputFieldState } from "../helpers/is";
 
-export class ModifierMechanismImplementation<TValue, TRenderValue> implements ModifierMechanism<TValue, TRenderValue> {
+export class ModifierUpdaterImplementation<TValue, TRenderValue> implements ModifierUpdater<TValue, TRenderValue> {
     public id: "field-modifier" = "field-modifier";
 
     public parse(

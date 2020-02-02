@@ -13,5 +13,5 @@
             "path": "../../packages/forms-core"
         }
     ],
-    "exclude": ["tools", "dist"]
+    "exclude": ["tools", "dist", "src/backup"]
 }

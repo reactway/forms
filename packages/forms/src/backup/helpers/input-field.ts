@@ -7,9 +7,9 @@ import {
     InputFieldData,
     InputFieldState,
     FieldState,
-    getMechanism,
-    ValidationMechanism,
-    ValidationMechanismId
+    getUpdater,
+    ValidationUpdater,
+    ValidationUpdaterId
 } from "@reactway/forms-core";
 import { FieldStore } from "@reactway/forms-core";
 import { UpdateFieldStoreHelpers } from "@reactway/forms-core";
@@ -41,7 +41,7 @@ export function changeFieldValue<TFieldState extends InputFieldState<InputFieldD
     // No need to wait for it.
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateField(draft, helpers, fieldId);
-    const validation = getMechanism<ValidationMechanism<any>>(draft, "field-value-validation");
+    const validation = getUpdater<ValidationUpdater<any>>(draft, "field-value-validation");
     validation?.validate(draft, fieldId);
 }
 
@@ -53,7 +53,11 @@ export function getRenderValue<TFieldState extends InputFieldState<InputFieldDat
         return currentValue;
     }
 
-    const a = fieldState.mechanisms?.[ValidationMechanismId].id;
+    const updaters = fieldState.updaters;
+
+    if (updaters == null) {
+        throw new Error();
+    }
 
     return fieldState.data.modifiers.format(currentValue);
 }

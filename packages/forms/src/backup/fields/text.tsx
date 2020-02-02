@@ -11,7 +11,7 @@ import {
 import { FormContext } from "../form-context";
 import { useField } from "../use-field";
 import { getRenderValue, changeFieldValue } from "../helpers/input-field";
-import { ValidationMechanismImplementation } from "../mechanisms/validation";
+import { ValidationUpdaterImplementation } from "../updaters/validation";
 
 export interface Cursor {
     selectionStart: number;
@@ -45,8 +45,8 @@ const initialFieldState = (name: string, defaultValue: string, initialValue: str
         results: [],
         validators: []
     },
-    mechanisms: {
-        "field-validation": new ValidationMechanismImplementation()
+    updaters: {
+        "field-validation": new ValidationUpdaterImplementation()
     }
 });
 
@@ -134,7 +134,7 @@ export const Text = (props: React.PropsWithChildren<TextProps>): React.ReactElem
                         // const fs = selectField(draft, fieldState.id) as TextFieldState | undefined;
                         // assertFieldIsDefined(fs, fieldState.id);
 
-                        // const validation = getMechanism<ValidationMechanism<number>>(fs, "field-value-validation");
+                        // const validation = getUpdater<ValidationUpdater<number>>(fs, "field-value-validation");
                         // validation?.validate(draft, fieldState.id);
                     });
                 }}

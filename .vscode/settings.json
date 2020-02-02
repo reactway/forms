@@ -16,5 +16,6 @@
         "./packages/forms-core",
         "./packages/forms",
         "./apps/demo",
-    ]
+    ],
+    "eslint.enable": true
 }

@@ -1,7 +1,7 @@
 import { Draft } from "immer";
 import shortid from "shortid";
 import { formsLogger } from "../logger";
-import { FieldState, FieldStateData, FieldStatus, InitialFieldState, FieldValidator, Mechanism } from "../contracts/field-state";
+import { FieldState, FieldStateData, FieldStatus, InitialFieldState, FieldValidator, Updater } from "../contracts/field-state";
 import { Dictionary } from "../contracts/helpers";
 import { Validator } from "../contracts/validators";
 import { assertFieldIsDefined, getFieldNameFromId } from "./helpers";
@@ -25,10 +25,10 @@ export interface UpdateFieldStoreHelpers extends FieldStoreHelpers {
     focusField(fieldId: string): void;
     blurField(fieldId: string): void;
 
-    registerMechanism(...mechanisms: Mechanism<string>[]): void;
-    getMechanism<TMechanism extends Mechanism<string>>(
-        mechanismId: TMechanism extends Mechanism<infer TName> ? TName : string
-    ): TMechanism | undefined;
+    registerUpdater(...updaters: Updater<string>[]): void;
+    getUpdater<TUpdater extends Updater<string>>(
+        updaterId: TUpdater extends Updater<infer TName> ? TName : string
+    ): TUpdater | undefined;
 
     enqueueUpdate: FieldStore<FieldState<any, any>>["update"];
 }
@@ -165,30 +165,30 @@ function unregisterValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, 
     modifiableValidators.splice(validatorIndex, 1);
 }
 
-function registerMechanism(state: FieldState<any, any>, mechanism: Mechanism<string>): void {
-    if (state.mechanisms == null) {
+function registerUpdater(state: FieldState<any, any>, updater: Updater<string>): void {
+    if (state.updaters == null) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        state.mechanisms = {};
+        state.updaters = {};
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const mechanisms = state.mechanisms!;
-    if (mechanisms[mechanism.id] != null) {
-        throw new Error(`Mechanism ${mechanism.id} has already been registered.`);
+    const updaters = state.updaters!;
+    if (updaters[updater.id] != null) {
+        throw new Error(`Updater ${updater.id} has already been registered.`);
     }
 
-    mechanisms[mechanism.id] = mechanism;
+    updaters[updater.id] = updater;
 }
 
-function getMechanism<TMechanism extends Mechanism<string>>(
+function getUpdater<TUpdater extends Updater<string>>(
     fieldState: FieldState<any, any>,
-    mechanismId: TMechanism extends Mechanism<infer TName> ? TName : string
-): TMechanism | undefined {
-    if (fieldState.mechanisms == null) {
-        throw new Error("The mechanisms are not registered.");
+    updaterId: TUpdater extends Updater<infer TName> ? TName : string
+): TUpdater | undefined {
+    if (fieldState.updaters == null) {
+        throw new Error("The updaters are not registered.");
     }
-    return fieldState.mechanisms[mechanismId] as TMechanism;
+    return fieldState.updaters[updaterId] as TUpdater;
 }
 
 export function constructFieldStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): FieldStoreHelpers {
@@ -252,13 +252,13 @@ export function constructUpdateFieldStoreHelpers(
             blurField(helpers, fieldId);
         },
 
-        registerMechanism: (...mechanisms) => {
-            for (const mechanism of mechanisms) {
-                registerMechanism(draft, mechanism);
+        registerUpdater: (...updaters) => {
+            for (const updater of updaters) {
+                registerUpdater(draft, updater);
             }
         },
-        getMechanism: mechanismId => {
-            return getMechanism(draft, mechanismId);
+        getUpdater: updaterId => {
+            return getUpdater(draft, updaterId);
         },
 
         enqueueUpdate: updater => {

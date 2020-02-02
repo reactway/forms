@@ -1,29 +1,22 @@
-import {
-    InputFieldState,
-    InputFieldData,
-    UpdateFieldStoreHelpers,
-    ValidationMechanism,
-    FieldState,
-    assertFieldIsDefined,
-    ValidationResult,
-    ValidationResultType,
-    ValidationResultOrigin
-} from "@reactway/forms-core";
-import { isPromise } from "../helpers/is";
+import { ValidationUpdater, FieldState, UpdateStoreHelpers } from "../contracts";
+import { assertFieldIsDefined } from "../helpers";
 
-export class ValidationMechanismImplementation<TValue> implements ValidationMechanism<TValue> {
-    public id: "field-validation" = "field-validation";
+export class ValidationUpdaterClass<TValue> implements ValidationUpdater<TValue> {
+    public id: "validation-updater" = "validation-updater";
 
-    public async validateField(
-        state: InputFieldState<InputFieldData<unknown, unknown>>,
-        helpers: UpdateFieldStoreHelpers,
-        fieldId: string
-    ): Promise<void> {
-        await validateField(state, helpers, fieldId);
+    public async validateField(state: FieldState<any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
+        if (state.validation.validators.length === 0) {
+            return;
+        }
+
+        const validation = state.validation;
+        for (const validator of validation.validators) {
+            
+        }
     }
 }
 
-async function validateField(_draft: FieldState<any, any>, helpers: UpdateFieldStoreHelpers, fieldId: string): Promise<void> {
+async function validateField(_draft: FieldState<any, any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
     const fieldState = helpers.selectField(fieldId);
     assertFieldIsDefined(fieldState, fieldId);
 

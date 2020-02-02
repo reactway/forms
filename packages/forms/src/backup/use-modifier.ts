@@ -29,7 +29,7 @@ export function useModifier<TValue, TRenderValue = any>(modifier: Modifier<TValu
 
             inputFieldState.data.modifiers.push(modifier);
 
-            // Initial value update is needed to kick off the modifier mechanism.
+            // Initial value update is needed to kick off the modifier updater.
             // TODO: Not sure whether this is the *right* approach, because transientValue and currentValue types can be different.
             changeFieldValue<FieldState<any, any>>(
                 draft,

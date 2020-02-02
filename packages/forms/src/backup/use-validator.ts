@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Validator, ValidationMechanism } from "@reactway/forms-core";
+import { Validator, ValidationUpdater } from "@reactway/forms-core";
 import { FormContext } from "./form-context";
 
 export function useValidator<TValue>(validator: Validator<TValue>): void {
@@ -28,7 +28,7 @@ export function useValidator<TValue>(validator: Validator<TValue>): void {
         }
 
         store.update((draft, helpers) => {
-            const validation = helpers.getMechanism<ValidationMechanism<TValue>>("field-validation");
+            const validation = helpers.getUpdater<ValidationUpdater<TValue>>("field-validation");
             validation?.validateField(draft, helpers, parentId);
         });
     }, [parentId, store]);
