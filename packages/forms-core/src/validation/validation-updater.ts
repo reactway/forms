@@ -1,29 +1,22 @@
 import {
-    InputFieldState,
-    InputFieldData,
-    UpdateFieldStoreHelpers,
-    ValidationUpdater,
     FieldState,
-    assertFieldIsDefined,
+    UpdateStoreHelpers,
+    ValidationUpdater,
     ValidationResult,
     ValidationResultType,
     ValidationResultOrigin
-} from "@reactway/forms-core";
-import { isPromise } from "../helpers/is";
+} from "../contracts";
+import { assertFieldIsDefined, isPromise } from "../helpers";
 
-export class ValidationUpdaterImplementation<TValue> implements ValidationUpdater<TValue> {
-    public id: "field-validation" = "field-validation";
+export class ValidationUpdaterClass<TValue> implements ValidationUpdater<TValue> {
+    public id: "validation-updater" = "validation-updater";
 
-    public async validateField(
-        state: InputFieldState<InputFieldData<unknown, unknown>>,
-        helpers: UpdateFieldStoreHelpers,
-        fieldId: string
-    ): Promise<void> {
+    public async validateField(state: FieldState<any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
         await validateField(state, helpers, fieldId);
     }
 }
 
-async function validateField(_draft: FieldState<any, any>, helpers: UpdateFieldStoreHelpers, fieldId: string): Promise<void> {
+async function validateField(_draft: FieldState<any, any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
     const fieldState = helpers.selectField(fieldId);
     assertFieldIsDefined(fieldState, fieldId);
 
@@ -101,7 +94,7 @@ function resolveValidationResult(value: string | ValidationResult): ValidationRe
 }
 
 function pushValidationResultsAsync(
-    helpers: UpdateFieldStoreHelpers,
+    helpers: UpdateStoreHelpers,
     fieldId: string,
     validationResults: ValidationResult[],
     currentData: {

@@ -138,8 +138,8 @@ function registerValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, va
 
     const id = shortid.generate();
 
-    const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
-    modifiableValidators.push({
+    const mutableValidators = fieldState.validation.validators as FieldValidator<any>[];
+    mutableValidators.push({
         ...validator,
         id: id
     });
@@ -161,8 +161,8 @@ function unregisterValidator(helpers: UpdateFieldStoreHelpers, fieldId: string, 
         return;
     }
 
-    const modifiableValidators = fieldState.validation.validators as FieldValidator<any>[];
-    modifiableValidators.splice(validatorIndex, 1);
+    const mutableValidators = fieldState.validation.validators as FieldValidator<any>[];
+    mutableValidators.splice(validatorIndex, 1);
 }
 
 function registerUpdater(state: FieldState<any, any>, updater: Updater<string>): void {

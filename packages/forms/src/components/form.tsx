@@ -1,6 +1,14 @@
 import React, { ReactNode, useState } from "react";
 import shortid from "shortid";
-import { Store, FormState, getDefaultStatuses, FormsStores } from "@reactway/forms-core";
+import {
+    Store,
+    FormState,
+    getDefaultState,
+    getDefaultStatuses,
+    FormsStores,
+    getDefaultUpdaters,
+    getDefaultValidation
+} from "@reactway/forms-core";
 import { FieldContext } from "./context";
 
 console.log(FieldContext);
@@ -12,18 +20,23 @@ export interface FormProps {
 
 const formStateFactory = (formId: string): FormState => {
     return {
+        ...getDefaultState(),
         id: formId,
         name: formId,
         data: {
             dehydratedState: {}
         },
-        status: getDefaultStatuses(),
         values: {
             currentValue: null,
             defaultValue: null,
             initialValue: null
         },
-        fields: {}
+        getValue: state => {
+            throw new Error("Not implemented.");
+        },
+        setValue: (state, value) => {
+            throw new Error("Not implemented.");
+        }
     };
 };
 
@@ -47,7 +60,7 @@ export const Form = (props: FormProps): JSX.Element => {
         >
             <FieldContext.Provider
                 value={{
-                    parentId: formId,
+                    parentId: undefined,
                     store: store,
                     permanent: false
                 }}

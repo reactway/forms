@@ -1,5 +1,10 @@
-import { FieldStatus, FieldValues } from "./contracts";
+import { FieldStatus, FieldValues, Updaters, FieldValidation, FieldState } from "./contracts";
 import { IdSeparator } from "./constants";
+import { ValidationUpdaterClass } from "./validation";
+
+export function isPromise(candidate: any): candidate is Promise<any> {
+    return candidate.then != null && candidate.catch != null;
+}
 
 export function generateFieldId(name: string, parentId: string | undefined): string {
     if (parentId == null) {
@@ -21,6 +26,15 @@ export function assertFieldIsDefined<TField>(field: TField, fieldId?: string): a
     if (field == null) {
         throw new Error(`Field '${fieldId}' does not exist in a given state.`);
     }
+}
+
+export function getDefaultState(): Pick<FieldState<any>, "fields" | "updaters" | "status" | "validation"> {
+    return {
+        fields: {},
+        updaters: getDefaultUpdaters(),
+        status: getDefaultStatuses(),
+        validation: getDefaultValidation()
+    };
 }
 
 export function getDefaultStatuses(): FieldStatus {
@@ -53,5 +67,18 @@ export function getDefaultValues<TValue, TRenderValue>(
         initialValue,
         currentValue,
         transientValue
+    };
+}
+
+export function getDefaultUpdaters(): Updaters<any, any> {
+    return {
+        "validation-updater": new ValidationUpdaterClass()
+    };
+}
+
+export function getDefaultValidation(): FieldValidation<any> {
+    return {
+        results: [],
+        validators: []
     };
 }

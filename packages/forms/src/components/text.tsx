@@ -1,6 +1,6 @@
 import React from "react";
-import { useField } from "../helpers/use-field";
-import { FieldState, Initial, getDefaultStatuses, getDefaultValues } from "@reactway/forms-core/src";
+import { useField } from "../helpers";
+import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultUpdaters, getDefaultValidation } from "@reactway/forms-core";
 
 export interface TextProps {
     name: string;
@@ -16,8 +16,14 @@ const initialState = (fieldName: string, defaultValue: string, initialValue: str
         data: {},
         status: getDefaultStatuses(),
         values: getDefaultValues(defaultValue, initialValue),
-        updaters: {
-            "validation-updater": 
+        updaters: getDefaultUpdaters(),
+        validation: getDefaultValidation(),
+        getValue: state => {
+            return state.values.currentValue;
+        },
+        setValue: state => {
+            // TODO: Maybe setValue updater should be used here?
+            throw new Error("setValue is not implemented.");
         }
     };
 };

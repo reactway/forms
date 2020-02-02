@@ -3,7 +3,7 @@ import { ValidationUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
 
 export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
-    extends FieldValue<TValue, FieldState<TValue, TRenderValue, TData>> {
+    extends FieldValue<TValue, FieldState<TValue, TRenderValue, {}>> {
     id: string;
     name: string;
     status: FieldStatus;
