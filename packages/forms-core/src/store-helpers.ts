@@ -1,6 +1,6 @@
 import { Draft } from "immer";
 import { IdSeparator } from "./constants";
-import { FieldState, Initial, Dictionary, StoreHelpers, UpdateStoreHelpers, FieldStatus } from "./contracts";
+import { FieldState, Initial, Dictionary, StoreHelpers, UpdateStoreHelpers, FieldStatus, StateUpdater } from "./contracts";
 import { Store } from "./store";
 import { getFieldNameFromId, assertFieldIsDefined } from "./helpers";
 
@@ -40,6 +40,9 @@ export function constructUpdateStoreHelpers(
         },
         updateFieldStatus: (fieldId, updater) => {
             updateFieldStatus(draft, fieldId, updater);
+        },
+        getUpdater: updaterId => {
+            return getUpdater(draft, updaterId);
         }
     };
 }
@@ -93,6 +96,16 @@ function unregisterField(state: FieldState<any>, id: string): void {
     mutableFields[fieldName] = undefined;
 }
 
+function getUpdater<TUpdater extends StateUpdater<string>>(
+    fieldState: FieldState<any>,
+    updaterId: TUpdater extends StateUpdater<infer TId> ? TId : never
+): TUpdater | undefined {
+    if (fieldState.updaters == null) {
+        throw new Error("The updaters are not registered.");
+    }
+    return fieldState.updaters[updaterId] as TUpdater;
+}
+
 function updateFieldStatus(state: Draft<FieldState<any, any>>, fieldId: string, updater: (status: FieldStatus) => void): void {
     const fieldState = selectField(state, fieldId);
 
@@ -100,7 +113,6 @@ function updateFieldStatus(state: Draft<FieldState<any, any>>, fieldId: string, 
 
     const prevStatus = fieldState.status;
     updater(fieldState.status);
-
     if (prevStatus === fieldState.status) {
         return;
     }

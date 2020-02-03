@@ -1,6 +1,6 @@
 import { FieldState, Initial, generateFieldId, Store } from "@reactway/forms-core";
-import { useFieldContext } from "../components";
 import { useState, useEffect } from "react";
+import { useFieldContext } from "../components";
 
 function fieldNameCompliance(fieldName: string): void {
     // TODO: Maybe we should throw errors with links to docs?
@@ -12,19 +12,34 @@ function fieldNameCompliance(fieldName: string): void {
     }
 }
 
-export interface UseFieldResult<TFieldState extends FieldState<any>> {
-    state: TFieldState;
+export interface UseFieldResult<TElement, TFieldState extends FieldState<any>> {
     // TODO: Is store needed here?
     // store: Store<FieldState<any>>;
+
+    id: string;
+    state: TFieldState;
 }
 
-export function useField<TFieldState extends FieldState<any>>(
+export function useFieldId(fieldName: string, parentId: string | undefined): string {
+    const [fieldId] = useState(generateFieldId(fieldName, parentId));
+
+    // Compliance check.
+    useEffect(() => {
+        return () => {
+            throw new Error(`Field name and its parentId should never change.`);
+        };
+    }, [fieldName, parentId]);
+
+    return fieldId;
+}
+
+export function useField<TElement, TFieldState extends FieldState<any>>(
     fieldName: string,
     initialStateFactory: () => Initial<TFieldState>
-): UseFieldResult<TFieldState> {
+): UseFieldResult<TElement, TFieldState> {
     fieldNameCompliance(fieldName);
     const { store, parentId, permanent } = useFieldContext();
-    const fieldId = generateFieldId(fieldName, parentId);
+    const fieldId = useFieldId(fieldName, parentId);
 
     const [state, setState] = useState<TFieldState>(() => {
         store.update((draft, helpers) => {
@@ -42,45 +57,53 @@ export function useField<TFieldState extends FieldState<any>>(
         return registeredField as TFieldState;
     });
 
-    useEffect(() => {
-        const storeUpdated = (): void => {
-            const nextState = store.helpers.selectField(fieldId) as TFieldState;
-            if (nextState != null) {
-                setState(nextState);
-            }
-        };
+    // Store updates.
+    useEffect(
+        () => {
+            const storeUpdated = (): void => {
+                const nextState = store.helpers.selectField(fieldId);
+                if (nextState != null) {
+                    setState(nextState as TFieldState);
+                }
+            };
 
-        /*
+            /*
         Synchronous updates occur in child component renders, because field is registered during the first render
         and store listener is added in useEffect, which fires asynchronously. The change action is emitted in-between,
         thus, a manual (i.e. not coming from the store) initial update is needed here.
         */
-        storeUpdated();
+            storeUpdated();
 
-        const removeListener = store.addListener(storeUpdated);
+            const removeListener = store.addListener(storeUpdated);
 
-        return () => {
-            removeListener();
-            store.update((_draft, helpers) => {
-                helpers.unregisterField(fieldId);
-            });
-        };
-    }, [fieldName, fieldId, store]);
+            return () => {
+                removeListener();
+                store.update((_draft, helpers) => {
+                    console.warn("Unregistering", fieldId);
+                    helpers.unregisterField(fieldId);
+                });
+            };
+        },
+        // The store and fieldId will never change in a compliant scenario.
+        [fieldId, store]
+    );
 
+    // Permanent changes.
     useEffect(() => {
         if (state.status.permanent === permanent) {
             return;
         }
 
-        store.update((draft, helpers) => {
+        store.update((_draft, helpers) => {
             helpers.updateFieldStatus(fieldId, status => {
                 status.permanent = permanent;
             });
         });
-    }, [fieldId, store, permanent, state.status.permanent]);
+    }, [fieldId, permanent, state.status.permanent, store]);
 
     return {
+        // store: store,
+        id: fieldId,
         state: state
-        // store: store
     };
 }

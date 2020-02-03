@@ -18,6 +18,14 @@ export class Store<TState extends FieldState<any>> extends TinyEmitter {
     }
 
     private set state(value: TState) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        if ((window as any).debugState === true) {
+            const err = new Error();
+            console.groupCollapsed("State being updated:", Object.assign({}, value));
+            console.log(err.stack?.split("\n")[3]);
+            console.groupEnd();
+        }
         this._state = value;
         this._helpers = constructStoreHelpers(this._state, {});
     }
@@ -32,7 +40,7 @@ export class Store<TState extends FieldState<any>> extends TinyEmitter {
 
     public update(updater: (draft: Draft<TState>, helpers: UpdateStoreHelpers) => void): void {
         const newState = produce(this.state, draft => {
-            return updater(draft, constructUpdateStoreHelpers(this, draft, {}));
+            updater(draft, constructUpdateStoreHelpers(this, draft, {}));
         });
 
         if (this.state === newState) {

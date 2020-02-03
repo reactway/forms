@@ -1,6 +1,6 @@
 import React from "react";
-import { useField } from "../helpers";
 import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultUpdaters, getDefaultValidation } from "@reactway/forms-core";
+import { useField, useInputField } from "../helpers";
 
 export interface TextProps {
     name: string;
@@ -21,7 +21,7 @@ const initialState = (fieldName: string, defaultValue: string, initialValue: str
         getValue: state => {
             return state.values.currentValue;
         },
-        setValue: state => {
+        setValue: _state => {
             // TODO: Maybe setValue updater should be used here?
             throw new Error("setValue is not implemented.");
         }
@@ -30,7 +30,7 @@ const initialState = (fieldName: string, defaultValue: string, initialValue: str
 
 export const Text = (props: TextProps): JSX.Element => {
     const { name, defaultValue = "", initialValue } = props;
-    const { state } = useField(props.name, () => initialState(name, defaultValue, initialValue));
+    const { state, id, ...rest } = useInputField(props.name, () => initialState(name, defaultValue, initialValue));
 
-    return <input />;
+    return <input {...rest} type="text" />;
 };

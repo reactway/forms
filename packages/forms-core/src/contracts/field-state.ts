@@ -1,5 +1,5 @@
 import { Dictionary } from "./type-helpers";
-import { ValidationUpdater } from "./state-updaters";
+import { ValidationUpdater, ValueUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
 
 export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
@@ -43,6 +43,7 @@ export interface StateUpdater<TId extends string = string, TValue = any, TRender
 export interface Updaters<TValue, TRenderValue> {
     [key: string]: StateUpdater<string, TValue, TRenderValue>;
     [ValidationUpdater]: ValidationUpdater<TValue>;
+    [ValueUpdater]: ValueUpdater<TValue>;
 }
 
 export interface FieldValidation<TValue> {

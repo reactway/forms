@@ -9,7 +9,7 @@ import {
 import { assertFieldIsDefined, isPromise } from "../helpers";
 
 export class ValidationUpdaterClass<TValue> implements ValidationUpdater<TValue> {
-    public id: "validation-updater" = "validation-updater";
+    public id: "validation" = "validation";
 
     public async validateField(state: FieldState<any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
         await validateField(state, helpers, fieldId);
