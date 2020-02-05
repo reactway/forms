@@ -42,7 +42,7 @@ export function useField<TElement, TFieldState extends FieldState<any>>(
     const fieldId = useFieldId(fieldName, parentId);
 
     const [state, setState] = useState<TFieldState>(() => {
-        store.update((draft, helpers) => {
+        store.update((_draft, helpers) => {
             const initialState = initialStateFactory();
 
             helpers.registerField(fieldId, initialState);

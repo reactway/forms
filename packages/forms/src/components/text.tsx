@@ -10,9 +10,8 @@ export interface TextProps {
 
 export interface TextFieldState extends FieldState<string, string> {}
 
-const initialState = (fieldName: string, defaultValue: string, initialValue: string | undefined): Initial<TextFieldState> => {
+const initialState = (defaultValue: string, initialValue: string | undefined): Initial<TextFieldState> => {
     return {
-        name: fieldName,
         data: {},
         status: getDefaultStatuses(),
         values: getDefaultValues(defaultValue, initialValue),
@@ -30,7 +29,9 @@ const initialState = (fieldName: string, defaultValue: string, initialValue: str
 
 export const Text = (props: TextProps): JSX.Element => {
     const { name, defaultValue = "", initialValue } = props;
-    const { state, id, ...rest } = useInputField(props.name, () => initialState(name, defaultValue, initialValue));
+    const { state, id, ...rest } = useInputField(name, () => initialState(defaultValue, initialValue));
+
+    // TODO: Handle defaultValue, initialValue and other prop changes.
 
     return <input {...rest} type="text" />;
 };

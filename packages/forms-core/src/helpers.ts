@@ -1,7 +1,7 @@
 import { FieldStatus, FieldValues, Updaters, FieldValidation, FieldState } from "./contracts";
 import { IdSeparator } from "./constants";
-import { ValidationUpdaterClass } from "./validation";
-import { ValueUpdaterClass } from "./value";
+import { ValidationUpdaterClass, ValueUpdaterClass } from "./updaters";
+import { StatusUpdaterClass } from "./updaters/status-updater";
 
 export function isPromise(candidate: any): candidate is Promise<any> {
     return candidate.then != null && candidate.catch != null;
@@ -74,7 +74,8 @@ export function getDefaultValues<TValue, TRenderValue>(
 export function getDefaultUpdaters(): Updaters<any, any> {
     return {
         validation: new ValidationUpdaterClass(),
-        value: new ValueUpdaterClass()
+        value: new ValueUpdaterClass(),
+        status: new StatusUpdaterClass()
     };
 }
 

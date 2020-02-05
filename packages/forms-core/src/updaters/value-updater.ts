@@ -12,7 +12,7 @@ export class ValueUpdaterClass<TValue> implements ValueUpdater<TValue> {
 
         helpers.updateFieldStatus(fieldId, status => {
             status.touched = true;
-            status.pristine = value !== fieldState.values.initialValue;
+            status.pristine = value === fieldState.values.initialValue;
         });
     }
 }

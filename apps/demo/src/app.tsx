@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { Form, useFieldContext, Text } from "@reactway/forms";
+import { Form, useFieldContext, Text, Group } from "@reactway/forms";
 import { FormsRegistry } from "./forms-registry";
 import { ErrorBoundary } from "./error-boundary";
 
@@ -16,7 +16,7 @@ const StoreStateJson = (): JSX.Element => {
         });
     }, [store]);
 
-    return <pre>{JSON.stringify(state, null, 4)}</pre>;
+    return <pre>{JSON.stringify(state, null, 2)}</pre>;
 };
 
 const App = (): JSX.Element => {
@@ -27,14 +27,18 @@ const App = (): JSX.Element => {
                 <FormsRegistry />
             </pre>
             <Form>
-                <label>
-                    First name
-                    <Text name="firstName" />
-                </label>
-                <label>
-                    Last name
-                    <Text name="lastName" />
-                </label>
+                <Group name="hello">
+                    <Group name="person">
+                        <label>
+                            First name
+                            <Text name="firstName" />
+                        </label>
+                        <label>
+                            Last name
+                            <Text name="lastName" />
+                        </label>
+                    </Group>
+                </Group>
                 <StoreStateJson />
             </Form>
         </div>

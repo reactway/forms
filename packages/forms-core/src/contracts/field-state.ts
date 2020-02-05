@@ -1,5 +1,5 @@
 import { Dictionary } from "./type-helpers";
-import { ValidationUpdater, ValueUpdater } from "./state-updaters";
+import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
 
 export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
@@ -42,8 +42,9 @@ export interface StateUpdater<TId extends string = string, TValue = any, TRender
 
 export interface Updaters<TValue, TRenderValue> {
     [key: string]: StateUpdater<string, TValue, TRenderValue>;
-    [ValidationUpdater]: ValidationUpdater<TValue>;
+    [ValidationUpdater]: ValidationUpdater;
     [ValueUpdater]: ValueUpdater<TValue>;
+    [StatusUpdater]: StateUpdater;
 }
 
 export interface FieldValidation<TValue> {
@@ -57,4 +58,4 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
     id: string;
 }
 
-export type Initial<TFieldState extends FieldState<any>> = Omit<TFieldState, "id" | "fields">;
+export type Initial<TFieldState extends FieldState<any>> = Omit<TFieldState, "id" | "name" | "fields">;
