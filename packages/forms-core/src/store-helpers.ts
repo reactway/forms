@@ -1,8 +1,18 @@
-import produce, { Draft, Patch } from "immer";
+import { Draft } from "immer";
 import { IdSeparator } from "./constants";
-import { FieldState, Initial, Dictionary, StoreHelpers, UpdateStoreHelpers, FieldStatus, StateUpdater } from "./contracts";
+import {
+    FieldState,
+    Initial,
+    Dictionary,
+    StoreHelpers,
+    UpdateStoreHelpers,
+    StoreUpdatersFactories,
+    StoreUpdater,
+    FormState,
+    StatusUpdater
+} from "./contracts";
 import { Store } from "./store";
-import { getFieldNameFromId, assertFieldIsDefined, generateFieldId } from "./helpers";
+import { getFieldNameFromId, assertUpdaterIsDefined } from "./helpers";
 
 export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dictionary<FieldState<any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
@@ -27,7 +37,12 @@ export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dicti
             }
 
             return cachedSelectField(parentId);
-        }
+        },
+        getActiveFieldId: () => {
+            const formState = state as FormState;
+            return formState.data.activeFieldId;
+        },
+        getFieldParentId: getFieldParentId
     };
     return helpers;
 }
@@ -35,10 +50,11 @@ export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dicti
 export function constructUpdateStoreHelpers(
     store: Store<FieldState<any>>,
     draft: Draft<FieldState<any>>,
+    updaters: StoreUpdatersFactories,
     fieldsCache: Dictionary<FieldState<any>>
 ): UpdateStoreHelpers {
     const fieldStoreHelpers = constructStoreHelpers(draft, fieldsCache);
-    return {
+    const updateStoreHelpers: UpdateStoreHelpers = {
         ...fieldStoreHelpers,
         registerField: (fieldId, initialFieldState) => {
             registerField(draft, fieldId, initialFieldState);
@@ -46,13 +62,20 @@ export function constructUpdateStoreHelpers(
         unregisterField: id => {
             unregisterField(draft, id);
         },
+        setActiveFieldId: fieldId => {
+            const formState = draft as Draft<FormState>;
+            formState.data.activeFieldId = fieldId;
+        },
         updateFieldStatus: (fieldId, updater) => {
-            updateFieldStatus(draft, fieldId, updater);
+            const statusUpdater = updateStoreHelpers.getUpdater<StatusUpdater>("status");
+            assertUpdaterIsDefined(statusUpdater, "status");
+            statusUpdater.updateFieldStatus(fieldId, updater);
         },
         getUpdater: updaterId => {
-            return getUpdater(draft, updaterId);
+            return getUpdater(draft, updateStoreHelpers, updaters, updaterId);
         }
     };
+    return updateStoreHelpers;
 }
 
 function registerField<TFieldState extends FieldState<any>>(
@@ -106,47 +129,35 @@ function unregisterField(state: FieldState<any>, id: string): void {
     mutableFields[fieldName] = undefined;
 }
 
-function getUpdater<TUpdater extends StateUpdater<string>>(
+function getUpdater<TUpdater extends StoreUpdater<string>>(
     fieldState: FieldState<any>,
-    updaterId: TUpdater extends StateUpdater<infer TId> ? TId : never
+    helpers: UpdateStoreHelpers,
+    updaters: StoreUpdatersFactories,
+    updaterId: TUpdater extends StoreUpdater<infer TId> ? TId : never
 ): TUpdater | undefined {
-    if (fieldState.updaters == null) {
-        throw new Error("The updaters are not registered.");
+    const factory = updaters[updaterId];
+
+    if (factory == null) {
+        return undefined;
     }
-    return fieldState.updaters[updaterId] as TUpdater;
+
+    return factory(fieldState, helpers) as TUpdater;
 }
 
-function updateFieldStatus(state: Draft<FieldState<any>>, fieldId: string, updater: (status: FieldStatus) => void): void {
-    const fieldState = selectField(state, fieldId);
-
-    assertFieldIsDefined(fieldState, fieldId);
-
-    const prevStatus = fieldState.status;
-
-    let statusPatches: Patch[];
-    const newStatus = produce(
-        prevStatus,
-        statusDraft => {
-            updater(statusDraft);
-        },
-        patches => {
-            statusPatches = patches;
-        }
-    );
-
-    const statusChanged = (statusKey: keyof FieldStatus): boolean => {
-        return statusPatches.find(x => x.path.includes(statusKey)) != null;
-    };
-
-    if (statusChanged("touched")) {
-    }
-
-    if (prevStatus === newStatus) {
-        return;
-    }
-
-    // TODO: Recalculate all statuses
-}
+// TODO: Should access to updater function be proxied from helpers?
+// TODO: If so, to all of them or some? What if there are multiple functions in the updater?
+// function updateFieldStatus(
+//     state: Draft<FieldState<any>>,
+//     helpers: UpdateStoreHelpers,
+//     fieldId: string,
+//     updater: (status: FieldStatus) => void
+// ): void {
+//     const statusUpdater = helpers.getUpdater<StatusUpdater>("status");
+//     if (statusUpdater == null) {
+//         throw new Error("Status updater was not found.");
+//     }
+//     statusUpdater.updateFieldStatus(fieldId, updater);
+// }
 
 function selectRegistrationParent(state: FieldState<any>, fieldId: string): FieldState<any> | undefined {
     const separatorIndex = fieldId.indexOf(IdSeparator);
@@ -187,7 +198,7 @@ export function selectField(state: FieldState<any>, fieldId: string | undefined)
     }
 }
 
-function getFieldParentId(fieldId: string): string | undefined {
+export function getFieldParentId(fieldId: string): string | undefined {
     const lastSeparatorIndex = fieldId.lastIndexOf(IdSeparator);
 
     if (lastSeparatorIndex === -1) {

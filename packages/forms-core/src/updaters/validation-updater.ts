@@ -8,12 +8,13 @@ import {
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers";
 
-export class ValidationUpdaterClass implements ValidationUpdater {
-    public id: "validation" = "validation";
-
-    public async validateField(state: FieldState<any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
-        await validateField(state, helpers, fieldId);
-    }
+export function ValidationUpdaterFactory(state: FieldState<any>, helpers: UpdateStoreHelpers): ValidationUpdater {
+    return {
+        id: "validation",
+        validateField: async fieldId => {
+            await validateField(state, helpers, fieldId);
+        }
+    };
 }
 
 async function validateField(_draft: FieldState<any, any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {

@@ -1,4 +1,5 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useRef, useEffect, useCallback } from "react";
+import { Draft } from "immer";
 import shortid from "shortid";
 import {
     Store,
@@ -24,7 +25,8 @@ const formStateFactory = (formId: string): FormState => {
         id: formId,
         name: formId,
         data: {
-            dehydratedState: {}
+            dehydratedState: {},
+            activeFieldId: undefined
         },
         values: {
             currentValue: null,
@@ -43,6 +45,7 @@ const formStateFactory = (formId: string): FormState => {
 export const Form = (props: FormProps): JSX.Element => {
     // TODO: Choose where to store formId.
     const [formId] = useState(`form-${shortid()}`);
+
     const [store] = useState(() => {
         // const formId = `form-${shortid()}`;
         const formStore = new Store<FormState>(() => formStateFactory(formId));
@@ -52,8 +55,27 @@ export const Form = (props: FormProps): JSX.Element => {
         return formStore;
     });
 
+    type FormRefCallback = (instance: HTMLFormElement | null) => void;
+
+    const setFormRef = useCallback<FormRefCallback>(
+        form => {
+            store.update(draft => {
+                const formState = draft as Draft<FormState>;
+                if (form != null) {
+                    formState.data.submitCallback = () => {
+                        form.dispatchEvent(new Event("submit"));
+                    };
+                } else {
+                    formState.data.submitCallback = undefined;
+                }
+            });
+        },
+        [store]
+    );
+
     return (
         <form
+            ref={setFormRef}
             onSubmit={() => {
                 props.onSubmit?.();
             }}

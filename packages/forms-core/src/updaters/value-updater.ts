@@ -1,18 +1,39 @@
 import { ValueUpdater, FieldState, UpdateStoreHelpers } from "../contracts";
 import { assertFieldIsDefined } from "../helpers";
 
-export class ValueUpdaterClass<TValue> implements ValueUpdater<TValue> {
-    public id: "value" = "value";
-    public updateFieldValue(state: FieldState<any>, helpers: UpdateStoreHelpers, fieldId: string, value: TValue): void {
-        const fieldState = helpers.selectField(fieldId);
-        assertFieldIsDefined(fieldState, fieldId);
+// export class ValueUpdaterClass implements ValueUpdater {
+//     public id: "value" = "value";
 
-        // TODO: modifiers, validation...
-        fieldState.values.currentValue = value;
+//     constructor(protected state: FieldState<any>) {}
 
-        helpers.updateFieldStatus(fieldId, status => {
-            status.touched = true;
-            status.pristine = value === fieldState.values.initialValue;
-        });
-    }
+//     public updateFieldValue(helpers: UpdateStoreHelpers, fieldId: string, value: unknown): void {
+//         const fieldState = helpers.selectField(fieldId);
+//         assertFieldIsDefined(fieldState, fieldId);
+
+//         // TODO: modifiers, validation...
+//         fieldState.values.currentValue = value;
+
+//         helpers.updateFieldStatus(fieldId, status => {
+//             status.touched = true;
+//             status.pristine = value === fieldState.values.initialValue;
+//         });
+//     }
+// }
+
+export function ValueUpdaterFactory(state: FieldState<any>, helpers: UpdateStoreHelpers): ValueUpdater {
+    return {
+        id: "value",
+        updateFieldValue: (fieldId, value) => {
+            const fieldState = helpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
+
+            // TODO: modifiers, validation...
+            fieldState.values.currentValue = value;
+
+            // helpers.updateFieldStatus(fieldId, status => {
+            //     status.touched = true;
+            //     status.pristine = value === fieldState.values.initialValue;
+            // });
+        }
+    };
 }

@@ -1,7 +1,7 @@
 import React from "react";
-import { FieldContext, useFieldContext } from "./context";
+import { FieldState, Initial, getDefaultState, getDefaultValues, NestedDictionary } from "@reactway/forms-core";
 import { useField } from "../helpers";
-import { FieldState, Initial, getDefaultState, getDefaultValues, NestedDictionary } from "@reactway/forms-core/src";
+import { FieldContext, useFieldContext } from "./context";
 
 export interface GroupProps {
     name: string;
@@ -55,7 +55,7 @@ export const Group = (props: GroupProps): JSX.Element => {
             value={{
                 store: store,
                 parentId: fieldState.id,
-                permanent: props.permanent || parentPermanent
+                permanent: props.permanent ?? parentPermanent
             }}
         >
             {props.children}

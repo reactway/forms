@@ -103,7 +103,7 @@ export interface FormStateData {
     dehydratedState: NestedDictionary<unknown>;
 }
 
-export type InitialFieldState<TFieldState extends FieldState<any, any>> = Omit<TFieldState, "id" | "fields">;
+export type InitialFieldState<TFieldState extends FieldState<any, any>> = Omit<TFieldState, "id" | "TUpdater">;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FormState<TData extends object = FormStateData> extends FieldState<NestedDictionary<unknown>, TData> {}

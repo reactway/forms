@@ -1,10 +1,12 @@
-import { UseFieldResult, useField } from "./use-field";
-import { FieldState, Initial, ValueUpdater } from "@reactway/forms-core/src";
-import { constructStoreHelpers } from "@reactway/forms-core/src/store-helpers";
-import { useFieldContext } from "../components";
+import { FieldState, Initial, ValueUpdater, StatusUpdater, assertUpdaterIsDefined } from "@reactway/forms-core";
+import { constructStoreHelpers } from "@reactway/forms-core";
 import { useCallback } from "react";
+import { useFieldContext } from "../components";
+import { UseFieldResult, useField } from "./use-field";
 
 export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any>> extends UseFieldResult<TElement, TFieldState> {
+    value: string;
+
     // Form events
     onChange: React.ChangeEventHandler<TElement>;
     // onBeforeInput?: React.FormEventHandler<TElement>;
@@ -79,12 +81,12 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         event => {
             const value = event.currentTarget.value;
             store.update((draft, helpers) => {
-                const valueUpdater = helpers.getUpdater<ValueUpdater<any>>("value");
+                const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 if (valueUpdater == null) {
                     throw new Error("Value updater is not defined, thus onChange cannot proceed.");
                 }
 
-                valueUpdater.updateFieldValue(draft, helpers, fieldId, value);
+                valueUpdater.updateFieldValue(fieldId, value);
             });
         },
         [fieldId, store]
@@ -93,8 +95,8 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const onFocus = useCallback<Result["onFocus"]>(
         _event => {
             store.update((draft, helpers) => {
+                helpers.setActiveFieldId(fieldId);
                 helpers.updateFieldStatus(fieldId, status => {
-                    status.focused = true;
                     status.touched = true;
                 });
             });
@@ -105,18 +107,19 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const onBlur = useCallback<Result["onBlur"]>(
         _event => {
             store.update((_draft, helpers) => {
-                helpers.updateFieldStatus(fieldId, status => {
-                    status.focused = false;
-                });
+                helpers.setActiveFieldId(undefined);
             });
         },
-        [fieldId, store]
+        [store]
     );
+
+    const value = fieldState.values.transientValue ?? fieldState.values.currentValue;
 
     return {
         ...fieldResult,
         onChange,
         onFocus,
-        onBlur
+        onBlur,
+        value
     };
 }

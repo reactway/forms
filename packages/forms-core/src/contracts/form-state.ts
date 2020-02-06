@@ -5,5 +5,6 @@ export type FormState<TData extends FormData = FormData> = FieldState<null | nev
 
 export interface FormData {
     submitCallback?: () => void;
+    activeFieldId: string | undefined;
     dehydratedState: NestedDictionary<unknown>;
 }

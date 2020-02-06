@@ -1,6 +1,7 @@
 import { Dictionary } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
+import { UpdateStoreHelpers } from "./store-helpers";
 
 export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
     extends FieldValue<TValue, FieldState<TValue, TRenderValue, {}>> {
@@ -9,7 +10,6 @@ export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
     status: FieldStatus;
     values: FieldValues<TValue, TRenderValue>;
     data: TData;
-    updaters: Updaters<TValue, TRenderValue>;
     validation: FieldValidation<TValue>;
 
     fields: Dictionary<FieldState<any>>;
@@ -21,7 +21,6 @@ export interface FieldValue<TValue, TFieldState extends FieldState<any>> {
 }
 
 export interface FieldStatus {
-    focused: boolean;
     touched: boolean;
     pristine: boolean;
     disabled: boolean;
@@ -36,15 +35,20 @@ export interface FieldValues<TValue, TRenderValue> {
     transientValue?: TRenderValue;
 }
 
-export interface StateUpdater<TId extends string = string, TValue = any, TRenderValue = any> {
+export type StoreUpdaterFactory<TStoreUpdater extends StoreUpdater> = (
+    state: FieldState<any>,
+    helpers: UpdateStoreHelpers
+) => TStoreUpdater;
+
+export interface StoreUpdater<TId extends string = string> {
     id: TId;
 }
 
-export interface Updaters<TValue, TRenderValue> {
-    [key: string]: StateUpdater<string, TValue, TRenderValue>;
-    [ValidationUpdater]: ValidationUpdater;
-    [ValueUpdater]: ValueUpdater<TValue>;
-    [StatusUpdater]: StateUpdater;
+export interface StoreUpdatersFactories {
+    [key: string]: StoreUpdaterFactory<StoreUpdater> | undefined;
+    [ValidationUpdater]: StoreUpdaterFactory<ValidationUpdater>;
+    [ValueUpdater]: StoreUpdaterFactory<ValueUpdater>;
+    [StatusUpdater]: StoreUpdaterFactory<StatusUpdater>;
 }
 
 export interface FieldValidation<TValue> {
