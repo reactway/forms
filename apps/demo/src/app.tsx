@@ -3,12 +3,40 @@ import ReactDOM from "react-dom";
 import { Form, useFieldContext, Text, Group } from "@reactway/forms";
 import { FormsRegistry } from "./forms-registry";
 import { ErrorBoundary } from "./error-boundary";
+import JSONTree from "react-json-tree";
 
 import "./app.scss";
 
 // (window as any).debugState = true;
 
-const StoreStateJson = (): JSX.Element => {
+const Stringify = (props: { state: {} }): JSX.Element => {
+    return (
+        <div className="pre">
+            {JSON.stringify(
+                props.state,
+                (key, value) => {
+                    const skip = ["validation", "getStatus", "setValue", "name"];
+
+                    if (skip.includes(key)) {
+                        return;
+                    }
+
+                    if (typeof value === "function") {
+                        const functionValue = value as Function;
+                        if (functionValue.name !== "") {
+                            return `${functionValue.name}() => {}`;
+                        }
+                        return "<anonymous>() => {}";
+                    }
+                    return value;
+                },
+                2
+            )}
+        </div>
+    );
+};
+
+const StoreStateJson = (props: any): JSX.Element => {
     const { store } = useFieldContext();
     const [state, setState] = useState(store.getState());
 
@@ -39,48 +67,64 @@ const StoreStateJson = (): JSX.Element => {
     }, []);
 
     return (
-        <pre>
-            {JSON.stringify(
-                state,
-                (_key, value) => {
-                    if (typeof value === "function") {
-                        const functionValue = value as Function;
-                        if (functionValue.name !== "") {
-                            return functionValue.name;
+        <div {...props}>
+            <div className="fields">
+                <JSONTree
+                    data={state}
+                    theme="bright"
+                    invertTheme
+                    shouldExpandNode={() => true}
+                    hideRoot
+                    // labelRenderer={(keyPath: string[], nodeType?: string, expanded?: boolean, expandable?: boolean): JSX.Element => {
+                    //     return <div>{nodeType}</div>;
+                    // }}
+                    valueRenderer={(displayValue, value) => {
+                        if (typeof value === "function") {
+                            const functionValue = value as Function;
+                            if (functionValue.name !== "") {
+                                return <span>{`${functionValue.name}() => {}`}</span>;
+                            }
+                            return <span>{"<anonymous>() => {}"}</span>;
                         }
-                        return "anonymous () => {}";
-                    }
-                    return value;
-                },
-                2
-            )}
-        </pre>
+                        return <span>{displayValue}</span>;
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
+
+const Layout = (props: { children: React.ReactNode }): JSX.Element => {
+    return (
+        <Form className="form-debug-container">
+            <div className="form-container">
+                <pre>
+                    Form stores:
+                    <FormsRegistry />
+                </pre>
+                {props.children}
+            </div>
+            <StoreStateJson className="form-store-container" />
+        </Form>
     );
 };
 
 const App = (): JSX.Element => {
     return (
-        <div>
-            <pre>
-                Form stores:
-                <FormsRegistry />
-            </pre>
-            <Form>
-                <Group name="hello">
-                    <Group name="person">
-                        <label>
-                            First name
-                            <Text name="firstName" initialValue="Hello" />
-                        </label>
-                        <label>
-                            Last name
-                            <Text name="lastName" />
-                        </label>
-                    </Group>
+        <Layout>
+            <Group name="hello">
+                <Group name="person">
+                    <label>
+                        First name
+                        <Text name="firstName" initialValue="Hello" />
+                    </label>
+                    <label>
+                        Last name
+                        <Text name="lastName" />
+                    </label>
                 </Group>
-                <StoreStateJson />
-            </Form>
-        </div>
+            </Group>
+        </Layout>
     );
 };
 

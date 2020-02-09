@@ -9,10 +9,12 @@ import {
     StoreUpdatersFactories,
     StoreUpdater,
     FormState,
-    StatusUpdater
+    StatusUpdater,
+    UpdaterId,
+    GetUpdaterReturnType
 } from "./contracts";
 import { Store } from "./store";
-import { getFieldNameFromId, assertUpdaterIsDefined } from "./helpers";
+import { getFieldNameFromId } from "./helpers";
 
 export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dictionary<FieldState<any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
@@ -68,7 +70,6 @@ export function constructUpdateStoreHelpers(
         },
         updateFieldStatus: (fieldId, updater) => {
             const statusUpdater = updateStoreHelpers.getUpdater<StatusUpdater>("status");
-            assertUpdaterIsDefined(statusUpdater, "status");
             statusUpdater.updateFieldStatus(fieldId, updater);
         },
         getUpdater: updaterId => {
@@ -133,15 +134,16 @@ function getUpdater<TUpdater extends StoreUpdater<string>>(
     fieldState: FieldState<any>,
     helpers: UpdateStoreHelpers,
     updaters: StoreUpdatersFactories,
-    updaterId: TUpdater extends StoreUpdater<infer TId> ? TId : never
-): TUpdater | undefined {
+    updaterId: UpdaterId<TUpdater>
+): GetUpdaterReturnType<typeof updaterId, TUpdater> {
+    type ResultType = GetUpdaterReturnType<typeof updaterId, TUpdater>;
     const factory = updaters[updaterId];
 
-    if (factory == null) {
-        return undefined;
+    if (factory != null) {
+        return factory(fieldState, helpers) as ResultType;
     }
 
-    return factory(fieldState, helpers) as TUpdater;
+    return undefined as ResultType;
 }
 
 // TODO: Should access to updater function be proxied from helpers?

@@ -1,4 +1,4 @@
-import { FieldState, Initial, generateFieldId, Store, assertUpdaterIsDefined, StatusUpdater } from "@reactway/forms-core";
+import { FieldState, Initial, generateFieldId, StatusUpdater } from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
 
@@ -96,7 +96,6 @@ export function useField<TElement, TFieldState extends FieldState<any>>(
 
         store.update((_draft, helpers) => {
             const statusUpdater = helpers.getUpdater<StatusUpdater>("status");
-            assertUpdaterIsDefined(statusUpdater, "status");
             statusUpdater.updateFieldStatus(fieldId, status => {
                 status.permanent = permanent;
             });

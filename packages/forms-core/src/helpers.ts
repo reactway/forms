@@ -52,8 +52,8 @@ export function getDefaultState(): Pick<FieldState<any>, "fields" | "status" | "
 export function getDefaultStatuses(): FieldStatus {
     return {
         disabled: false,
-        touched: false,
         pristine: true,
+        touched: false,
         readonly: false,
         permanent: false
     };
@@ -81,7 +81,7 @@ export function getDefaultValues<TValue, TRenderValue>(
     };
 }
 
-export function getDefaultUpdaters(): StoreUpdatersFactories {
+export function getDefaultUpdatersFactories(): StoreUpdatersFactories {
     return {
         validation: ValidationUpdaterFactory,
         value: ValueUpdaterFactory,

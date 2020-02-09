@@ -3,7 +3,11 @@
     "compilerOptions": {
         "lib": ["dom", "es6", "es2015.iterable"],
         "rootDir": "src",
-        "outDir": "dist"
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": ["src/assets/*"]
+        }
     },
     "references": [
         {

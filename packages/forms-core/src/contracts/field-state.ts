@@ -63,3 +63,4 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
 }
 
 export type Initial<TFieldState extends FieldState<any>> = Omit<TFieldState, "id" | "name" | "fields">;
+export type UpdaterId<TUpdater extends StoreUpdater> = TUpdater extends StoreUpdater<infer TId> ? TId : never;

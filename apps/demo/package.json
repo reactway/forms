@@ -32,7 +32,9 @@
         "typescript": "^3.7.4",
         "webpack": "^4.41.5",
         "webpack-cli": "^3.3.10",
-        "webpack-dev-server": "^3.10.1"
+        "webpack-dev-server": "^3.10.1",
+        "react-json-tree": "0.11.2",
+        "@types/react-json-tree": "0.6.11"
     },
     "dependencies": {
         "@reactway/eslint-config": "^1.0.1",

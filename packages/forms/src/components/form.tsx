@@ -7,7 +7,7 @@ import {
     getDefaultState,
     getDefaultStatuses,
     FormsStores,
-    getDefaultUpdaters,
+    getDefaultUpdatersFactories,
     getDefaultValidation
 } from "@reactway/forms-core";
 import { FieldContext } from "./context";
@@ -16,6 +16,7 @@ console.log(FieldContext);
 
 export interface FormProps {
     onSubmit?: () => void;
+    className?: string;
     children?: ReactNode;
 }
 
@@ -48,7 +49,7 @@ export const Form = (props: FormProps): JSX.Element => {
 
     const [store] = useState(() => {
         // const formId = `form-${shortid()}`;
-        const formStore = new Store<FormState>(() => formStateFactory(formId));
+        const formStore = new Store<FormState>(() => formStateFactory(formId), getDefaultUpdatersFactories());
 
         FormsStores.registry.registerStore(formId, formStore);
 
@@ -79,6 +80,7 @@ export const Form = (props: FormProps): JSX.Element => {
             onSubmit={() => {
                 props.onSubmit?.();
             }}
+            className={props.className}
         >
             <FieldContext.Provider
                 value={{

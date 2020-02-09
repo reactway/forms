@@ -2,14 +2,14 @@ import { TinyEmitter } from "@reactway/tiny-emitter";
 import produce, { Draft } from "immer";
 import { FieldState, StoreHelpers, UpdateStoreHelpers, StoreUpdatersFactories } from "./contracts";
 import { constructStoreHelpers, constructUpdateStoreHelpers } from "./store-helpers";
-import { getDefaultUpdaters as getDefaultUpdaterFactories } from "./helpers";
+import { getDefaultUpdatersFactories } from "./helpers";
 
 export class Store<TState extends FieldState<any>> extends TinyEmitter {
     constructor(initialStateFactory: () => TState, updaters?: StoreUpdatersFactories) {
         super();
 
         this.state = produce<TState>(initialStateFactory(), () => {});
-        this.updaters = updaters ?? getDefaultUpdaterFactories();
+        this.updaters = updaters != null ? Object.assign({}, updaters) : getDefaultUpdatersFactories();
     }
 
     private _state!: TState;
@@ -25,9 +25,11 @@ export class Store<TState extends FieldState<any>> extends TinyEmitter {
         // @ts-ignore
         if ((window as any).debugState === true) {
             const err = new Error();
+            /* eslint-disable no-console */
             console.groupCollapsed("State being updated:", Object.assign({}, value));
             console.log(err.stack?.split("\n")[3]);
             console.groupEnd();
+            /* eslint-enable no-console */
         }
         this._state = value;
         this._helpers = constructStoreHelpers(this._state, {});

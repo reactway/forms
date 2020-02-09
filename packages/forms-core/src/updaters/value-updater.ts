@@ -21,7 +21,7 @@ import { assertFieldIsDefined } from "../helpers";
 // }
 
 export function ValueUpdaterFactory(state: FieldState<any>, helpers: UpdateStoreHelpers): ValueUpdater {
-    return {
+    const valueUpdater: ValueUpdater = {
         id: "value",
         updateFieldValue: (fieldId, value) => {
             const fieldState = helpers.selectField(fieldId);
@@ -30,10 +30,26 @@ export function ValueUpdaterFactory(state: FieldState<any>, helpers: UpdateStore
             // TODO: modifiers, validation...
             fieldState.values.currentValue = value;
 
-            // helpers.updateFieldStatus(fieldId, status => {
-            //     status.touched = true;
-            //     status.pristine = value === fieldState.values.initialValue;
-            // });
+            helpers.updateFieldStatus(fieldId, status => {
+                status.touched = true;
+                status.pristine = value === fieldState.values.initialValue;
+            });
+        },
+        resetFieldValue: fieldId => {
+            throw new Error("Not implemented.");
+            // const fieldState = helpers.selectField(fieldId);
+            // assertFieldIsDefined(fieldState, fieldId);
+
+            // valueUpdater.updateFieldValue(fieldId, fieldState.values.initialValue);
+        },
+        clearFieldValue: fieldId => {
+            throw new Error("Not implemented.");
+            // const fieldState = helpers.selectField(fieldId);
+            // assertFieldIsDefined(fieldState, fieldId);
+
+            // valueUpdater.updateFieldValue(fieldId, fieldState.values.defaultValue);
         }
     };
+
+    return valueUpdater;
 }
