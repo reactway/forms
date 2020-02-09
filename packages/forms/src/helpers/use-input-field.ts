@@ -1,10 +1,19 @@
-import { FieldState, Initial, ValueUpdater } from "@reactway/forms-core";
+import {
+    FieldState,
+    Initial,
+    ValueUpdater,
+    isInputValues,
+    InputValues,
+    FieldStateValue,
+    assertUpdaterIsDefined,
+    StatusUpdater
+} from "@reactway/forms-core";
 import { useCallback } from "react";
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
 
-export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any>> extends UseFieldResult<TElement, TFieldState> {
-    value: string;
+export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
+    value: FieldStateValue<TFieldState>;
 
     // Form events
     onChange: React.ChangeEventHandler<TElement>;
@@ -65,9 +74,14 @@ export interface UseInputFieldResult<TElement, TFieldState extends FieldState<an
 
 export type InputElement = HTMLInputElement;
 
-export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any>>(
+export interface UseInputFieldEventHooks<TElement> {
+    getValueFromChangeEvent?: (event: React.ChangeEvent<TElement>) => any;
+}
+
+export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputValues<any, any>>>(
     fieldName: string,
-    initialStateFactory: () => Initial<TFieldState>
+    initialStateFactory: () => Initial<TFieldState>,
+    eventHooks?: UseInputFieldEventHooks<TElement>
 ): UseInputFieldResult<TElement, TFieldState> {
     type Result = UseInputFieldResult<TElement, TFieldState>;
     const fieldResult = useField(fieldName, initialStateFactory);
@@ -76,9 +90,16 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const { store } = useFieldContext();
     (window as any).store = store;
 
+    type EventHooks = NonNullable<typeof eventHooks>;
+    const getValueFromEventDefault: EventHooks["getValueFromChangeEvent"] = event => {
+        return event.currentTarget.value;
+    };
+
+    const getValueFromChangeEvent = eventHooks?.getValueFromChangeEvent ?? getValueFromEventDefault;
+
     const onChange = useCallback<Result["onChange"]>(
         event => {
-            const value = event.currentTarget.value;
+            const value = getValueFromChangeEvent(event);
             store.update((draft, helpers) => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 if (valueUpdater == null) {
@@ -88,7 +109,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
                 valueUpdater.updateFieldValue(fieldId, value);
             });
         },
-        [fieldId, store]
+        [fieldId, getValueFromChangeEvent, store]
     );
 
     const onFocus = useCallback<Result["onFocus"]>(
@@ -112,7 +133,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         [store]
     );
 
-    const value = fieldState.values.transientValue ?? fieldState.values.currentValue;
+    const value = fieldState.data.transientValue ?? fieldState.data.currentValue;
 
     return {
         ...fieldResult,

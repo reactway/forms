@@ -1,7 +1,6 @@
-import { FieldStatus, FieldValues, StoreUpdatersFactories, FieldValidation, FieldState, StoreUpdater } from "./contracts";
+import { FieldStatus, InputValues, StoreUpdatersFactories, FieldValidation, FieldState, StoreUpdater } from "./contracts";
 import { IdSeparator } from "./constants";
-import { ValueUpdaterFactory, ValidationUpdaterFactory } from "./updaters";
-import { StatusUpdaterFactory } from "./updaters/status-updater";
+import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "./updaters";
 
 export function isPromise(candidate: any): candidate is Promise<any> {
     return candidate.then != null && candidate.catch != null;
@@ -23,7 +22,7 @@ export function getFieldNameFromId(fieldId: string): string {
     return fieldId.slice(lastSeparatorIndex + IdSeparator.length);
 }
 
-export function assertFieldIsDefined<TField extends FieldState<any>>(
+export function assertFieldIsDefined<TField extends FieldState<any, any>>(
     field: TField | undefined,
     fieldId?: string
 ): asserts field is NonNullable<TField> {
@@ -41,7 +40,7 @@ export function assertUpdaterIsDefined<TUpdater extends StoreUpdater>(
     }
 }
 
-export function getDefaultState(): Pick<FieldState<any>, "fields" | "status" | "validation"> {
+export function getDefaultState(): Pick<FieldState<any, any>, "fields" | "status" | "validation"> {
     return {
         fields: {},
         status: getDefaultStatuses(),
@@ -64,12 +63,14 @@ export function getDefaultValues<TValue, TRenderValue>(
     initialValue?: TValue,
     currentValue?: TValue,
     transientValue?: TRenderValue
-): FieldValues<TValue, TRenderValue> {
-    if (initialValue == null) {
+): InputValues<TValue, TRenderValue> {
+    // Triple equals to `undefined`, because `null` might be a valid value.
+    if (initialValue === undefined) {
         initialValue = defaultValue;
     }
 
-    if (currentValue == null) {
+    // Triple equals to `undefined`, because `null` might be a valid value.
+    if (currentValue === undefined) {
         currentValue = initialValue;
     }
 
@@ -94,4 +95,9 @@ export function getDefaultValidation(): FieldValidation<any> {
         results: [],
         validators: []
     };
+}
+
+export function isInputValues(candidate: any): candidate is InputValues<any, any> {
+    const inputValues = candidate as InputValues<any, any>;
+    return inputValues.defaultValue !== undefined && inputValues.initialValue !== undefined && inputValues.currentValue !== undefined;
 }

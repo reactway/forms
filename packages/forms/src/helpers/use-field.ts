@@ -12,9 +12,9 @@ function fieldNameCompliance(fieldName: string): void {
     }
 }
 
-export interface UseFieldResult<TElement, TFieldState extends FieldState<any>> {
+export interface UseFieldResult<TElement, TFieldState extends FieldState<any, any>> {
     // TODO: Is store needed here?
-    // store: Store<FieldState<any>>;
+    // store: Store<FieldState<any, any>>;
 
     id: string;
     state: TFieldState;
@@ -33,7 +33,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
     return fieldId;
 }
 
-export function useField<TElement, TFieldState extends FieldState<any>>(
+export function useField<TElement, TFieldState extends FieldState<any, any>>(
     fieldName: string,
     initialStateFactory: () => Initial<TFieldState>
 ): UseFieldResult<TElement, TFieldState> {

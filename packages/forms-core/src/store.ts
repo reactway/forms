@@ -4,12 +4,13 @@ import { FieldState, StoreHelpers, UpdateStoreHelpers, StoreUpdatersFactories } 
 import { constructStoreHelpers, constructUpdateStoreHelpers } from "./store-helpers";
 import { getDefaultUpdatersFactories } from "./helpers";
 
-export class Store<TState extends FieldState<any>> extends TinyEmitter {
-    constructor(initialStateFactory: () => TState, updaters?: StoreUpdatersFactories) {
+export class Store<TState extends FieldState<any, any>> extends TinyEmitter {
+    constructor(initialStateFactory: () => TState, updatersFactories?: StoreUpdatersFactories) {
         super();
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.state = produce<TState>(initialStateFactory(), () => {});
-        this.updaters = updaters != null ? Object.assign({}, updaters) : getDefaultUpdatersFactories();
+        this.updaters = updatersFactories != null ? { ...updatersFactories } : getDefaultUpdatersFactories();
     }
 
     private _state!: TState;

@@ -8,11 +8,11 @@ import {
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers";
 
-export function ValidationUpdaterFactory(state: FieldState<any>, helpers: UpdateStoreHelpers): ValidationUpdater {
+export function ValidationUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): ValidationUpdater {
     return {
         id: "validation",
         validateField: async fieldId => {
-            await validateField(state, helpers, fieldId);
+            return validateField(state, helpers, fieldId);
         }
     };
 }

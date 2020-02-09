@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, Store } from "@reactway/forms-core";
+import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, Store, InputValues } from "@reactway/forms-core";
 import { useInputField } from "../helpers";
 import { useFieldContext } from "./context";
 
@@ -11,16 +11,19 @@ export interface TextProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface TextFieldState extends FieldState<string, string> {}
+export interface TextFieldData extends InputValues<string, string> {}
+
+export type TextFieldState = FieldState<string, TextFieldData>;
 
 const initialState = (defaultValue: string, initialValue: string | undefined): Initial<TextFieldState> => {
     return {
-        data: {},
+        data: {
+            ...getDefaultValues(defaultValue, initialValue)
+        },
         status: getDefaultStatuses(),
-        values: getDefaultValues(defaultValue, initialValue),
         validation: getDefaultValidation(),
         getValue: state => {
-            return state.values.currentValue;
+            return state.data.currentValue;
         },
         setValue: _state => {
             // TODO: Maybe setValue updater should be used here?

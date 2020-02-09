@@ -9,12 +9,12 @@ export interface GroupProps {
     children?: React.ReactNode;
 }
 
-export interface GroupFieldState extends FieldState<NestedDictionary<unknown>, unknown, {}> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface GroupFieldState extends FieldState<NestedDictionary<unknown>, {}> {}
 
 const initialState = (): Initial<GroupFieldState> => {
     return {
         ...getDefaultState(),
-        values: getDefaultValues({}),
         data: {},
         getValue: state => {
             const data: NestedDictionary<any> = {};

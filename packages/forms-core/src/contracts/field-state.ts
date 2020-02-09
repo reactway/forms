@@ -3,19 +3,23 @@ import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters
 import { ValidationResult, Validator } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
 
-export interface FieldState<TValue, TRenderValue = any, TData extends {} = {}>
-    extends FieldValue<TValue, FieldState<TValue, TRenderValue, {}>> {
+// export type FieldState<TValue, TRenderValue = any, TData extends {} = {}> =
+//     | State<TValue, TRenderValue, TData>
+//     | ComputedValue
+//     | InputValue<TValue, TRenderValue>;
+
+export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue, FieldState<TValue, TData>> {
     id: string;
     name: string;
     status: FieldStatus;
-    values: FieldValues<TValue, TRenderValue>;
+
     data: TData;
     validation: FieldValidation<TValue>;
 
-    fields: Dictionary<FieldState<any>>;
+    fields: Dictionary<FieldState<any, any>>;
 }
 
-export interface FieldValue<TValue, TFieldState extends FieldState<any>> {
+export interface FieldValue<TValue, TFieldState extends FieldState<any, any>> {
     getValue: (fieldState: TFieldState) => TValue;
     setValue: (fieldState: TFieldState, value: TValue) => void;
 }
@@ -28,7 +32,7 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
-export interface FieldValues<TValue, TRenderValue> {
+export interface InputValues<TValue, TRenderValue> {
     currentValue: TValue;
     initialValue: TValue;
     defaultValue: TValue;
@@ -36,7 +40,7 @@ export interface FieldValues<TValue, TRenderValue> {
 }
 
 export type StoreUpdaterFactory<TStoreUpdater extends StoreUpdater> = (
-    state: FieldState<any>,
+    state: FieldState<any, any>,
     helpers: UpdateStoreHelpers
 ) => TStoreUpdater;
 
@@ -62,5 +66,7 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
     id: string;
 }
 
-export type Initial<TFieldState extends FieldState<any>> = Omit<TFieldState, "id" | "name" | "fields">;
+export type Initial<TFieldState extends FieldState<any, any>> = Omit<TFieldState, "id" | "name" | "fields">;
 export type UpdaterId<TUpdater extends StoreUpdater> = TUpdater extends StoreUpdater<infer TId> ? TId : never;
+
+export type FieldStateValue<TFieldState> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;

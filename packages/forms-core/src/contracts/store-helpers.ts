@@ -1,8 +1,8 @@
 import { FieldState, Initial, StoreUpdater, FieldStatus, StoreUpdatersFactories, UpdaterId } from "./field-state";
 
 export interface StoreHelpers {
-    selectField(fieldId: string): FieldState<any> | undefined;
-    selectFieldParent(fieldId: string): FieldState<any> | undefined;
+    selectField(fieldId: string): FieldState<any, any> | undefined;
+    selectFieldParent(fieldId: string): FieldState<any, any> | undefined;
     getActiveFieldId(): string | undefined;
     getFieldParentId(fieldId: string): string | undefined;
 }

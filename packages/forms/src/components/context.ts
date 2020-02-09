@@ -1,13 +1,12 @@
 import { createContext, useContext } from "react";
-import { Store, FieldState, getDefaultState, getDefaultValues } from "@reactway/forms-core";
+import { Store, FieldState, getDefaultState } from "@reactway/forms-core";
 
-export const StubId = "This is not the field you're looking for.";
-export const StubStore = new Store<FieldState<null>>(() => ({
+export const StubId = `This is not the field you're looking for. What you found is a StubStore.`;
+export const StubStore = new Store<FieldState<unknown, {}>>(() => ({
     ...getDefaultState(),
     id: StubId,
     name: StubId,
     data: {},
-    values: getDefaultValues(null),
     getValue: () => {
         throw new Error("StubStore should not be used.");
     },
@@ -18,7 +17,7 @@ export const StubStore = new Store<FieldState<null>>(() => ({
 
 export interface FieldContextData {
     parentId: string | undefined;
-    store: Store<FieldState<any>>;
+    store: Store<FieldState<any, any>>;
     permanent: boolean;
 }
 

@@ -16,7 +16,7 @@ import {
 import { Store } from "./store";
 import { getFieldNameFromId } from "./helpers";
 
-export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dictionary<FieldState<any>>): StoreHelpers {
+export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
         const cachedField = fieldsCache[fieldId];
         if (cachedField != null) {
@@ -50,10 +50,10 @@ export function constructStoreHelpers(state: FieldState<any>, fieldsCache: Dicti
 }
 
 export function constructUpdateStoreHelpers(
-    store: Store<FieldState<any>>,
-    draft: Draft<FieldState<any>>,
+    store: Store<FieldState<any, any>>,
+    draft: Draft<FieldState<any, any>>,
     updaters: StoreUpdatersFactories,
-    fieldsCache: Dictionary<FieldState<any>>
+    fieldsCache: Dictionary<FieldState<any, any>>
 ): UpdateStoreHelpers {
     const fieldStoreHelpers = constructStoreHelpers(draft, fieldsCache);
     const updateStoreHelpers: UpdateStoreHelpers = {
@@ -79,8 +79,8 @@ export function constructUpdateStoreHelpers(
     return updateStoreHelpers;
 }
 
-function registerField<TFieldState extends FieldState<any>>(
-    state: FieldState<any>,
+function registerField<TFieldState extends FieldState<any, any>>(
+    state: FieldState<any, any>,
     fieldId: string,
     initialFieldState: Initial<TFieldState>
 ): void {
@@ -99,7 +99,7 @@ function registerField<TFieldState extends FieldState<any>>(
 
     if (fieldState == null) {
         // Make fields non-read-only
-        const mutableFields = parentField.fields as Dictionary<FieldState<any>>;
+        const mutableFields = parentField.fields as Dictionary<FieldState<any, any>>;
         // Add field into the state.
         mutableFields[fieldName] = {
             ...initialFieldState,
@@ -110,7 +110,7 @@ function registerField<TFieldState extends FieldState<any>>(
     }
 }
 
-function unregisterField(state: FieldState<any>, id: string): void {
+function unregisterField(state: FieldState<any, any>, id: string): void {
     const parentField = selectFieldParent(state, id);
     if (parentField == null) {
         return;
@@ -126,12 +126,12 @@ function unregisterField(state: FieldState<any>, id: string): void {
     }
 
     // Make fields non-read-only
-    const mutableFields = parentField.fields as Dictionary<FieldState<any>>;
+    const mutableFields = parentField.fields as Dictionary<FieldState<any, any>>;
     mutableFields[fieldName] = undefined;
 }
 
 function getUpdater<TUpdater extends StoreUpdater<string>>(
-    fieldState: FieldState<any>,
+    fieldState: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
     updaters: StoreUpdatersFactories,
     updaterId: UpdaterId<TUpdater>
@@ -149,7 +149,7 @@ function getUpdater<TUpdater extends StoreUpdater<string>>(
 // TODO: Should access to updater function be proxied from helpers?
 // TODO: If so, to all of them or some? What if there are multiple functions in the updater?
 // function updateFieldStatus(
-//     state: Draft<FieldState<any>>,
+//     state: Draft<FieldState<any, any>>,
 //     helpers: UpdateStoreHelpers,
 //     fieldId: string,
 //     updater: (status: FieldStatus) => void
@@ -161,7 +161,7 @@ function getUpdater<TUpdater extends StoreUpdater<string>>(
 //     statusUpdater.updateFieldStatus(fieldId, updater);
 // }
 
-function selectRegistrationParent(state: FieldState<any>, fieldId: string): FieldState<any> | undefined {
+function selectRegistrationParent(state: FieldState<any, any>, fieldId: string): FieldState<any, any> | undefined {
     const separatorIndex = fieldId.indexOf(IdSeparator);
     if (separatorIndex === -1) {
         return state;
@@ -179,7 +179,7 @@ function selectRegistrationParent(state: FieldState<any>, fieldId: string): Fiel
 }
 
 // TODO: Do we need recursion here?
-export function selectField(state: FieldState<any>, fieldId: string | undefined): FieldState<any> | undefined {
+export function selectField(state: FieldState<any, any>, fieldId: string | undefined): FieldState<any, any> | undefined {
     if (fieldId == null) {
         return undefined;
     }
@@ -210,7 +210,7 @@ export function getFieldParentId(fieldId: string): string | undefined {
     return fieldId.slice(0, lastSeparatorIndex);
 }
 
-export function selectFieldParent(state: FieldState<any>, fieldId: string): FieldState<any> | undefined {
+export function selectFieldParent(state: FieldState<any, any>, fieldId: string): FieldState<any, any> | undefined {
     const parentId = getFieldParentId(fieldId);
     if (parentId == null) {
         return undefined;

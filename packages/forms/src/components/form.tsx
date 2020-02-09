@@ -1,18 +1,8 @@
-import React, { ReactNode, useState, useRef, useEffect, useCallback } from "react";
+import React, { ReactNode, useState, useCallback } from "react";
 import { Draft } from "immer";
 import shortid from "shortid";
-import {
-    Store,
-    FormState,
-    getDefaultState,
-    getDefaultStatuses,
-    FormsStores,
-    getDefaultUpdatersFactories,
-    getDefaultValidation
-} from "@reactway/forms-core";
+import { Store, FormState, getDefaultState, FormsStores, getDefaultUpdatersFactories, NestedDictionary } from "@reactway/forms-core";
 import { FieldContext } from "./context";
-
-console.log(FieldContext);
 
 export interface FormProps {
     onSubmit?: () => void;
@@ -20,22 +10,29 @@ export interface FormProps {
     children?: ReactNode;
 }
 
-const formStateFactory = (formId: string): FormState => {
+const initialState = (formId: string): FormState => {
     return {
         ...getDefaultState(),
         id: formId,
         name: formId,
         data: {
             dehydratedState: {},
-            activeFieldId: undefined
-        },
-        values: {
-            currentValue: null,
-            defaultValue: null,
-            initialValue: null
+            activeFieldId: undefined,
+            submitCallback: undefined
         },
         getValue: state => {
-            throw new Error("Not implemented.");
+            const result: NestedDictionary<unknown> = {};
+
+            for (const key of Object.keys(state.fields)) {
+                const field = state.fields[key];
+                if (field == null) {
+                    continue;
+                }
+
+                result[key] = field.getValue(field);
+            }
+
+            return result;
         },
         setValue: (state, value) => {
             throw new Error("Not implemented.");
@@ -49,7 +46,7 @@ export const Form = (props: FormProps): JSX.Element => {
 
     const [store] = useState(() => {
         // const formId = `form-${shortid()}`;
-        const formStore = new Store<FormState>(() => formStateFactory(formId), getDefaultUpdatersFactories());
+        const formStore = new Store<FormState>(() => initialState(formId), getDefaultUpdatersFactories());
 
         FormsStores.registry.registerStore(formId, formStore);
 

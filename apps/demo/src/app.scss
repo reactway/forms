@@ -22,6 +22,11 @@ button {
     margin-right: 5px;
 }
 
+.pre {
+    white-space: pre-wrap;
+    max-width: 100%;
+}
+
 .form-debug-container {
     display: flex;
     flex-direction: row;
@@ -44,10 +49,6 @@ button {
 
         h2 {
             font-weight: 600;
-        }
-
-        .pre {
-            white-space: pre;
         }
 
         > div {

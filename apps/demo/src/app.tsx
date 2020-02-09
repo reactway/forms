@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
-import { Form, useFieldContext, Text, Group } from "@reactway/forms";
+import { Form, useFieldContext, Text, Group, Number, RadioGroup, Radio, Checkbox, useStoreState } from "@reactway/forms";
+import JSONTree from "react-json-tree";
 import { FormsRegistry } from "./forms-registry";
 import { ErrorBoundary } from "./error-boundary";
-import JSONTree from "react-json-tree";
 
 import "./app.scss";
 
@@ -94,7 +94,13 @@ const StoreStateJson = (props: any): JSX.Element => {
     );
 };
 
+const StoreResult = (): JSX.Element => {
+    const { state } = useStoreState();
+    return <pre>{JSON.stringify(state.getValue(state), null, 4)}</pre>;
+};
+
 const Layout = (props: { children: React.ReactNode }): JSX.Element => {
+    setTimeout(() => console.clear());
     return (
         <Form className="form-debug-container">
             <div className="form-container">
@@ -116,14 +122,49 @@ const App = (): JSX.Element => {
                 <Group name="person">
                     <label>
                         First name
-                        <Text name="firstName" initialValue="Hello" />
+                        <Text name="firstName" initialValue="Jane" />
                     </label>
                     <label>
                         Last name
-                        <Text name="lastName" />
+                        <Text name="lastName" initialValue="Doe" />
+                    </label>
+                    <label>
+                        Age
+                        <Number name="age" initialValue={"19"} />
+                    </label>
+                    <label>
+                        Sex
+                        <RadioGroup name="sex" initialValue="female">
+                            <label>
+                                <Radio value="female" />
+                                Female
+                            </label>
+                            <label>
+                                <Radio value="male" />
+                                Male
+                            </label>
+                        </RadioGroup>
+                    </label>
+                    <label>
+                        Hobbies
+                        <Group name="hobbies">
+                            <label>
+                                <Checkbox name="rugby" initialValue />
+                                Rugby
+                            </label>
+                            <label>
+                                <Checkbox name="basketball" />
+                                Basketball
+                            </label>
+                            <label>
+                                <Checkbox name="football" initialValue />
+                                Football
+                            </label>
+                        </Group>
                     </label>
                 </Group>
             </Group>
+            <StoreResult />
         </Layout>
     );
 };

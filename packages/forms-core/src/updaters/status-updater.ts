@@ -2,7 +2,7 @@ import { StatusUpdater, FieldStatus, FieldState, UpdateStoreHelpers } from "../c
 import { assertFieldIsDefined } from "../helpers";
 import produce, { Patch } from "immer";
 
-export function StatusUpdaterFactory(state: FieldState<any>, helpers: UpdateStoreHelpers): StatusUpdater {
+export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): StatusUpdater {
     return {
         id: "status",
         updateFieldStatus: (fieldId, updater) => {
@@ -60,7 +60,7 @@ export function StatusUpdaterFactory(state: FieldState<any>, helpers: UpdateStor
     };
 }
 
-function updateDependentStatusDownwards(fieldState: FieldState<any>, updater: (status: FieldStatus) => void): void {
+function updateDependentStatusDownwards(fieldState: FieldState<any, any>, updater: (status: FieldStatus) => void): void {
     // updater(fieldState.status);
     for (const key of Object.keys(fieldState.fields)) {
         console.log(key);
@@ -74,7 +74,7 @@ function updateDependentStatusDownwards(fieldState: FieldState<any>, updater: (s
 }
 
 function updateDependentStatusUpwards(
-    state: FieldState<any>,
+    state: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
     fieldId: string,
     updater: (status: FieldStatus) => void
