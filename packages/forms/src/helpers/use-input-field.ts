@@ -6,7 +6,8 @@ import {
     InputValues,
     FieldStateValue,
     assertUpdaterIsDefined,
-    StatusUpdater
+    StatusUpdater,
+    ValidationUpdater
 } from "@reactway/forms-core";
 import { useCallback } from "react";
 import { useFieldContext } from "../components";
@@ -102,11 +103,11 @@ export function useInputField<TElement extends InputElement, TFieldState extends
             const value = getValueFromChangeEvent(event);
             store.update((draft, helpers) => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
-                if (valueUpdater == null) {
-                    throw new Error("Value updater is not defined, thus onChange cannot proceed.");
-                }
-
                 valueUpdater.updateFieldValue(fieldId, value);
+
+                const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                validationUpdater.validateField(fieldId);
             });
         },
         [fieldId, getValueFromChangeEvent, store]

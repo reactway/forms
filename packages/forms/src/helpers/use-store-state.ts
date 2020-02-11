@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { FieldState } from "@reactway/forms-core";
+import { FieldState, Store } from "@reactway/forms-core";
 import { useFieldContext } from "../components";
 
-export function useStoreState<TFieldState extends FieldState<any, any>>(): { state: FieldState<any, any> } {
+export function useStoreState<TFieldState extends FieldState<any, any>>(): {
+    state: FieldState<any, any>;
+    store: Store<FieldState<any, any>>;
+} {
     const { store } = useFieldContext();
     const [state, setState] = useState<TFieldState>(store.getState() as TFieldState);
 
@@ -15,6 +18,7 @@ export function useStoreState<TFieldState extends FieldState<any, any>>(): { sta
     }, [store]);
 
     return {
-        state
+        state,
+        store
     };
 }

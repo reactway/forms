@@ -5,9 +5,10 @@ import { Builder } from "@reactway/webpack-builder";
 import { TypeScriptPlugin } from "@reactway/webpack-builder-plugin-typescript";
 import webpackDevServer from "@reactway/webpack-builder-plugin-web-dev";
 import { StylesPlugin } from "@reactway/webpack-builder-plugin-styles";
-import htmlPlugin from "@reactway/webpack-builder-plugin-html";
-import clean from "@reactway/webpack-builder-plugin-clean";
-import writeFile from "@reactway/webpack-builder-plugin-write-file";
+import HtmlPlugin from "@reactway/webpack-builder-plugin-html";
+import ImagesPlugin from "@reactway/webpack-builder-plugin-images";
+import CleanPlugin from "@reactway/webpack-builder-plugin-clean";
+import WriteFilePlugin from "@reactway/webpack-builder-plugin-write-file";
 
 const fullOutputPath = path.resolve(__dirname, "dist");
 
@@ -36,8 +37,9 @@ const configToExport = new Builder(__dirname, {
         }
     })
     .use(StylesPlugin)
+    .use(ImagesPlugin, {})
     .use(webpackDevServer)
-    .use(htmlPlugin, {
+    .use(HtmlPlugin, {
         inject: false,
         appMountId: "root",
         title: "React Forms Demo",
@@ -54,8 +56,8 @@ const configToExport = new Builder(__dirname, {
             }
         ]
     })
-    .use(writeFile)
-    .use(clean)
+    .use(WriteFilePlugin)
+    .use(CleanPlugin)
     .update(config => {
         if (config.resolve == null) {
             throw new Error("'config.resolve' is undefined.");
@@ -68,6 +70,18 @@ const configToExport = new Builder(__dirname, {
         if (config.plugins == null) {
             config.plugins = [];
         }
+
+        // config.devtool = "cheap-module-eval-source-map";
+
+        config.module?.rules.splice(1, 0, {
+            test: /\.jsx?$/,
+            use: ["source-map-loader"],
+            enforce: "pre",
+            exclude: /node_modules/
+        });
+
+        // console.log(config.module?.rules);
+        console.log(config);
 
         return config;
     })

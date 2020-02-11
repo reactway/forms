@@ -74,6 +74,9 @@ export function constructUpdateStoreHelpers(
         },
         getUpdater: updaterId => {
             return getUpdater(draft, updateStoreHelpers, updaters, updaterId);
+        },
+        enqueueUpdate: updater => {
+            setTimeout(() => store.update(updater), 0);
         }
     };
     return updateStoreHelpers;

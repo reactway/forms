@@ -1,13 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, Store, InputValues } from "@reactway/forms-core";
 import { useInputField } from "../helpers";
-import { useFieldContext } from "./context";
+import { useFieldContext, FieldContext } from "./context";
 
 export interface TextProps {
     name: string;
     initialValue?: string;
     defaultValue?: string;
     autoFocus?: boolean;
+
+    children?: React.ReactNode;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -33,9 +35,9 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
 };
 
 export const Text = (props: TextProps): JSX.Element => {
-    const { name, defaultValue = "", initialValue, ...restProps } = props;
+    const { name, defaultValue = "", initialValue, children, ...restProps } = props;
 
-    const { store } = useFieldContext();
+    const { store, permanent } = useFieldContext();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { state, id: fieldId, ...restField } = useInputField(name, () => initialState(defaultValue, initialValue));
@@ -59,5 +61,19 @@ export const Text = (props: TextProps): JSX.Element => {
     }, [fieldId, store]);
 
     // TODO: Handle defaultValue, initialValue and other prop changes.
-    return <input {...restField} type="text" {...restProps} ref={textRef} />;
+    return (
+        <>
+            <input {...restField} type="text" {...restProps} ref={textRef} />
+            {/* TODO: <FieldChildren>? */}
+            <FieldContext.Provider
+                value={{
+                    parentId: fieldId,
+                    permanent: permanent,
+                    store: store
+                }}
+            >
+                {children}
+            </FieldContext.Provider>
+        </>
+    );
 };

@@ -1,4 +1,5 @@
 import { FieldState, Initial, StoreUpdater, FieldStatus, StoreUpdatersFactories, UpdaterId } from "./field-state";
+import { Store } from "..";
 
 export interface StoreHelpers {
     selectField(fieldId: string): FieldState<any, any> | undefined;
@@ -21,4 +22,6 @@ export interface UpdateStoreHelpers extends StoreHelpers {
 
     // TODO: Add registerUpdater.
     getUpdater<TUpdater extends StoreUpdater<string>>(updaterId: UpdaterId<TUpdater>): GetUpdaterReturnType<typeof updaterId, TUpdater>;
+
+    enqueueUpdate: Store<FieldState<any, any>>["update"];
 }

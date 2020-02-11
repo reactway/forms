@@ -27,6 +27,10 @@ button {
     max-width: 100%;
 }
 
+.store-result {
+    background: darken(#f6f6f6, 5);
+}
+
 .form-debug-container {
     display: flex;
     flex-direction: row;
