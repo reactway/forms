@@ -8,14 +8,18 @@ export type WaitValidatorProps = {
 export const WaitValidator = (props: WaitValidatorProps): null => {
     const { time } = props;
 
-    useValidator<string>(() => {
-        return {
-            validate: async (_): Promise<ValidationResultOrString[]> => {
-                await new Promise(resolve => setTimeout(resolve, time));
-                return [];
-            }
-        };
-    }, [time]);
+    useValidator<string>(
+        WaitValidator.name,
+        () => {
+            return {
+                validate: async (_): Promise<ValidationResultOrString[]> => {
+                    await new Promise(resolve => setTimeout(resolve, time));
+                    return [];
+                }
+            };
+        },
+        [time]
+    );
 
     return null;
 };

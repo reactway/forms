@@ -10,27 +10,32 @@ export type UsernameValidatorProps = {
 export const UsernameValidator = (props: UsernameValidatorProps): null => {
     const { error, takenUsernames } = props;
 
-    useValidator<string>(() => {
-        return {
-            shouldValidate: value => {
-                return value != null && value.length > 0;
-            },
-            validate: async (value: string): Promise<ValidationResultOrString[]> => {
-                console.log("Making request...");
-                await new Promise(resolve => setTimeout(resolve, props.wait));
+    useValidator<string>(
+        UsernameValidator.name,
+        () => {
+            return {
+                shouldValidate: value => {
+                    return value != null && value.length > 0;
+                },
+                validate: async (value: string): Promise<ValidationResultOrString[]> => {
+                    // eslint-disable-next-line no-console
+                    console.log("Making request...");
+                    await new Promise(resolve => setTimeout(resolve, props.wait));
 
-                if (takenUsernames == null) {
+                    if (takenUsernames == null) {
+                        return [];
+                    }
+
+                    if (takenUsernames.includes(value.toLowerCase())) {
+                        return [error];
+                    }
+
                     return [];
                 }
-
-                if (takenUsernames.includes(value.toLowerCase())) {
-                    return [error];
-                }
-
-                return [];
-            }
-        };
-    }, [error, props.wait, takenUsernames]);
+            };
+        },
+        [error, props.wait, takenUsernames]
+    );
 
     return null;
 };

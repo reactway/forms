@@ -4,6 +4,7 @@
 // 2017-04-09 Future-self might love usage of an object with message property instead of a plain string.
 
 export interface Validator<TValue> {
+    name: string;
     validate: (value: TValue) => ValidatorResult;
 
     // E.g. only validate non-empty and non-null values.
@@ -16,6 +17,7 @@ export interface ValidationResult {
 
     // 2017-05-08 Told you so.
     origin?: ValidationResultOrigin;
+    validatorName?: string;
     code?: string;
 }
 

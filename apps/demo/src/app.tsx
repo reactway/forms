@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { Form, useFieldContext, Text, Group, Number, RadioGroup, Radio, Checkbox, useStoreState } from "@reactway/forms";
+import { FieldState, Store, ValidationResultType } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
-import { FieldState, Store, ValidationResultType } from "@reactway/forms-core/src";
 import { FormsRegistry } from "./forms-registry";
 import { ErrorBoundary } from "./error-boundary";
 import { LengthValidator } from "./validators/length-validator";
-import { LengthValidatorAsync } from "./validators/length-validator-async";
 import { UsernameValidator } from "./validators/username-validator";
+import { WaitValidator } from "./validators/wait-validator";
 import Loader from "./assets/loader.svg";
 
 import "./app.scss";
-import { WaitValidator } from "./validators/wait-validator";
 
 // (window as any).debugState = true;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Stringify = (props: { state: {} }): JSX.Element => {
     return (
         <div className="pre">
@@ -141,7 +141,6 @@ function useForceUpdate(): () => void {
 const Test = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onClick = (): void => {};
-
     return (
         <Group name="hello">
             <Group name="person">
@@ -163,19 +162,12 @@ const Test = (): JSX.Element => {
                                 return null;
                             }
 
-                            const validationResults = fieldState.validation.results.map((result, index) => {
-                                return <div key={`validation-result-${index}`}>{result.message}</div>;
-                            });
-
                             const warnings = fieldState.validation.results.filter(x => x.type === ValidationResultType.Warning);
                             const errors = fieldState.validation.results.filter(x => x.type === ValidationResultType.Error);
-
                             const loader =
                                 fieldState.validation.validationStarted != null ? (
                                     <img key="validation-loader" src={Loader.src} width={25} />
                                 ) : null;
-
-                            // return loader ?? validationResults;
 
                             return (
                                 <div>
@@ -247,14 +239,7 @@ const Test = (): JSX.Element => {
 const App = (): JSX.Element => {
     return (
         <Layout>
-            <Group name="person">
-                <label>
-                    First name:
-                    <Text name="firstName" initialValue="Jane">
-                        <LengthValidator max={7} />
-                    </Text>
-                </label>
-            </Group>
+            <Test />
             <StoreResult />
         </Layout>
     );

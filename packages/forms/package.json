@@ -8,7 +8,6 @@
     "@reactway/forms-core": "5.0.0-alpha",
     "@types/shortid": "^0.0.29",
     "immer": "^5.2.1",
-    "prettier": "^1.19.1",
     "shortid": "^2.2.15"
   },
   "devDependencies": {

@@ -1,8 +1,12 @@
 import { DependencyList, useMemo, useEffect, useLayoutEffect, useState } from "react";
-import { Validator, ValidationUpdater, PartialKeys } from "@reactway/forms-core";
+import { Validator, ValidationUpdater } from "@reactway/forms-core";
 import { useFieldContext } from "../components";
 
-export function useValidator<TValue>(validatorFactory: () => PartialKeys<Validator<TValue>, "shouldValidate">, deps: DependencyList): void {
+export function useValidator<TValue>(
+    name: string,
+    validatorFactory: () => Pick<Validator<TValue>, "validate"> & Partial<Pick<Validator<TValue>, "shouldValidate">>,
+    deps: DependencyList
+): void {
     const { store, parentId } = useFieldContext();
     const validator = useMemo(validatorFactory, deps);
     const [validatorId, setValidatorId] = useState<string>();
@@ -17,6 +21,7 @@ export function useValidator<TValue>(validatorFactory: () => PartialKeys<Validat
             const shouldValidate = validator.shouldValidate ?? (() => true);
 
             const validatorToRegister: Validator<TValue> = {
+                name: name,
                 validate: validator.validate,
                 shouldValidate: shouldValidate
             };
@@ -24,7 +29,7 @@ export function useValidator<TValue>(validatorFactory: () => PartialKeys<Validat
             const id = validationUpdater.registerValidator(parentId, validatorToRegister);
             setValidatorId(id);
         });
-    }, [parentId, store, validator]);
+    }, [name, parentId, store, validator]);
 
     useEffect(() => {
         // console.log("useValidator, useEffect 1");
