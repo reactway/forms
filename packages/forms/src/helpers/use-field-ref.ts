@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export interface MutableFieldRef extends FieldRef {
-    setFieldId: (id: string) => void;
+    setFieldId: (id: string | undefined) => void;
 }
 
 export interface FieldRef {

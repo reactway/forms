@@ -64,6 +64,19 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
         mutableRef.setFieldId(fieldId);
     }
 
+    useEffect(() => {
+        return () => {
+            if (fieldRef != null) {
+                const mutableRef = fieldRef as MutableFieldRef;
+                mutableRef.setFieldId(undefined);
+            }
+        };
+        // Adding fieldRef to deps array sets fieldId to a proper value and to undefined immediately after.
+        // This happens because the fieldRef is updated.
+        // We only need to set fieldId to undefined when component is unmounted.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Store updates.
     useEffect(
         () => {
