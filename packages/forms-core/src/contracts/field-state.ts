@@ -1,4 +1,4 @@
-import { Dictionary } from "./type-helpers";
+import { Dictionary, PartialKeys } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
@@ -66,7 +66,12 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
     id: string;
 }
 
-export type Initial<TFieldState extends FieldState<any, any>> = Omit<TFieldState, "id" | "name" | "fields">;
+export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
+export type Initial<TFieldState extends FieldState<any, any>> = Omit<
+    PartialKeys<TFieldState, keyof DefaultFieldState>,
+    "id" | "name" | "fields"
+>;
+// Partial<Pick<TFieldState, keyof DefaultFieldState>>;
 export type UpdaterId<TUpdater extends StoreUpdater> = TUpdater extends StoreUpdater<infer TId> ? TId : never;
 
 export type FieldStateValue<TFieldState> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;

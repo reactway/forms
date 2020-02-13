@@ -23,8 +23,6 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
         data: {
             ...getDefaultValues(defaultValue, initialValue)
         },
-        status: getDefaultStatuses(),
-        validation: getDefaultValidation(),
         getValue: state => {
             return state.data.currentValue;
         },
@@ -41,7 +39,7 @@ export const Text = (props: TextProps): JSX.Element => {
     const { store, permanent } = useFieldContext();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { state, id: fieldId, ...restField } = useInputField(name, props.fieldRef, () => initialState(defaultValue, initialValue));
+    const { state, id: fieldId, ...restField } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
     const textRef = useRef<HTMLInputElement>(null);
 

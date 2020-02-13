@@ -1,4 +1,4 @@
-import { FieldStatus, InputValues, StoreUpdatersFactories, FieldValidation, FieldState, StoreUpdater } from "./contracts";
+import { FieldStatus, InputValues, StoreUpdatersFactories, FieldValidation, FieldState, StoreUpdater, DefaultFieldState } from "./contracts";
 import { IdSeparator } from "./constants";
 import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "./updaters";
 
@@ -40,7 +40,7 @@ export function assertUpdaterIsDefined<TUpdater extends StoreUpdater>(
     }
 }
 
-export function getDefaultState(): Pick<FieldState<any, any>, "fields" | "status" | "validation"> {
+export function getDefaultState(): DefaultFieldState {
     return {
         fields: {},
         status: getDefaultStatuses(),

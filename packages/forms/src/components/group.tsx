@@ -15,7 +15,6 @@ export interface GroupFieldState extends FieldState<NestedDictionary<unknown>, {
 
 const initialState = (): Initial<GroupFieldState> => {
     return {
-        ...getDefaultState(),
         data: {},
         getValue: state => {
             const data: NestedDictionary<any> = {};

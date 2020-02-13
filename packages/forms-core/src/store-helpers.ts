@@ -14,7 +14,7 @@ import {
     GetUpdaterReturnType
 } from "./contracts";
 import { Store } from "./store";
-import { getFieldNameFromId } from "./helpers";
+import { getFieldNameFromId, getDefaultState } from "./helpers";
 
 export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
@@ -105,6 +105,7 @@ function registerField<TFieldState extends FieldState<any, any>>(
         const mutableFields = parentField.fields as Dictionary<FieldState<any, any>>;
         // Add field into the state.
         mutableFields[fieldName] = {
+            ...getDefaultState(),
             ...initialFieldState,
             id: fieldId,
             name: fieldName,
