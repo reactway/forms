@@ -31,6 +31,15 @@ button {
     background: darken(#f6f6f6, 5);
 }
 
+.ref-test {
+    border: none;
+
+    &:focus {
+        border: 1px red solid;
+        outline: none;
+    }
+}
+
 .form-debug-container {
     display: flex;
     flex-direction: row;

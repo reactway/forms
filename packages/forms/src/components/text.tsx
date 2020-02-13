@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, Store, InputValues } from "@reactway/forms-core";
-import { useInputField } from "../helpers";
+import React, { useRef, useEffect, RefObject, MutableRefObject, Ref, LegacyRef } from "react";
+import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, InputValues } from "@reactway/forms-core";
+import { useInputField, FieldRef, MutableFieldRef } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
 export interface TextProps {
     name: string;
+    fieldRef?: FieldRef;
     initialValue?: string;
     defaultValue?: string;
     autoFocus?: boolean;
@@ -35,12 +36,12 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
 };
 
 export const Text = (props: TextProps): JSX.Element => {
-    const { name, defaultValue = "", initialValue, children, ...restProps } = props;
+    const { name, defaultValue = "", initialValue, children, fieldRef, ...restProps } = props;
 
     const { store, permanent } = useFieldContext();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { state, id: fieldId, ...restField } = useInputField(name, () => initialState(defaultValue, initialValue));
+    const { state, id: fieldId, ...restField } = useInputField(name, props.fieldRef, () => initialState(defaultValue, initialValue));
 
     const textRef = useRef<HTMLInputElement>(null);
 

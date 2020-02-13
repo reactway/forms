@@ -1,6 +1,7 @@
 import { FieldState, Initial, generateFieldId, StatusUpdater } from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
+import { FieldRef, MutableFieldRef } from "./use-field-ref";
 
 function fieldNameCompliance(fieldName: string): void {
     // TODO: Maybe we should throw errors with links to docs?
@@ -26,7 +27,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
     // Compliance check.
     useEffect(() => {
         return () => {
-            throw new Error(`Field name and its parentId should never change.`);
+            throw new Error(`Field name and its parentId should never change during the lifecycle of the field.`);
         };
     }, [fieldName, parentId]);
 
@@ -35,6 +36,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
 
 export function useField<TElement, TFieldState extends FieldState<any, any>>(
     fieldName: string,
+    fieldRef: FieldRef | undefined,
     initialStateFactory: () => Initial<TFieldState>
 ): UseFieldResult<TElement, TFieldState> {
     fieldNameCompliance(fieldName);
@@ -56,6 +58,11 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
 
         return registeredField as TFieldState;
     });
+
+    if (fieldRef != null) {
+        const mutableRef = fieldRef as MutableFieldRef;
+        mutableRef.setFieldId(fieldId);
+    }
 
     // Store updates.
     useEffect(

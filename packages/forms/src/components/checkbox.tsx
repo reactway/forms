@@ -1,9 +1,10 @@
 import React from "react";
 import { FieldState, InputValues, Initial, getDefaultState, getDefaultValues } from "@reactway/forms-core";
-import { useInputField, UseInputFieldEventHooks } from "../helpers";
+import { useInputField, UseInputFieldEventHooks, FieldRef } from "../helpers";
 
 export interface CheckboxProps {
     name: string;
+    fieldRef?: FieldRef;
     defaultValue?: CheckboxValue;
     initialValue?: CheckboxValue;
 }
@@ -37,9 +38,10 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
 };
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
-    const { name, defaultValue = false, initialValue } = props;
+    const { name, defaultValue = false, initialValue, fieldRef } = props;
     const { id, state, value, ...rest } = useInputField<HTMLInputElement, CheckboxFieldState>(
         name,
+        fieldRef,
         () => initialState(defaultValue, initialValue),
         eventHooks
     );

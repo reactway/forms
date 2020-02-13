@@ -1,10 +1,11 @@
 import React from "react";
-import { FieldState, Initial, getDefaultState, getDefaultValues, NestedDictionary } from "@reactway/forms-core";
-import { useField } from "../helpers";
+import { FieldState, Initial, getDefaultState, NestedDictionary } from "@reactway/forms-core";
+import { useField, FieldRef } from "../helpers";
 import { FieldContext, useFieldContext } from "./context";
 
 export interface GroupProps {
     name: string;
+    fieldRef?: FieldRef;
     permanent?: boolean;
     children?: React.ReactNode;
 }
@@ -48,7 +49,7 @@ const initialState = (): Initial<GroupFieldState> => {
 
 export const Group = (props: GroupProps): JSX.Element => {
     const { store, permanent: parentPermanent } = useFieldContext();
-    const { state: fieldState } = useField<never, GroupFieldState>(props.name, () => initialState());
+    const { state: fieldState } = useField<never, GroupFieldState>(props.name, props.fieldRef, () => initialState());
 
     return (
         <FieldContext.Provider

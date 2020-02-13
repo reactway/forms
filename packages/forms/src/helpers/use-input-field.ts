@@ -12,6 +12,7 @@ import {
 import { useCallback } from "react";
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
+import { FieldRef } from ".";
 
 export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
     value: FieldStateValue<TFieldState>;
@@ -81,11 +82,12 @@ export interface UseInputFieldEventHooks<TElement> {
 
 export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputValues<any, any>>>(
     fieldName: string,
+    fieldRef: FieldRef | undefined,
     initialStateFactory: () => Initial<TFieldState>,
     eventHooks?: UseInputFieldEventHooks<TElement>
 ): UseInputFieldResult<TElement, TFieldState> {
     type Result = UseInputFieldResult<TElement, TFieldState>;
-    const fieldResult = useField(fieldName, initialStateFactory);
+    const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
     const { state: fieldState, id: fieldId } = fieldResult;
 
     const { store } = useFieldContext();

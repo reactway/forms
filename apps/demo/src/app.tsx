@@ -1,6 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
 import ReactDOM from "react-dom";
-import { Form, useFieldContext, Text, Group, Number, RadioGroup, Radio, Checkbox, useStoreState } from "@reactway/forms";
+import {
+    Form,
+    useFieldContext,
+    Text,
+    Group,
+    Number,
+    RadioGroup,
+    Radio,
+    Checkbox,
+    useStoreState,
+    useFieldRef,
+    FieldRef
+} from "@reactway/forms";
 import { FieldState, Store, ValidationResultType } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
 import { FormsRegistry } from "./forms-registry";
@@ -138,9 +150,33 @@ function useForceUpdate(): () => void {
     return update;
 }
 
+const Print = (props: { name: string; refObj: any; result?: string }): JSX.Element => {
+    const [, set] = useState();
+    useEffect(() => {
+        console.log(`${name}: Print effect:`, props.refObj);
+        set("");
+    }, [props.refObj]);
+    console.log(`${name}: Print render`, props.refObj);
+    return (
+        <div>
+            {/* <pre>FieldRef: {JSON.stringify(props.refObj)}</pre>
+            <pre>FieldRef fieldId: {JSON.stringify(props.refObj?.fieldId)}</pre> */}
+        </div>
+    );
+};
+
 const Test = (): JSX.Element => {
+    const [value, setValue] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const onClick = (): void => {};
+    const onClick = (): void => {
+        setValue(value + 1);
+    };
+
+    // const firstNameRef = useRef<string>(null);
+    console.warn("=====================");
+    const firstNameRef = useFieldRef();
+    const reactRef = useRef<HTMLInputElement>(null);
+
     return (
         <Group name="hello">
             <Group name="person">
@@ -149,15 +185,32 @@ const Test = (): JSX.Element => {
                 </button>
                 <label>
                     First name
-                    <Text name="firstName" initialValue="Jane">
+                    <Print refObj={reactRef.current} name="react" />
+                    <Print refObj={firstNameRef.fieldId} result={firstNameRef.fieldId} name="field" />
+                    <input ref={reactRef} />
+                    {console.warn("reactRef", reactRef.current)}
+                    {console.warn("firstNameRef", firstNameRef.fieldId)}
+                    <Text fieldRef={firstNameRef} name="firstName" initialValue="Jane">
                         <LengthValidator min={5} max={10} />
                         <WaitValidator time={1000} />
                         <UsernameValidator wait={500} error="The username is already taken." takenUsernames={["jane", "janet"]} />
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </Text>
+                    {console.warn("reactRef", reactRef.current)}
+                    {console.warn("firstNameRef", firstNameRef.fieldId)}
+                    <div>FieldRef value: {firstNameRef.fieldId}</div>
+                    <Print refObj={reactRef.current} name="react" />
+                    <Print refObj={firstNameRef.fieldId} result={firstNameRef.fieldId} name="field" />
                     <FormRender>
                         {(_state, store) => {
-                            const fieldState = store.helpers.selectField("hello.person.firstName");
+                            console.error("form-render: reactRef", reactRef.current);
+                            console.error("form-render: firstNameRef", firstNameRef.fieldId);
+                            // console.log("firstNameRef.firstNameRef.fieldId:", firstNameRef.fieldId);
+                            if (firstNameRef.fieldId == null) {
+                                return null;
+                            }
+
+                            const fieldState = store.helpers.selectField(firstNameRef.fieldId);
                             if (fieldState == null) {
                                 return null;
                             }
@@ -237,9 +290,16 @@ const Test = (): JSX.Element => {
 };
 
 const App = (): JSX.Element => {
+    const divRef = useRef<HTMLInputElement>(null);
+
+    useLayoutEffect(() => {
+        divRef.current?.focus();
+    }, []);
+
     return (
         <Layout>
             <Test />
+            {/* <input type="text" className="ref-test" ref={divRef} /> */}
             <StoreResult />
         </Layout>
     );
