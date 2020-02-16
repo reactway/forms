@@ -94,7 +94,7 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
         */
             storeUpdated();
 
-            const removeListener = store.addListener(storeUpdated);
+            const removeListener = store.addListener(storeUpdated, [fieldId]);
 
             return () => {
                 removeListener();

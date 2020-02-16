@@ -19,7 +19,7 @@ export const UsernameValidator = (props: UsernameValidatorProps): null => {
                 },
                 validate: async (value: string): Promise<ValidationResultOrString[]> => {
                     // eslint-disable-next-line no-console
-                    console.log("Making request...");
+                    // console.log("Making request...");
                     await new Promise(resolve => setTimeout(resolve, props.wait));
 
                     if (takenUsernames == null) {

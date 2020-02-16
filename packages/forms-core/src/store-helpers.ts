@@ -49,6 +49,10 @@ export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: 
     return helpers;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+window.fieldsCount = 0;
+
 export function constructUpdateStoreHelpers(
     store: Store<FieldState<any, any>>,
     draft: Draft<FieldState<any, any>>,
@@ -59,6 +63,9 @@ export function constructUpdateStoreHelpers(
     const updateStoreHelpers: UpdateStoreHelpers = {
         ...fieldStoreHelpers,
         registerField: (fieldId, initialFieldState) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            window.fieldsCount++;
             registerField(draft, fieldId, initialFieldState);
         },
         unregisterField: id => {
@@ -73,7 +80,7 @@ export function constructUpdateStoreHelpers(
             statusUpdater.updateFieldStatus(fieldId, updater);
         },
         getUpdater: updaterId => {
-            return getUpdater(draft, updateStoreHelpers, updaters, updaterId);
+            return getUpdater(draft, updateStoreHelpers, store, updaters, updaterId);
         },
         enqueueUpdate: updater => {
             setTimeout(() => store.update(updater), 0);
@@ -137,6 +144,7 @@ function unregisterField(state: FieldState<any, any>, id: string): void {
 function getUpdater<TUpdater extends StoreUpdater<string>>(
     fieldState: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
+    store: Store<FieldState<any, any>>,
     updaters: StoreUpdatersFactories,
     updaterId: UpdaterId<TUpdater>
 ): GetUpdaterReturnType<typeof updaterId, TUpdater> {
@@ -144,7 +152,7 @@ function getUpdater<TUpdater extends StoreUpdater<string>>(
     const factory = updaters[updaterId];
 
     if (factory != null) {
-        return factory(fieldState, helpers) as ResultType;
+        return factory(fieldState, helpers, store) as ResultType;
     }
 
     return undefined as ResultType;

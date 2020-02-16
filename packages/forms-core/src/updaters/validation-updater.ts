@@ -7,16 +7,22 @@ import {
     ValidationResultOrigin,
     FieldValidator,
     ValidationResultOrString,
-    FieldValidation
+    FieldValidation,
+    StoreHelpers
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers";
 import shortid from "shortid";
+import { Store } from "../store";
 
-export function ValidationUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): ValidationUpdater {
+export function ValidationUpdaterFactory(
+    state: FieldState<any, any>,
+    helpers: UpdateStoreHelpers,
+    store: Store<FieldState<any, any>>
+): ValidationUpdater {
     return {
         id: "validation",
         validateField: async fieldId => {
-            return validateField(state, helpers, fieldId);
+            return validateField(state, helpers, store, fieldId);
         },
         registerValidator: (fieldId, validator) => {
             const fieldState = helpers.selectField(fieldId);
@@ -51,7 +57,12 @@ export function ValidationUpdaterFactory(state: FieldState<any, any>, helpers: U
 
 // TODO: Review the following implementation.
 
-async function validateField(_draft: FieldState<any, any>, helpers: UpdateStoreHelpers, fieldId: string): Promise<void> {
+async function validateField(
+    _draft: FieldState<any, any>,
+    helpers: UpdateStoreHelpers,
+    store: Store<FieldState<any, any>>,
+    fieldId: string
+): Promise<void> {
     const fieldState = helpers.selectField(fieldId);
     assertFieldIsDefined(fieldState, fieldId);
 
@@ -88,6 +99,13 @@ async function validateField(_draft: FieldState<any, any>, helpers: UpdateStoreH
         validatorsProcessedCount += 1;
         if (!validator.shouldValidate(fieldValue)) {
             continue;
+        }
+
+        // If the updates are not sync anymore, the values might have already changed.
+        // If the values have changed, current run is stale and there's nothing left to do.
+        if (!syncUpdates && isValidationStale(store.helpers, fieldId, previousValues)) {
+            // console.log("Bailing out because the values are stale.");
+            return;
         }
 
         const validatorResult = validator.validate(fieldValue);
@@ -203,7 +221,7 @@ function resolveValidationResult(value: string | ValidationResult): ValidationRe
 }
 
 function isValidationStale(
-    helpers: UpdateStoreHelpers,
+    helpers: StoreHelpers,
     fieldId: string,
     previousData: {
         value: any;
@@ -214,7 +232,7 @@ function isValidationStale(
 
     if (fieldState == null) {
         // Field has been unregistered or the fieldId is simply incorrect. Either way, there's nothing left to do.
-        console.log("Field has been unregistered or the fieldId is simply incorrect. Either way, there's nothing left to do.");
+        // console.log("Field has been unregistered or the fieldId is simply incorrect. Either way, there's nothing left to do.");
         return true;
     }
 
@@ -223,14 +241,14 @@ function isValidationStale(
         fieldState.validation.validationStarted.getTime() !== previousData.validationStarted.getTime()
     ) {
         // Current validation has been canceled or new validation has already been started.
-        console.log("Current validation has been canceled or new validation has already been started.");
+        // console.log("Current validation has been canceled or new validation has already been started.");
         return true;
     }
 
     const fieldValue = fieldState.getValue(fieldState);
     if (fieldValue !== previousData.value) {
         // Value has changed since validation has started.
-        console.log("Value has changed since validation has started.");
+        // console.log("Value has changed since validation has started.");
         return true;
     }
 

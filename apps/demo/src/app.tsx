@@ -119,6 +119,7 @@ const StoreResult = (): JSX.Element => {
 };
 
 const FormRender = (props: {
+    fieldDeps?: string[];
     children: (state: FieldState<any, any>, store: Store<FieldState<any, any>>) => React.ReactNode;
 }): JSX.Element => {
     const { state, store } = useStoreState();
@@ -137,7 +138,7 @@ const Layout = (props: { children: React.ReactNode }): JSX.Element => {
                 </pre>
                 {props.children}
             </div>
-            <StoreStateJson className="form-store-container" />
+            {/* <StoreStateJson className="form-store-container" /> */}
         </Form>
     );
 };
@@ -174,7 +175,6 @@ const Test = (): JSX.Element => {
     };
 
     // const firstNameRef = useRef<string>(null);
-    console.warn("=====================");
     const firstNameRef = useFieldRef();
 
     return (
@@ -187,11 +187,11 @@ const Test = (): JSX.Element => {
                     First name
                     <Text fieldRef={firstNameRef} name="firstName" initialValue="Jane">
                         <LengthValidator min={5} max={10} />
-                        <WaitValidator time={1000} />
+                        <WaitValidator time={250} />
                         <UsernameValidator wait={500} error="The username is already taken." takenUsernames={["jane", "janet"]} />
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </Text>
-                    <FormRender>
+                    <FormRender fieldDeps={firstNameRef.fieldId == null ? undefined : [firstNameRef.fieldId]}>
                         {(_state, store) => {
                             if (firstNameRef.fieldId == null) {
                                 return null;
@@ -241,7 +241,7 @@ const Test = (): JSX.Element => {
                     Age
                     <Number name="age" initialValue={"19"} />
                 </label>
-                <label>
+                {/* <label>
                     Sex
                     <RadioGroup name="sex" initialValue="female">
                         <label>
@@ -270,7 +270,7 @@ const Test = (): JSX.Element => {
                             Football
                         </label>
                     </Group>
-                </label>
+                </label> */}
             </Group>
         </Group>
     );
@@ -279,13 +279,44 @@ const Test = (): JSX.Element => {
 const App = (): JSX.Element => {
     const firstNameRef = useFieldRef();
 
+    // const [initialValue, setInitialValue] = useState<string>("");
+
+    const items = Array(20)
+        .fill(0)
+        .map((_, index) => {
+            return (
+                <Group key={`test${index}`} name={`test${index}`}>
+                    <Test />
+                </Group>
+            );
+        });
+
+    useEffect(() => {
+        setTimeout(() => {
+            // eslint-disable-next-line no-console
+            // console.log((window as any)?.statistics?.average);
+        }, 2000);
+    }, []);
+
     return (
         <Layout>
-            <Text name="firstName" fieldRef={firstNameRef}>
+            {items}
+            {/* <Text name="firstName" fieldRef={firstNameRef}>
+                <WaitValidator time={1000} />
                 <LengthValidator min={5} max={7} />
-            </Text>
-            <ValidationResults fieldId={firstNameRef.fieldId} />
-            <StoreResult />
+            </Text> */}
+            {/* <div>
+                <button
+                    type="button"
+                    onClick={() => {
+                        setInitialValue("Jane");
+                    }}
+                >
+                    Jane
+                </button>
+            </div> */}
+            {/* <ValidationResults fieldId={firstNameRef.fieldId} /> */}
+            {/* <StoreResult /> */}
         </Layout>
     );
 };

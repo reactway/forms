@@ -1,3 +1,4 @@
+import { Store } from "../store";
 import { Dictionary, PartialKeys } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
@@ -41,7 +42,8 @@ export interface InputValues<TValue, TRenderValue> {
 
 export type StoreUpdaterFactory<TStoreUpdater extends StoreUpdater> = (
     state: FieldState<any, any>,
-    helpers: UpdateStoreHelpers
+    helpers: UpdateStoreHelpers,
+    store: Store<FieldState<any, any>>
 ) => TStoreUpdater;
 
 export interface StoreUpdater<TId extends string = string> {

@@ -1,6 +1,5 @@
 import React from "react";
-import { ValidationResultType } from "@reactway/forms-core/src";
-import { useFieldContext } from "./context";
+import { ValidationResultType } from "@reactway/forms-core";
 import { useStoreState } from "../helpers";
 
 export interface ValidationResultsProps {
@@ -9,8 +8,6 @@ export interface ValidationResultsProps {
 
 export const ValidationResults = (props: ValidationResultsProps): JSX.Element | null => {
     const { store } = useStoreState();
-
-    console.log(props.fieldId);
 
     if (props.fieldId == null) {
         return null;
@@ -21,7 +18,7 @@ export const ValidationResults = (props: ValidationResultsProps): JSX.Element | 
         return null;
     }
 
-    const validationInProgress = fieldState.validation.validationStarted !== null;
+    const validationInProgress = fieldState.validation.validationStarted != null;
 
     const loader = validationInProgress ? <div>Validating...</div> : null;
     const validationResults = fieldState.validation.results;

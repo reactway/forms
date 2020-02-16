@@ -30,13 +30,9 @@ export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: Updat
             };
 
             if (newStatus.touched && statusChanged("touched")) {
-                console.log("Touched...");
                 updateDependentStatusUpwards(state, helpers, fieldId, status => {
                     status.touched = true;
                 });
-                // updateDependentStatusDownwards(fieldState, status => {
-                //     status.touched = true;
-                // });
             }
 
             if (statusChanged("pristine")) {

@@ -2,11 +2,11 @@ import { ValidationResultOrString } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
 
 export type WaitValidatorProps = {
-    time: number;
+    time?: number;
 };
 
 export const WaitValidator = (props: WaitValidatorProps): null => {
-    const { time } = props;
+    const { time = 250 } = props;
 
     useValidator<string>(
         WaitValidator.name,

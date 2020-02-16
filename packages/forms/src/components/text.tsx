@@ -1,5 +1,14 @@
 import React, { useRef, useEffect, RefObject, MutableRefObject, Ref, LegacyRef } from "react";
-import { FieldState, Initial, getDefaultStatuses, getDefaultValues, getDefaultValidation, InputValues } from "@reactway/forms-core";
+import {
+    FieldState,
+    Initial,
+    getDefaultStatuses,
+    getDefaultValues,
+    getDefaultValidation,
+    InputValues,
+    ValueUpdater,
+    assertFieldIsDefined
+} from "@reactway/forms-core";
 import { useInputField, FieldRef, MutableFieldRef } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
@@ -41,6 +50,16 @@ export const Text = (props: TextProps): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { state, id: fieldId, ...restField } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
+    useEffect(() => {
+        store.update((_, helpers) => {
+            const fieldState = helpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
+
+            const textState = fieldState as TextFieldState;
+            textState.data.initialValue = initialValue ?? defaultValue;
+        });
+    }, [defaultValue, fieldId, initialValue, store]);
+
     const textRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -56,7 +75,7 @@ export const Text = (props: TextProps): JSX.Element => {
 
         return store.addListener(() => {
             focusWhenActive();
-        });
+        }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
     // TODO: Handle defaultValue, initialValue and other prop changes.
