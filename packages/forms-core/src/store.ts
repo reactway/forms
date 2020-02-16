@@ -1,6 +1,6 @@
 import { TinyEmitter } from "@reactway/tiny-emitter";
 import produce, { Draft, Patch } from "immer";
-import { FieldState, StoreHelpers, UpdateStoreHelpers, StoreUpdatersFactories, Dictionary } from "./contracts";
+import { FieldState, StoreHelpers, UpdateStoreHelpers, StoreUpdatersFactories, Dictionary, SpecificKey } from "./contracts";
 import { constructStoreHelpers, constructUpdateStoreHelpers } from "./store-helpers";
 import { getDefaultUpdatersFactories } from "./helpers";
 import { IdSeparator } from "./constants";
@@ -120,17 +120,12 @@ export class Store<TState extends FieldState<any, any>> {
             return;
         }
 
-        // if (this.done > 10) {
-        //     setTimeout(() => {
-        //         this.done = 0;
-        //     }, 500);
-        //     return;
-        // }
-        // this.done++;
+        // Strongly type the key to catch an error if it changes.
+        const fieldsKey: SpecificKey<FieldState<any, any>, "fields"> = "fields";
 
         const paths: string[] = [];
         patches.map(patch => {
-            const idPath = patch.path.filter(x => x !== "fields").join(IdSeparator);
+            const idPath = patch.path.filter(x => x !== fieldsKey).join(IdSeparator);
             paths.push(idPath);
         });
 
@@ -146,7 +141,7 @@ export class Store<TState extends FieldState<any, any>> {
                     return;
                 }
 
-                return path[fieldKey.length] === IdSeparator;
+                return path.charAt(fieldKey.length) === IdSeparator;
             });
 
             if (!fieldHandlersShouldBeCalled) {

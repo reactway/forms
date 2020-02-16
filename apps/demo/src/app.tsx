@@ -281,7 +281,7 @@ const App = (): JSX.Element => {
 
     // const [initialValue, setInitialValue] = useState<string>("");
 
-    const items = Array(20)
+    const items = Array(1)
         .fill(0)
         .map((_, index) => {
             return (
