@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldState, Initial, InputValues, getDefaultValues, getDefaultState } from "@reactway/forms-core";
+import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
 import { useField, FieldRef } from "../helpers";
 import { FieldContext, useFieldContext } from "./context";
 
@@ -13,7 +13,7 @@ export interface RadioGroupProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface RadioGroupData extends InputValues<RadioGroupValue, never> {}
+interface RadioGroupData extends InputFieldData<RadioGroupValue, never> {}
 
 export type RadioGroupState = FieldState<RadioGroupValue, RadioGroupData>;
 

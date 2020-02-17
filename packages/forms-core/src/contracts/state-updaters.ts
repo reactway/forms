@@ -1,11 +1,14 @@
 import { FieldStatus, StoreUpdater } from "./field-state";
 import { Validator } from "./validation";
+import { Modifier } from "./modifiers";
 
 export const ValueUpdater = "value" as const;
 export interface ValueUpdater extends StoreUpdater<typeof ValueUpdater> {
     updateFieldValue(fieldId: string, value: any): void;
     resetFieldValue(fieldId: string): void;
     clearFieldValue(fieldId: string): void;
+    registerModifier(fieldId: string, modifier: Modifier<any, any>): string;
+    unregisterModifier(fieldId: string, modifierId: string): void;
 }
 
 export const StatusUpdater = "status" as const;

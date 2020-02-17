@@ -4,3 +4,4 @@ export * from "./form-state";
 export * from "./store-helpers";
 export * from "./state-updaters";
 export * from "./validation";
+export * from "./modifiers";

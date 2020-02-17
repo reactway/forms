@@ -2,20 +2,19 @@ import {
     FieldState,
     Initial,
     ValueUpdater,
-    isInputValues,
-    InputValues,
-    FieldStateValue,
-    assertUpdaterIsDefined,
-    StatusUpdater,
-    ValidationUpdater
+    ValidationUpdater,
+    InputFieldData,
+    RenderValue,
+    FieldStateData,
+    FieldStateValue
 } from "@reactway/forms-core";
 import { useCallback } from "react";
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
 import { FieldRef } from ".";
 
-export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
-    value: FieldStateValue<TFieldState>;
+export interface InputElementProps<TElement, TFieldState extends FieldState<any, any>> {
+    value: FieldStateValue<TFieldState> | RenderValue<FieldStateData<TFieldState>>;
 
     // Form events
     onChange: React.ChangeEventHandler<TElement>;
@@ -74,19 +73,44 @@ export interface UseInputFieldResult<TElement, TFieldState extends FieldState<an
     onWheel?: React.WheelEventHandler<TElement>;
 }
 
+export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
+    inputElementProps: InputElementProps<TElement, TFieldState>;
+}
+
 export type InputElement = HTMLInputElement;
 
 export interface UseInputFieldEventHooks<TElement> {
     getValueFromChangeEvent?: (event: React.ChangeEvent<TElement>) => any;
 }
 
-export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputValues<any, any>>>(
+export function getRenderValue<TFieldState extends FieldState<any, any>>(
+    fieldState: TFieldState
+): RenderValue<FieldStateData<TFieldState>> {
+    if (fieldState.data.transientValue != null) {
+        return fieldState.data.transientValue;
+    }
+
+    const modifiers = fieldState.data.modifiers;
+    if (modifiers.length === 0) {
+        return fieldState.data.currentValue;
+    }
+
+    let renderValue = fieldState.data.currentValue;
+
+    for (const modifier of modifiers) {
+        renderValue = modifier.format(renderValue);
+    }
+
+    return renderValue;
+}
+
+export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>(
     fieldName: string,
     fieldRef: FieldRef | undefined,
     initialStateFactory: () => Initial<TFieldState>,
     eventHooks?: UseInputFieldEventHooks<TElement>
 ): UseInputFieldResult<TElement, TFieldState> {
-    type Result = UseInputFieldResult<TElement, TFieldState>;
+    type Result = UseInputFieldResult<TElement, TFieldState>["inputElementProps"];
     const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
     const { state: fieldState, id: fieldId } = fieldResult;
 
@@ -137,13 +161,15 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         [store]
     );
 
-    const value = fieldState.data.transientValue ?? fieldState.data.currentValue;
+    const value = getRenderValue<TFieldState>(fieldState);
 
     return {
         ...fieldResult,
-        onChange,
-        onFocus,
-        onBlur,
-        value
+        inputElementProps: {
+            onChange,
+            onFocus,
+            onBlur,
+            value
+        }
     };
 }

@@ -1,15 +1,6 @@
-import React, { useRef, useEffect, RefObject, MutableRefObject, Ref, LegacyRef } from "react";
-import {
-    FieldState,
-    Initial,
-    getDefaultStatuses,
-    getDefaultValues,
-    getDefaultValidation,
-    InputValues,
-    ValueUpdater,
-    assertFieldIsDefined
-} from "@reactway/forms-core";
-import { useInputField, FieldRef, MutableFieldRef } from "../helpers";
+import React, { useRef, useEffect } from "react";
+import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import { useInputField, FieldRef } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
 export interface TextProps {
@@ -23,7 +14,7 @@ export interface TextProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface TextFieldData extends InputValues<string, string> {}
+export interface TextFieldData extends InputFieldData<string, string> {}
 
 export type TextFieldState = FieldState<string, TextFieldData>;
 
@@ -47,8 +38,7 @@ export const Text = (props: TextProps): JSX.Element => {
 
     const { store, permanent } = useFieldContext();
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { state, id: fieldId, ...restField } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
+    const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
     useEffect(() => {
         store.update((_, helpers) => {
@@ -81,7 +71,7 @@ export const Text = (props: TextProps): JSX.Element => {
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (
         <>
-            <input {...restField} type="text" {...restProps} ref={textRef} />
+            <input {...inputElementProps} type="text" {...restProps} ref={textRef} />
             {/* TODO: <FieldChildren>? */}
             <FieldContext.Provider
                 value={{

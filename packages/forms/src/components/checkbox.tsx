@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldState, InputValues, Initial, getDefaultState, getDefaultValues } from "@reactway/forms-core";
+import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
 import { useInputField, UseInputFieldEventHooks, FieldRef } from "../helpers";
 
 export interface CheckboxProps {
@@ -12,7 +12,7 @@ export interface CheckboxProps {
 export type CheckboxValue = boolean | null;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CheckboxData extends InputValues<CheckboxValue, never> {}
+export interface CheckboxData extends InputFieldData<CheckboxValue, undefined> {}
 
 export type CheckboxFieldState = FieldState<CheckboxValue, CheckboxData>;
 
@@ -38,12 +38,14 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
     const { name, defaultValue = false, initialValue, fieldRef } = props;
-    const { id, state, value, ...rest } = useInputField<HTMLInputElement, CheckboxFieldState>(
+    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxFieldState>(
         name,
         fieldRef,
         () => initialState(defaultValue, initialValue),
         eventHooks
     );
+
+    const { value, ...rest } = inputElementProps;
 
     return <input {...rest} type="checkbox" checked={value != null ? value : undefined} />;
 };

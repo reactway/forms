@@ -138,7 +138,7 @@ export class Store<TState extends FieldState<any, any>> {
 
             const fieldHandlersShouldBeCalled = paths.some(path => {
                 if (!path.startsWith(fieldKey)) {
-                    return;
+                    return false;
                 }
 
                 return path.charAt(fieldKey.length) === IdSeparator;

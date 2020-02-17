@@ -3,11 +3,7 @@ import { Dictionary, PartialKeys } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
-
-// export type FieldState<TValue, TRenderValue = any, TData extends {} = {}> =
-//     | State<TValue, TRenderValue, TData>
-//     | ComputedValue
-//     | InputValue<TValue, TRenderValue>;
+import { Modifier } from "./modifiers";
 
 export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue, FieldState<TValue, TData>> {
     id: string;
@@ -33,11 +29,13 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
-export interface InputValues<TValue, TRenderValue> {
+export interface InputFieldData<TValue, TRenderValue> {
     currentValue: TValue;
     initialValue: TValue;
     defaultValue: TValue;
     transientValue?: TRenderValue;
+
+    modifiers: ReadonlyArray<FieldModifier<TValue, TRenderValue>>;
 }
 
 export type StoreUpdaterFactory<TStoreUpdater extends StoreUpdater> = (
@@ -68,12 +66,21 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
     id: string;
 }
 
+export interface FieldModifier<TValue, TRenderValue> extends Modifier<TValue, TRenderValue> {
+    id: string;
+}
+
 export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
 export type Initial<TFieldState extends FieldState<any, any>> = Omit<
     PartialKeys<TFieldState, keyof DefaultFieldState>,
     "id" | "name" | "fields"
 >;
+
 // Partial<Pick<TFieldState, keyof DefaultFieldState>>;
 export type UpdaterId<TUpdater extends StoreUpdater> = TUpdater extends StoreUpdater<infer TId> ? TId : never;
 
-export type FieldStateValue<TFieldState> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
+export type FieldStateValue<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
+export type FieldStateData<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<any, infer TData> ? TData : never;
+export type RenderValue<TData extends InputFieldData<any, any>> = TData extends InputFieldData<any, infer TRenderValue>
+    ? TRenderValue
+    : never;

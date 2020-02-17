@@ -1,19 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
-import {
-    Form,
-    useFieldContext,
-    Text,
-    Group,
-    Number,
-    RadioGroup,
-    Radio,
-    Checkbox,
-    useStoreState,
-    useFieldRef,
-    FieldRef,
-    ValidationResults
-} from "@reactway/forms";
+import { Form, useFieldContext, Text, Group, Number, useStoreState, useFieldRef } from "@reactway/forms";
 import { FieldState, Store, ValidationResultType } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
 import { FormsRegistry } from "./forms-registry";
@@ -55,6 +42,7 @@ const Stringify = (props: { state: {} }): JSX.Element => {
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const StoreStateJson = (props: any): JSX.Element => {
     const { store } = useFieldContext();
     const [state, setState] = useState(store.getState());
@@ -152,6 +140,7 @@ function useForceUpdate(): () => void {
     return update;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Print = (props: { name: string; refObj: any; result?: string }): JSX.Element => {
     const [, set] = useState();
     useEffect(() => {
@@ -239,7 +228,7 @@ const Test = (): JSX.Element => {
                 </label>
                 <label>
                     Age
-                    <Number name="age" initialValue={"19"} />
+                    <Number name="age" initialValue={19} />
                 </label>
                 {/* <label>
                     Sex
@@ -316,7 +305,7 @@ const App = (): JSX.Element => {
                 </button>
             </div> */}
             {/* <ValidationResults fieldId={firstNameRef.fieldId} /> */}
-            {/* <StoreResult /> */}
+            <StoreResult />
         </Layout>
     );
 };

@@ -1,4 +1,12 @@
-import { FieldStatus, InputValues, StoreUpdatersFactories, FieldValidation, FieldState, StoreUpdater, DefaultFieldState } from "./contracts";
+import {
+    FieldStatus,
+    InputFieldData,
+    StoreUpdatersFactories,
+    FieldValidation,
+    FieldState,
+    StoreUpdater,
+    DefaultFieldState
+} from "./contracts";
 import { IdSeparator } from "./constants";
 import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "./updaters";
 
@@ -63,7 +71,7 @@ export function getDefaultValues<TValue, TRenderValue>(
     initialValue?: TValue,
     currentValue?: TValue,
     transientValue?: TRenderValue
-): InputValues<TValue, TRenderValue> {
+): InputFieldData<TValue, TRenderValue> {
     // Triple equals to `undefined`, because `null` might be a valid value.
     if (initialValue === undefined) {
         initialValue = defaultValue;
@@ -78,7 +86,8 @@ export function getDefaultValues<TValue, TRenderValue>(
         defaultValue,
         initialValue,
         currentValue,
-        transientValue
+        transientValue,
+        modifiers: []
     };
 }
 
@@ -97,7 +106,12 @@ export function getDefaultValidation(): FieldValidation<any> {
     };
 }
 
-export function isInputValues(candidate: any): candidate is InputValues<any, any> {
-    const inputValues = candidate as InputValues<any, any>;
-    return inputValues.defaultValue !== undefined && inputValues.initialValue !== undefined && inputValues.currentValue !== undefined;
+export function isInputFieldData(candidate: any): candidate is InputFieldData<any, any> {
+    const inputValues = candidate as InputFieldData<any, any>;
+    return (
+        inputValues.defaultValue !== undefined &&
+        inputValues.initialValue !== undefined &&
+        inputValues.currentValue !== undefined &&
+        Array.isArray(inputValues.modifiers)
+    );
 }

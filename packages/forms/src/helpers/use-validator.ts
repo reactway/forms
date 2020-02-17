@@ -29,7 +29,7 @@ export function useValidator<TValue>(
             const id = validationUpdater.registerValidator(parentId, validatorToRegister);
             setValidatorId(id);
         });
-    }, [name, parentId, store, validator]);
+    }, [name, parentId, validator, store]);
 
     useEffect(() => {
         // console.log("useValidator, useEffect 1");
@@ -40,7 +40,7 @@ export function useValidator<TValue>(
         }
 
         return () => {
-            store.update((_draft, helpers) => {
+            store.update((_, helpers) => {
                 const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                 validationUpdater.unregisterValidator(parentId, validatorId);
             });
@@ -53,7 +53,7 @@ export function useValidator<TValue>(
             return;
         }
 
-        store.update((_draft, helpers) => {
+        store.update((_, helpers) => {
             const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             validationUpdater.validateField(parentId);
