@@ -1,5 +1,6 @@
 import { ValidatorResult } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
+import { useState } from "react";
 
 export interface LengthValidatorMessages {
     tooShort: string;
@@ -17,12 +18,16 @@ const defaultErrorMessages = {
     tooLong: "The value is too long."
 };
 
+let count = 0;
 export const LengthValidator = (props: LengthValidatorProps): null => {
     const { min = 0, max } = props;
     const errorMessages = props.errorMessages ?? defaultErrorMessages;
 
+    count++;
+    const [name] = useState<string>(LengthValidator.name + count);
+
     useValidator<string>(
-        LengthValidator.name,
+        name,
         () => {
             return {
                 shouldValidate: value => {

@@ -19,6 +19,7 @@ export type RadioGroupState = FieldState<RadioGroupValue, RadioGroupData>;
 
 const initialState = (defaultValue: RadioGroupValue, initialValue: RadioGroupValue | undefined): Initial<RadioGroupState> => {
     return {
+        computedValue: false,
         data: {
             ...getDefaultValues(defaultValue, initialValue)
         },

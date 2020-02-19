@@ -13,6 +13,7 @@ export interface FormProps {
 const initialState = (formId: string): FormState => {
     return {
         ...getDefaultState(),
+        computedValue: true,
         id: formId,
         name: formId,
         data: {

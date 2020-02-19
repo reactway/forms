@@ -1,7 +1,7 @@
 import { Store } from "../store";
 import { Dictionary, PartialKeys } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
-import { ValidationResult, Validator } from "./validation";
+import { ValidationResult, Validator, CancellationToken } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
 import { Modifier } from "./modifiers";
 
@@ -10,6 +10,7 @@ export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue,
     name: string;
     status: FieldStatus;
 
+    computedValue: boolean;
     data: TData;
     validation: FieldValidation<TValue>;
 
@@ -59,7 +60,12 @@ export interface FieldValidation<TValue> {
     results: ReadonlyArray<ValidationResult>;
     validators: ReadonlyArray<FieldValidator<TValue>>;
     // TODO: Status + Date or just Date?
-    validationStarted?: Date;
+    currentValidation?: Validation;
+}
+
+export interface Validation {
+    started: Date;
+    cancellationToken: CancellationToken;
 }
 
 export interface FieldValidator<TValue> extends Validator<TValue> {

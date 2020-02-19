@@ -55,6 +55,7 @@ export function useValidator<TValue>(
 
         store.update((_, helpers) => {
             const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+            console.log(`VALIDATE BECAUSE YOU WERE RENDERED TO! (${parentId})`);
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             validationUpdater.validateField(parentId);
         });

@@ -18,6 +18,7 @@ export type CheckboxFieldState = FieldState<CheckboxValue, CheckboxData>;
 
 const initialState = (defaultValue: CheckboxValue, initialValue: CheckboxValue | undefined): Initial<CheckboxFieldState> => {
     return {
+        computedValue: false,
         data: {
             ...getDefaultValues(defaultValue, initialValue)
         },

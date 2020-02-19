@@ -4,6 +4,7 @@ import { Store, FieldState, getDefaultState } from "@reactway/forms-core";
 export const StubId = `This is not the field you're looking for. What you found is a StubStore.`;
 export const StubStore = new Store<FieldState<unknown, {}>>(() => ({
     ...getDefaultState(),
+    computedValue: false,
     id: StubId,
     name: StubId,
     data: {},

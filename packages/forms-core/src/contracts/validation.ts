@@ -35,3 +35,8 @@ export enum ValidationResultOrigin {
     Validation = 1,
     FormSubmit = 2
 }
+
+export interface CancellationToken {
+    cancellationRequested: boolean;
+    cancel: () => void;
+}

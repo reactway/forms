@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
-import { Form, useFieldContext, Text, Group, Number, useStoreState, useFieldRef } from "@reactway/forms";
+import { Form, useFieldContext, Text, Group, Number, useStoreState, useFieldRef, RadioGroup, Radio, Checkbox } from "@reactway/forms";
 import { FieldState, Store, ValidationResultType } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
 import { FormsRegistry } from "./forms-registry";
@@ -11,6 +11,7 @@ import { WaitValidator } from "./validators/wait-validator";
 import Loader from "./assets/loader.svg";
 
 import "./app.scss";
+import { PersonContactsValidator } from "./validators/person-validator";
 
 // (window as any).debugState = true;
 
@@ -126,7 +127,7 @@ const Layout = (props: { children: React.ReactNode }): JSX.Element => {
                 </pre>
                 {props.children}
             </div>
-            {/* <StoreStateJson className="form-store-container" /> */}
+            <StoreStateJson className="form-store-container" />
         </Form>
     );
 };
@@ -165,10 +166,12 @@ const Test = (): JSX.Element => {
 
     // const firstNameRef = useRef<string>(null);
     const firstNameRef = useFieldRef();
+    const personGroupRef = useFieldRef();
 
     return (
         <Group name="hello">
-            <Group name="person">
+            <Group name="person" fieldRef={personGroupRef}>
+                <PersonContactsValidator />
                 <button type="button" onClick={onClick}>
                     Do it
                 </button>
@@ -180,13 +183,13 @@ const Test = (): JSX.Element => {
                         <UsernameValidator wait={500} error="The username is already taken." takenUsernames={["jane", "janet"]} />
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </Text>
-                    <FormRender fieldDeps={firstNameRef.fieldId == null ? undefined : [firstNameRef.fieldId]}>
+                    <FormRender fieldDeps={personGroupRef.fieldId == null ? undefined : [personGroupRef.fieldId]}>
                         {(_state, store) => {
-                            if (firstNameRef.fieldId == null) {
+                            if (personGroupRef.fieldId == null) {
                                 return null;
                             }
 
-                            const fieldState = store.helpers.selectField(firstNameRef.fieldId);
+                            const fieldState = store.helpers.selectField(personGroupRef.fieldId);
                             if (fieldState == null) {
                                 return null;
                             }
@@ -194,7 +197,7 @@ const Test = (): JSX.Element => {
                             const warnings = fieldState.validation.results.filter(x => x.type === ValidationResultType.Warning);
                             const errors = fieldState.validation.results.filter(x => x.type === ValidationResultType.Error);
                             const loader =
-                                fieldState.validation.validationStarted != null ? (
+                                fieldState.validation.currentValidation != null ? (
                                     <img key="validation-loader" src={Loader.src} width={25} />
                                 ) : null;
 

@@ -20,6 +20,7 @@ export type TextFieldState = FieldState<string, TextFieldData>;
 
 const initialState = (defaultValue: string, initialValue: string | undefined): Initial<TextFieldState> => {
     return {
+        computedValue: false,
         data: {
             ...getDefaultValues(defaultValue, initialValue)
         },

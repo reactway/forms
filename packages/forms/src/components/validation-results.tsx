@@ -18,7 +18,7 @@ export const ValidationResults = (props: ValidationResultsProps): JSX.Element | 
         return null;
     }
 
-    const validationInProgress = fieldState.validation.validationStarted != null;
+    const validationInProgress = fieldState.validation.currentValidation != null;
 
     const loader = validationInProgress ? <div>Validating...</div> : null;
     const validationResults = fieldState.validation.results;

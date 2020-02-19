@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldState, selectField, ValueUpdater } from "@reactway/forms-core";
+import { selectField, ValueUpdater } from "@reactway/forms-core";
 import { useFieldContext } from "./context";
 import { RadioGroupState, RadioGroup } from "./radio-group";
 
@@ -8,9 +8,6 @@ export type RadioValue = string | number;
 export interface RadioProps {
     value: RadioValue;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RadioFieldState extends FieldState<RadioValue | undefined, { checked: boolean }> {}
 
 export const Radio = (props: RadioProps): JSX.Element => {
     const { parentId, store } = useFieldContext();
