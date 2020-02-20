@@ -55,9 +55,6 @@ export function ValidationUpdaterFactory(
     };
 }
 
-// TODO: Review the following implementation.
-
-let count = 0;
 async function validateField(
     _draft: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
@@ -67,21 +64,13 @@ async function validateField(
     const fieldState = helpers.selectField(fieldId);
     assertFieldIsDefined(fieldState, fieldId);
 
-    console.group(`Validation for ${fieldId}`);
-    console.log(fieldState.validation.currentValidation);
     if (fieldState.validation.currentValidation != null) {
-        console.error(`Cancelling previous validation for ${fieldId}`);
         fieldState.validation.currentValidation.cancellationToken.cancel();
     }
 
     if (fieldState.validation.validators.length === 0) {
         return;
     }
-
-    const validationNumber = ++count;
-
-    console.log(`Running validation #${validationNumber}`);
-    console.groupEnd();
 
     // Copy validators because we're in an asynchronous context
     // and their proxy into current state might be revoked by immer.
@@ -96,7 +85,7 @@ async function validateField(
 
     // Indicate that the validation has started.
     const validationStarted = new Date();
-    const cancellationToken = new CancellationTokenImpl(`${validationNumber} for ${fieldId}`, () => {
+    const cancellationToken = new CancellationTokenImpl(() => {
         store.update((_, asyncHelpers) => {
             const asyncFieldState = asyncHelpers.selectField(fieldId);
             if (asyncFieldState == null) {
@@ -153,12 +142,7 @@ async function validateField(
         }
 
         // Construct proper ValidationResults in case any strings are in results.
-        let validationResults = results.map(x => resolveValidationResult(x, validator.name));
-
-        validationResults = validationResults.map(x => {
-            x.message += ` #${validationNumber}`;
-            return x;
-        });
+        const validationResults = results.map(x => resolveValidationResult(x, validator.name));
 
         updateFieldAsync(fieldId, store, cancellationToken, state => {
             const mutableValidationResults = state.validation.results as ValidationResult[];
@@ -179,13 +163,11 @@ function updateFieldAsync(
 ): void {
     // Check for cancellation right away.
     if (cancellationToken.cancellationRequested) {
-        console.log("Cancelled.");
         return;
     }
     setTimeout(() => {
-        // Check for cancellation at the start of asynchronous scope.
+        // Check for cancellation again at the start of asynchronous scope.
         if (cancellationToken.cancellationRequested) {
-            console.log("Cancelled in async context.");
             return;
         }
         store.update((_, helpers) => {

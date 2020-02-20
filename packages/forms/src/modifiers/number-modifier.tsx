@@ -6,8 +6,7 @@ export interface NumberModifierProps {
     thousandsSeparator?: string;
 }
 
-// TODO: Should be non-exported function?
-export function parseNumber(
+function parseNumber(
     value: string,
     decimalSeparator: string,
     thousandsSeparator: string,

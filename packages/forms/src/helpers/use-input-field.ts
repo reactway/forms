@@ -141,7 +141,6 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     const onFocus = useCallback<Result["onFocus"]>(
         _event => {
-            console.log("Focusing field.");
             store.update((draft, helpers) => {
                 helpers.setActiveFieldId(fieldId);
                 helpers.updateFieldStatus(fieldId, status => {

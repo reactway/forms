@@ -3,7 +3,7 @@ import { CancellationToken } from "./contracts";
 export type CancellationCallback = () => void;
 
 export class CancellationTokenImpl implements CancellationToken {
-    constructor(protected tokenName: string, cancellationCallback?: CancellationCallback) {
+    constructor(cancellationCallback?: CancellationCallback, protected tokenName?: string) {
         this.cancellationCallback = cancellationCallback;
     }
 
@@ -15,7 +15,6 @@ export class CancellationTokenImpl implements CancellationToken {
     }
 
     public cancel(): void {
-        console.warn(`Token #${this.tokenName} has been cancelled${this.cancelled ? " again" : ""}.`);
         if (this.cancelled) {
             return;
         }

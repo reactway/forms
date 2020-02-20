@@ -14,7 +14,7 @@ import {
     GetUpdaterReturnType
 } from "./contracts";
 import { Store } from "./store";
-import { getFieldNameFromId, getDefaultState } from "./helpers";
+import { getFieldNameFromId, getDefaultState, isInputFieldData } from "./helpers";
 
 export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
@@ -49,10 +49,6 @@ export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: 
     return helpers;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-window.fieldsCount = 0;
-
 export function constructUpdateStoreHelpers(
     store: Store<FieldState<any, any>>,
     draft: Draft<FieldState<any, any>>,
@@ -63,9 +59,6 @@ export function constructUpdateStoreHelpers(
     const updateStoreHelpers: UpdateStoreHelpers = {
         ...fieldStoreHelpers,
         registerField: (fieldId, initialFieldState) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
-            window.fieldsCount++;
             registerField(draft, fieldId, initialFieldState);
         },
         unregisterField: id => {
@@ -94,6 +87,10 @@ function registerField<TFieldState extends FieldState<any, any>>(
     fieldId: string,
     initialFieldState: Initial<TFieldState>
 ): void {
+    if (initialFieldState.computedValue && isInputFieldData(initialFieldState.data)) {
+        throw new Error(`Field ${fieldId} is marked to have computedValue, but also has data of an input field.`);
+    }
+
     const fieldName = getFieldNameFromId(fieldId);
     const parentField = selectRegistrationParent(state, fieldId);
 

@@ -65,20 +65,13 @@ export const Group = (props: GroupProps): JSX.Element => {
 
                 const currentValue = JSON.stringify(fieldState.getValue(fieldState));
 
-                console.group(`Validating ${fieldId}`);
-                console.log(currentValue);
-                console.log(previousValue);
                 if (currentValue === previousValue) {
                     // Value did not change. No need to re-validate.
-                    console.log("Same value.");
-                    console.groupEnd();
                     setPreviousValue(currentValue);
                     return;
                 }
 
                 // New value. Validation needs to be run.
-                console.log("Value changed.");
-                console.groupEnd();
                 setPreviousValue(currentValue);
 
                 // Cancel currently running validation
@@ -86,7 +79,6 @@ export const Group = (props: GroupProps): JSX.Element => {
                     fieldState.validation.currentValidation.cancellationToken.cancel();
                 }
 
-                console.log("Kicking validation!");
                 const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 validationUpdater.validateField(fieldId);
