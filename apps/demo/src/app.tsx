@@ -183,22 +183,40 @@ const Test = (): JSX.Element => {
                         <UsernameValidator wait={500} error="The username is already taken." takenUsernames={["jane", "janet"]} />
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </Text>
-                    <FormRender fieldDeps={personGroupRef.fieldId == null ? undefined : [personGroupRef.fieldId]}>
+                    <FormRender fieldDeps={firstNameRef.fieldId == null ? undefined : [firstNameRef.fieldId]}>
                         {(_state, store) => {
-                            if (personGroupRef.fieldId == null) {
+                            {
+                                /* <FormRender fieldDeps={personGroupRef.fieldId == null ? undefined : [personGroupRef.fieldId]}> */
+                            }
+                            if (firstNameRef.fieldId == null) {
                                 return null;
                             }
 
-                            const fieldState = store.helpers.selectField(personGroupRef.fieldId);
+                            const fieldState = store.helpers.selectField(firstNameRef.fieldId);
                             if (fieldState == null) {
                                 return null;
                             }
 
                             const warnings = fieldState.validation.results.filter(x => x.type === ValidationResultType.Warning);
                             const errors = fieldState.validation.results.filter(x => x.type === ValidationResultType.Error);
+
+                            const cancelButton = (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        fieldState.validation.currentValidation?.cancellationToken.cancel();
+                                    }}
+                                >
+                                    Cancel validation
+                                </button>
+                            );
+
                             const loader =
                                 fieldState.validation.currentValidation != null ? (
-                                    <img key="validation-loader" src={Loader.src} width={25} />
+                                    <>
+                                        <img key="validation-loader" src={Loader.src} width={25} />
+                                        {cancelButton}
+                                    </>
                                 ) : null;
 
                             return (

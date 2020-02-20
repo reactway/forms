@@ -64,24 +64,22 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
             fieldState.data.transientValue = transientValue;
         },
         resetFieldValue: fieldId => {
-            throw new Error("Not implemented.");
-            // const fieldState = helpers.selectField(fieldId);
-            // assertFieldIsDefined(fieldState, fieldId);
+            const fieldState = helpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
 
-            // if (!isInputValues(fieldState.data)) {
-            //     throw new Error("Not implemented.");
-            // }
-            // valueUpdater.updateFieldValue(fieldId, fieldState.data.initialValue);
+            if (!isInputFieldData(fieldState.data)) {
+                throw new Error("Only input field can be reset.");
+            }
+            valueUpdater.updateFieldValue(fieldId, fieldState.data.initialValue);
         },
         clearFieldValue: fieldId => {
-            throw new Error("Not implemented.");
-            // const fieldState = helpers.selectField(fieldId);
-            // assertFieldIsDefined(fieldState, fieldId);
+            const fieldState = helpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
 
-            // if (!isInputValues(fieldState.data)) {
-            //     throw new Error("Not implemented.");
-            // }
-            // valueUpdater.updateFieldValue(fieldId, fieldState.data.defaultValue);
+            if (!isInputFieldData(fieldState.data)) {
+                throw new Error("Only input field can be cleared.");
+            }
+            valueUpdater.updateFieldValue(fieldId, fieldState.data.defaultValue);
         },
         registerModifier: (fieldId, modifier) => {
             const fieldState = helpers.selectField(fieldId);

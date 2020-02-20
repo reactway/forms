@@ -1,4 +1,4 @@
-import { ValidationResultOrString } from "@reactway/forms-core";
+import { ValidationResultOrString, constructUpdateStoreHelpers } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
 
 export type WaitValidatorProps = {
@@ -13,7 +13,9 @@ export const WaitValidator = (props: WaitValidatorProps): null => {
         () => {
             return {
                 validate: async (_): Promise<ValidationResultOrString[]> => {
+                    console.log(`WaitValidator waiting for ${time}`);
                     await new Promise(resolve => setTimeout(resolve, time));
+                    console.log(`WaitValidator waiting done.`);
                     return [];
                 }
             };
