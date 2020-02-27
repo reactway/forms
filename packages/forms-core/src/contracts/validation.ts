@@ -11,6 +11,8 @@ export interface Validator<TValue> {
     shouldValidate: (value: TValue) => boolean;
 }
 
+export type ValidatorFactory<TValue> = Pick<Validator<TValue>, "validate"> & Partial<Pick<Validator<TValue>, "shouldValidate">>;
+
 export interface ValidatorHelpers {
     error: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Error };
     warning: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Warning };
