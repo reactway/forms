@@ -5,17 +5,22 @@
 
 export interface Validator<TValue> {
     name: string;
-    validate: (value: TValue) => ValidatorResult;
+    validate: (value: TValue, helpers: ValidatorHelpers) => ValidatorResult;
 
     // E.g. only validate non-empty and non-null values.
     shouldValidate: (value: TValue) => boolean;
 }
 
+export interface ValidatorHelpers {
+    error: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Error };
+    warning: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Warning };
+}
+
 export interface ValidationResult {
     message: string;
-    type: ValidationResultType;
 
     // 2017-05-08 Told you so.
+    type: ValidationResultType;
     origin?: ValidationResultOrigin;
     validatorName?: string;
     code?: string;

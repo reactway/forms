@@ -1,6 +1,7 @@
 import { FieldStatus, StoreUpdater } from "./field-state";
-import { Validator } from "./validation";
+import { Validator, ValidationResultOrString } from "./validation";
 import { Modifier } from "./modifiers";
+import { NestedDictionary } from "./type-helpers";
 
 export const ValueUpdater = "value" as const;
 export interface ValueUpdater extends StoreUpdater<typeof ValueUpdater> {
@@ -21,4 +22,5 @@ export interface ValidationUpdater extends StoreUpdater<typeof ValidationUpdater
     registerValidator(fieldId: string, validator: Validator<any>): string;
     unregisterValidator(fieldId: string, validatorId: string): void;
     validateField(fieldId: string): Promise<void>;
+    setFormErrors(errors: NestedDictionary<ValidationResultOrString[]>): void;
 }

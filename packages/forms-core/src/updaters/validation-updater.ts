@@ -7,7 +7,9 @@ import {
     ValidationResultOrigin,
     FieldValidator,
     ValidationResultOrString,
-    CancellationToken
+    CancellationToken,
+    NestedDictionary,
+    ValidatorHelpers
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers";
 import shortid from "shortid";
@@ -51,6 +53,9 @@ export function ValidationUpdaterFactory(
 
             const mutableValidators = fieldState.validation.validators as FieldValidator<any>[];
             mutableValidators.splice(validatorIndex, 1);
+        },
+        setFormErrors: errors => {
+            setFormErrors(state, errors);
         }
     };
 }
@@ -124,7 +129,10 @@ async function validateField(
             return;
         }
 
-        const validatorResult = validator.validate(fieldValue);
+        const validatorResult = validator.validate(
+            fieldValue,
+            constructValidatorHelpers(ValidationResultOrigin.Validation, validator.name)
+        );
         if (validatorResult == null) {
             continue;
         }
@@ -153,6 +161,30 @@ async function validateField(
     updateFieldAsync(fieldId, store, cancellationToken, state => {
         state.validation.currentValidation = undefined;
     });
+}
+
+export function constructValidatorHelpers(origin: ValidationResultOrigin.FormSubmit, validatorName?: string | undefined): ValidatorHelpers;
+export function constructValidatorHelpers(
+    origin: ValidationResultOrigin.Validation | ValidationResultOrigin.Unknown,
+    validatorName: string
+): ValidatorHelpers;
+export function constructValidatorHelpers(origin: ValidationResultOrigin, validatorName: string | undefined): ValidatorHelpers {
+    return {
+        error: (message, code) => ({
+            type: ValidationResultType.Error,
+            message: message,
+            code: code,
+            origin: origin,
+            validatorName: validatorName
+        }),
+        warning: (message, code) => ({
+            type: ValidationResultType.Warning,
+            message: message,
+            code: code,
+            origin: origin,
+            validatorName: validatorName
+        })
+    };
 }
 
 function updateFieldAsync(
@@ -191,4 +223,40 @@ function resolveValidationResult(value: string | ValidationResult, validatorName
         type: ValidationResultType.Error,
         origin: ValidationResultOrigin.Validation
     };
+}
+
+function setFormErrors(state: FieldState<any, any>, errors: NestedDictionary<ValidationResultOrString[]>): void {
+    for (const key of Object.keys(errors)) {
+        const fieldError = errors[key];
+
+        const field = state.fields[key];
+
+        if (field == null || fieldError == null) {
+            continue;
+        }
+
+        if (typeof fieldError === "object" && !Array.isArray(fieldError)) {
+            setFormErrors(field, fieldError);
+            continue;
+        }
+
+        const validationResults: ValidationResult[] = [];
+        for (const error of fieldError) {
+            let validationResult: ValidationResult;
+            if (typeof error !== "string") {
+                validationResult = error;
+            } else {
+                validationResult = {
+                    message: error,
+                    type: ValidationResultType.Error,
+                    origin: ValidationResultOrigin.FormSubmit
+                };
+            }
+            validationResults.push(validationResult);
+        }
+        console.log("validationResults");
+        console.log(validationResults);
+
+        field.validation.results = validationResults;
+    }
 }

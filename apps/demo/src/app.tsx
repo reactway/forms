@@ -1,7 +1,31 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
-import { Form, useFieldContext, Text, Group, Number, useStoreState, useFieldRef, RadioGroup, Radio, Checkbox } from "@reactway/forms";
-import { FieldState, Store, ValidationResultType } from "@reactway/forms-core";
+import {
+    Form,
+    useFieldContext,
+    Text,
+    Group,
+    Number,
+    useStoreState,
+    useFieldRef,
+    RadioGroup,
+    Radio,
+    Checkbox,
+    Reset,
+    ValidationResults,
+    Submit,
+    FormProps,
+    Clear
+} from "@reactway/forms";
+import {
+    FieldState,
+    Store,
+    ValidationResultType,
+    ValidationUpdater,
+    ValidationResultOrigin,
+    NestedDictionary,
+    ValidationResultOrString
+} from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
 import { FormsRegistry } from "./forms-registry";
 import { ErrorBoundary } from "./error-boundary";
@@ -12,6 +36,8 @@ import Loader from "./assets/loader.svg";
 
 import "./app.scss";
 import { PersonContactsValidator } from "./validators/person-validator";
+import { GroupValidator } from "./validators/group-validator";
+import { Validator } from "./validators/validator";
 
 // (window as any).debugState = true;
 
@@ -116,16 +142,17 @@ const FormRender = (props: {
     return <>{props.children(state, store)}</>;
 };
 
-const Layout = (props: { children: React.ReactNode }): JSX.Element => {
+const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
+    const { children, ...restProps } = props;
     // setTimeout(() => console.clear());
     return (
-        <Form className="form-debug-container">
+        <Form className="form-debug-container" {...restProps}>
             <div className="form-container">
                 <pre>
                     Form stores:
                     <FormsRegistry />
                 </pre>
-                {props.children}
+                {children}
             </div>
             <StoreStateJson className="form-store-container" />
         </Form>
@@ -183,6 +210,7 @@ const Test = (): JSX.Element => {
                         <UsernameValidator wait={500} error="The username is already taken." takenUsernames={["jane", "janet"]} />
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </Text>
+                    <Reset />
                     <FormRender fieldDeps={firstNameRef.fieldId == null ? undefined : [firstNameRef.fieldId]}>
                         {(_state, store) => {
                             {
@@ -286,11 +314,7 @@ const Test = (): JSX.Element => {
     );
 };
 
-const App = (): JSX.Element => {
-    const firstNameRef = useFieldRef();
-
-    // const [initialValue, setInitialValue] = useState<string>("");
-
+const TestApp1 = (): JSX.Element => {
     const items = Array(1)
         .fill(0)
         .map((_, index) => {
@@ -300,34 +324,119 @@ const App = (): JSX.Element => {
                 </Group>
             );
         });
-
-    useEffect(() => {
-        setTimeout(() => {
-            // eslint-disable-next-line no-console
-            // console.log((window as any)?.statistics?.average);
-        }, 2000);
-    }, []);
-
     return (
         <Layout>
             {items}
             {/* <Text name="firstName" fieldRef={firstNameRef}>
-                <WaitValidator time={1000} />
-                <LengthValidator min={5} max={7} />
-            </Text> */}
+    <WaitValidator time={1000} />
+    <LengthValidator min={5} max={7} />
+</Text> */}
             {/* <div>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setInitialValue("Jane");
-                    }}
-                >
-                    Jane
-                </button>
-            </div> */}
+    <button
+        type="button"
+        onClick={() => {
+            setInitialValue("Jane");
+        }}
+    >
+        Jane
+    </button>
+</div> */}
             {/* <ValidationResults fieldId={firstNameRef.fieldId} /> */}
             <StoreResult />
         </Layout>
+    );
+};
+
+const App = (): JSX.Element => {
+    const personFieldRef = useFieldRef();
+    const firstNameRef = useFieldRef();
+    const lastNameRef = useFieldRef();
+
+    type FormValue = {
+        person: {
+            firstName: string;
+            lastName: string;
+        };
+    };
+
+    return (
+        <>
+            <Layout
+                onSubmit={async (event, store, validationHelpers) => {
+                    const formValue = store.helpers.getFormValue() as FormValue;
+                    console.log(JSON.stringify(formValue, null, 4));
+
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    const errorsFromServer: NestedDictionary<ValidationResultOrString[]> = {
+                        person: {
+                            // firstName: [`First name ${formValue.person.firstName}`],
+                            firstName: [validationHelpers.warning(`First name ${formValue.person.firstName}`, "925")],
+                            lastName: [validationHelpers.warning(`Last name ${formValue.person.lastName}`)]
+                        }
+                    };
+
+                    console.log("Errors from server:", errorsFromServer);
+
+                    store.update((_, helpers) => {
+                        const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+                        validationUpdater.setFormErrors(errorsFromServer);
+                    });
+                }}
+            >
+                <Group name="person" fieldRef={personFieldRef}>
+                    <label>
+                        First name
+                        <Text name="firstName" initialValue="Jane" fieldRef={firstNameRef}>
+                            <WaitValidator time={800} />
+                            <Validator<string>
+                                shouldValidate={value => value != null && value.length > 0}
+                                validate={(value, helpers) => {
+                                    if (value !== "Jane") {
+                                        return [
+                                            helpers.error(`First name ${value} is already taken.`),
+                                            helpers.warning(
+                                                `Going for a walk is a good way to boost your creativity. You consider trying that.`
+                                            )
+                                        ];
+                                    }
+
+                                    return [];
+                                }}
+                            />
+                        </Text>
+                        <ValidationResults fieldId={firstNameRef.fieldId} />
+                    </label>
+                    <label>
+                        Last name
+                        <Text name="lastName" initialValue="Doe" fieldRef={lastNameRef} />
+                        <ValidationResults fieldId={lastNameRef.fieldId} />
+                    </label>
+                </Group>
+
+                <ValidationResults fieldId={personFieldRef.fieldId} />
+
+                <Reset />
+                <Clear />
+                <Submit />
+
+                <StoreResult />
+            </Layout>
+            {/* <Form>
+                <label>
+                    First name
+                    <Text name="firstName" />
+                </label>
+                <label>
+                    Last name
+                    <Text name="lastName" />
+                </label>
+
+                <Reset />
+
+                <StoreResult />
+            </Form> */}
+        </>
     );
 };
 

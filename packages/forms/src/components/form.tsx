@@ -1,11 +1,28 @@
 import React, { ReactNode, useState, useCallback } from "react";
 import { Draft } from "immer";
 import shortid from "shortid";
-import { Store, FormState, getDefaultState, FormsStores, getDefaultUpdatersFactories, NestedDictionary } from "@reactway/forms-core";
+import {
+    Store,
+    FormState,
+    getDefaultState,
+    FormsStores,
+    getDefaultUpdatersFactories,
+    NestedDictionary,
+    FieldState,
+    ValidatorHelpers,
+    constructValidatorHelpers,
+    ValidationResultOrigin
+} from "@reactway/forms-core";
 import { FieldContext } from "./context";
 
+export type FormSubmitEventHandler = (
+    event: React.FormEvent,
+    store: Store<FieldState<any, any>>,
+    validationResultsHelper: ValidatorHelpers
+) => Promise<void> | void;
+
 export interface FormProps {
-    onSubmit?: () => void;
+    onSubmit?: FormSubmitEventHandler;
     className?: string;
     children?: ReactNode;
 }
@@ -19,7 +36,8 @@ const initialState = (formId: string): FormState => {
         data: {
             dehydratedState: {},
             activeFieldId: undefined,
-            submitCallback: undefined
+            submitCallback: undefined,
+            isSubmitting: false
         },
         getValue: state => {
             const result: NestedDictionary<unknown> = {};
@@ -75,8 +93,17 @@ export const Form = (props: FormProps): JSX.Element => {
     return (
         <form
             ref={setFormRef}
-            onSubmit={() => {
-                props.onSubmit?.();
+            onSubmit={async event => {
+                event.preventDefault();
+                store.update(draft => {
+                    draft.data.isSubmitting = true;
+                });
+
+                await props.onSubmit?.(event, store, constructValidatorHelpers(ValidationResultOrigin.FormSubmit));
+
+                store.update(draft => {
+                    draft.data.isSubmitting = false;
+                });
             }}
             className={props.className}
         >

@@ -6,6 +6,7 @@ export interface StoreHelpers {
     selectFieldParent(fieldId: string): FieldState<any, any> | undefined;
     getActiveFieldId(): string | undefined;
     getFieldParentId(fieldId: string): string | undefined;
+    getFormValue(): {};
 }
 
 export type GetUpdaterReturnType<

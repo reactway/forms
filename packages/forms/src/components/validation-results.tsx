@@ -26,25 +26,45 @@ export const ValidationResults = (props: ValidationResultsProps): JSX.Element | 
     const errors = validationResults
         .filter(result => result.type === ValidationResultType.Error)
         .map((error, index) => {
-            return <div key={`error-${index}`}>{error.message}</div>;
+            return (
+                <div key={`error-${index}`}>
+                    {error.message}
+                    {error.code != null ? ` (${error.code})` : ""}
+                </div>
+            );
         });
     const warnings = validationResults
         .filter(result => result.type === ValidationResultType.Warning)
         .map((warning, index) => {
-            return <div key={`warning-${index}`}>{warning.message}</div>;
+            return (
+                <div key={`warning-${index}`}>
+                    {warning.message}
+                    {warning.code != null ? ` (${warning.code})` : ""}
+                </div>
+            );
         });
 
-    return (
-        <div>
-            {loader}
+    const errorsBlock =
+        errors.length === 0 ? null : (
             <div>
                 Errors:
                 {errors}
             </div>
+        );
+
+    const warningsBlock =
+        warnings.length === 0 ? null : (
             <div>
                 Warnings:
                 {warnings}
             </div>
+        );
+
+    return (
+        <div>
+            {loader}
+            {errorsBlock}
+            {warningsBlock}
         </div>
     );
 };

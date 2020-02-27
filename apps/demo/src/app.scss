@@ -8,14 +8,18 @@ body,
     max-height: 100%;
 }
 
-input {
-    display: inline-block;
-    margin-left: 5px;
-}
+form {
+    padding: 10px;
 
-label {
-    padding-bottom: 5px;
-    display: block;
+    label {
+        display: block;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    input {
+        display: block;
+    }
 }
 
 button {

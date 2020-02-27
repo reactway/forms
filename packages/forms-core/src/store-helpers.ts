@@ -44,7 +44,10 @@ export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: 
             const formState = state as FormState;
             return formState.data.activeFieldId;
         },
-        getFieldParentId: getFieldParentId
+        getFieldParentId: getFieldParentId,
+        getFormValue: () => {
+            return state.getValue(state);
+        }
     };
     return helpers;
 }
