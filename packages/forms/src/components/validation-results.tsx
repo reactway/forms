@@ -46,7 +46,7 @@ export const ValidationResults = (props: ValidationResultsProps): JSX.Element | 
 
     const errorsBlock =
         errors.length === 0 ? null : (
-            <div>
+            <div style={{ border: "1px solid #FF9494", padding: "5px", color: "red" }}>
                 Errors:
                 {errors}
             </div>
@@ -54,7 +54,7 @@ export const ValidationResults = (props: ValidationResultsProps): JSX.Element | 
 
     const warningsBlock =
         warnings.length === 0 ? null : (
-            <div>
+            <div style={{ border: "1px solid orange", padding: "5px", color: "orange" }}>
                 Warnings:
                 {warnings}
             </div>

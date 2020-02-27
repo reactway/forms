@@ -27,7 +27,9 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
     // Compliance check.
     useEffect(() => {
         return () => {
-            throw new Error(`Field name and its parentId should never change during the lifecycle of the field.`);
+            throw new Error(
+                `Field name and its parentId should never change during the lifecycle of the field. parentId: ${parentId}, fieldName: ${fieldName}`
+            );
         };
     }, [fieldName, parentId]);
 
