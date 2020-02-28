@@ -1,7 +1,7 @@
 {
   "name": "@reactway/forms",
   "description": "React forms.",
-  "version": "5.0.0-alpha",
+  "version": "1.0.0-alpha.1",
   "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
   "dependencies": {
     "@reactway/eslint-config": "^1.0.1",
