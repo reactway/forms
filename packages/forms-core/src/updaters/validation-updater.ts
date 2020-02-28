@@ -54,10 +54,9 @@ export function ValidationUpdaterFactory(
             }
 
             const mutableValidators = fieldState.validation.validators as Dictionary<FieldValidator<any>>;
-            // TODO: Review. Setting key to undefined, the key itself stays in the object.
+
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete mutableValidators[validatorId];
-            // mutableValidators[validatorId] = undefined;
 
             const validatorOrderIndex = fieldState.validation.validatorsOrder.findIndex(x => x === validatorId);
             if (validatorOrderIndex === -1) {
@@ -112,7 +111,7 @@ async function validateField(
     // Indicate that the validation has started.
     const validationStarted = new Date();
     const cancellationToken = new CancellationTokenImpl(() => {
-        store.update((_, asyncHelpers) => {
+        store.update(asyncHelpers => {
             const asyncFieldState = asyncHelpers.selectField(fieldId);
             if (asyncFieldState == null) {
                 return;
@@ -223,7 +222,7 @@ function updateFieldAsync(
         if (cancellationToken.cancellationRequested) {
             return;
         }
-        store.update((_, helpers) => {
+        store.update(helpers => {
             const fieldState = helpers.selectField(fieldId);
             if (fieldState == null) {
                 return;
@@ -275,8 +274,6 @@ function setFormErrors(state: FieldState<any, any>, errors: NestedDictionary<Val
             }
             validationResults.push(validationResult);
         }
-        console.log("validationResults");
-        console.log(validationResults);
 
         field.validation.results = validationResults;
     }

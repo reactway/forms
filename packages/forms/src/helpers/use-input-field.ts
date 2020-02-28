@@ -115,7 +115,6 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const { state: fieldState, id: fieldId } = fieldResult;
 
     const { store } = useFieldContext();
-    (window as any).store = store;
 
     type EventHooks = NonNullable<typeof eventHooks>;
     const getValueFromEventDefault: EventHooks["getValueFromChangeEvent"] = event => {
@@ -127,7 +126,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const onChange = useCallback<Result["onChange"]>(
         event => {
             const value = getValueFromChangeEvent(event);
-            store.update((draft, helpers) => {
+            store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 valueUpdater.updateFieldValue(fieldId, value);
 
@@ -141,7 +140,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     const onFocus = useCallback<Result["onFocus"]>(
         _event => {
-            store.update((draft, helpers) => {
+            store.update(helpers => {
                 helpers.setActiveFieldId(fieldId);
                 helpers.updateFieldStatus(fieldId, status => {
                     status.touched = true;
@@ -153,7 +152,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     const onBlur = useCallback<Result["onBlur"]>(
         _event => {
-            store.update((_draft, helpers) => {
+            store.update(helpers => {
                 helpers.setActiveFieldId(undefined);
             });
         },

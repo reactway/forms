@@ -18,7 +18,7 @@ export function useModifier<TValue, TRenderValue = any>(modifierFactory: () => M
             return;
         }
 
-        store.update((_, helpers) => {
+        store.update(helpers => {
             const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
             const id = valueUpdater.registerModifier(parentId, modifier);
             setModifierId(id);
@@ -30,7 +30,7 @@ export function useModifier<TValue, TRenderValue = any>(modifierFactory: () => M
             return;
         }
 
-        store.update((_, helpers) => {
+        store.update(helpers => {
             const parentState = helpers.selectField(parentId);
             assertFieldIsDefined(parentState, parentId);
 
@@ -44,7 +44,7 @@ export function useModifier<TValue, TRenderValue = any>(modifierFactory: () => M
             return;
         }
         return () => {
-            store.update((_, helpers) => {
+            store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 valueUpdater.unregisterModifier(parentId, modifierId);
             });

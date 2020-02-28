@@ -76,7 +76,7 @@ export const Form = (props: FormProps): JSX.Element => {
 
     const setFormRef = useCallback<FormRefCallback>(
         form => {
-            store.update(draft => {
+            store.update((_, draft) => {
                 const formState = draft as Draft<FormState>;
                 if (form != null) {
                     formState.data.submitCallback = () => {
@@ -95,13 +95,13 @@ export const Form = (props: FormProps): JSX.Element => {
             ref={setFormRef}
             onSubmit={async event => {
                 event.preventDefault();
-                store.update(draft => {
+                store.update((_, draft) => {
                     draft.data.isSubmitting = true;
                 });
 
                 await props.onSubmit?.(event, store, constructValidatorHelpers(ValidationResultOrigin.FormSubmit));
 
-                store.update(draft => {
+                store.update((_, draft) => {
                     draft.data.isSubmitting = false;
                 });
             }}

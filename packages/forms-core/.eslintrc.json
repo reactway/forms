@@ -9,13 +9,7 @@
                 "readonly": "generic"
             }
         ],
-        "@typescript-eslint/no-use-before-define": "off",
-        "react-hooks/exhaustive-deps": [
-            "warn",
-            {
-                "additionalHooks": "use.+"
-            }
-        ]
+        "@typescript-eslint/no-use-before-define": "off"
     },
     "parserOptions": {
         "project": "./tsconfig.json"

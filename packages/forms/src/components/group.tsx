@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FieldState, Initial, getDefaultState, NestedDictionary, ValidationUpdater, assertFieldIsDefined } from "@reactway/forms-core";
+import { FieldState, Initial, NestedDictionary, ValidationUpdater, assertFieldIsDefined } from "@reactway/forms-core";
 import { useField, FieldRef } from "../helpers";
 import { FieldContext, useFieldContext } from "./context";
 
@@ -49,17 +49,17 @@ const initialState = (): Initial<GroupFieldState> => {
 
 export const Group = (props: GroupProps): JSX.Element => {
     const { store, permanent: parentPermanent } = useFieldContext();
-    const { id: fieldId, state } = useField<never, GroupFieldState>(props.name, props.fieldRef, () => initialState());
+    const { id: fieldId, state: groupState } = useField<never, GroupFieldState>(props.name, props.fieldRef, () => initialState());
 
     const [previousValue, setPreviousValue] = useState<string>(JSON.stringify(undefined));
 
     useEffect(() => {
-        if (Object.keys(state.validation.validators).length === 0) {
+        if (Object.keys(groupState.validation.validators).length === 0) {
             return;
         }
 
         const validate = (): void => {
-            store.update((_, helpers) => {
+            store.update(helpers => {
                 const fieldState = helpers.selectField(fieldId);
                 assertFieldIsDefined(fieldState, fieldId);
 
@@ -96,7 +96,7 @@ export const Group = (props: GroupProps): JSX.Element => {
             },
             [fieldId]
         );
-    }, [state.validation.validators.length, previousValue, fieldId, store]);
+    }, [groupState.validation.validators.length, previousValue, fieldId, store, groupState.validation.validators]);
 
     return (
         <FieldContext.Provider

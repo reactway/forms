@@ -1,5 +1,13 @@
 import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData, FieldHelpers } from "@reactway/forms-core";
+import {
+    FieldState,
+    Initial,
+    getDefaultValues,
+    assertFieldIsDefined,
+    InputFieldData,
+    FieldHelpers,
+    ValidationUpdater
+} from "@reactway/forms-core";
 import { useInputField, FieldRef } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
@@ -42,7 +50,7 @@ export const Text = (props: TextProps): JSX.Element => {
     const { id: fieldId, inputElementProps, orderGuards } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
     useEffect(() => {
-        store.update((_, helpers) => {
+        store.update(helpers => {
             const fieldState = helpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
 
@@ -71,10 +79,19 @@ export const Text = (props: TextProps): JSX.Element => {
 
     const helpers: FieldHelpers = {
         registerValidator: validator => {
-            throw new Error("Not implemented.");
+            // Will be overwritten synchronously.
+            let validatorId = "";
+            store.update(registerHelpers => {
+                const validationUpdater = registerHelpers.getUpdater<ValidationUpdater>("validation");
+                validatorId = validationUpdater.registerValidator(fieldId, validator);
+            });
+            return validatorId;
         },
         unregisterValidator: validator => {
-            throw new Error("Not implemented.");
+            store.update(unregisterHelpers => {
+                const validationUpdater = unregisterHelpers.getUpdater<ValidationUpdater>("validation");
+                validationUpdater.unregisterValidator(fieldId, validator);
+            });
         },
         orderGuards
     };
@@ -89,7 +106,7 @@ export const Text = (props: TextProps): JSX.Element => {
                     parentId: fieldId,
                     permanent: permanent,
                     store: store,
-                    helpers: helpers
+                    parentHelpers: helpers
                 }}
             >
                 {children}

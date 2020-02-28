@@ -48,7 +48,7 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
     const fieldId = useFieldId(fieldName, parentId);
 
     const [state, setState] = useState<TFieldState>(() => {
-        store.update((_draft, helpers) => {
+        store.update(helpers => {
             const initialState = initialStateFactory();
 
             helpers.registerField(fieldId, initialState);
@@ -104,7 +104,7 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
 
             return () => {
                 removeListener();
-                store.update((_draft, helpers) => {
+                store.update(helpers => {
                     helpers.unregisterField(fieldId);
                 });
             };
@@ -119,7 +119,7 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
             return;
         }
 
-        store.update((_draft, helpers) => {
+        store.update(helpers => {
             const statusUpdater = helpers.getUpdater<StatusUpdater>("status");
             statusUpdater.updateFieldStatus(fieldId, status => {
                 status.permanent = permanent;

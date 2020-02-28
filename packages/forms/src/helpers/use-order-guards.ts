@@ -5,7 +5,7 @@ import { useFieldContext } from "../components";
 export function useOrderGuards(fieldId: string): FieldOrderGuards {
     const { store } = useFieldContext();
 
-    const { reportIndex: updateIndex } = useOrderGuard(() => {
+    const { reportIndex } = useOrderGuard(() => {
         return {
             getCurrentOrder: () => {
                 const currentFieldState = store.helpers.selectField(fieldId);
@@ -17,7 +17,7 @@ export function useOrderGuards(fieldId: string): FieldOrderGuards {
                     return;
                 }
 
-                store.update((_, helpers) => {
+                store.update(helpers => {
                     const fieldState = helpers.selectField(fieldId);
                     assertFieldIsDefined(fieldState, fieldId);
                     fieldState.validation.validatorsOrder = newOrder;
@@ -31,7 +31,7 @@ export function useOrderGuards(fieldId: string): FieldOrderGuards {
     }, [fieldId, store]);
 
     return {
-        reportValidatorIndex: updateIndex
+        reportValidatorIndex: reportIndex
     };
 }
 
@@ -44,23 +44,14 @@ function useOrderGuard(callbacksFactory: () => OrderGuardCallbacks, deps: Depend
     const callbacks = useMemo(callbacksFactory, deps);
 
     const mutableOrder: string[] = [];
-    const updateIndex = (id: string): void => {
+    const reportIndex = (id: string): void => {
         mutableOrder.push(id);
     };
 
     useEffect(() => {
         const currentOrder = callbacks.getCurrentOrder();
 
-        if (currentOrder == null) {
-            return;
-        }
-
-        // TODO: Review
-        if (mutableOrder.length === 0) {
-            return;
-        }
-
-        if (isOrderUpToDate(currentOrder, mutableOrder)) {
+        if (currentOrder == null || isOrderUpToDate(currentOrder, mutableOrder)) {
             return;
         }
 
@@ -68,7 +59,7 @@ function useOrderGuard(callbacksFactory: () => OrderGuardCallbacks, deps: Depend
     });
 
     return {
-        reportIndex: updateIndex
+        reportIndex
     };
 }
 

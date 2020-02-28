@@ -11,8 +11,8 @@ export const Clear = (props: ClearProps): JSX.Element => {
 
     const { children = "Clear" } = props;
 
-    const onClick: React.MouseEventHandler<HTMLButtonElement> = event => {
-        store.update((draft, helpers) => {
+    const onClick: React.MouseEventHandler<HTMLButtonElement> = _ => {
+        store.update((helpers, draft) => {
             const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
             clearField(draft, valueUpdater);
         });
@@ -26,7 +26,6 @@ export const Clear = (props: ClearProps): JSX.Element => {
 };
 
 function clearField(state: FieldState<any, any>, valueUpdater: ValueUpdater): void {
-    console.log(`Clearing ${state.id}...`);
     if (isInputFieldData(state.data)) {
         valueUpdater.clearFieldValue(state.id);
     }

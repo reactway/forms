@@ -16,7 +16,7 @@ export const WaitValidator = (props: WaitValidatorProps): null => {
                     // console.log(`WaitValidator waiting for ${time}`);
                     await new Promise(resolve => setTimeout(resolve, time));
                     // console.log(`WaitValidator waiting done.`);
-                    return ["Wait validator error"];
+                    return [];
                 }
             };
         },

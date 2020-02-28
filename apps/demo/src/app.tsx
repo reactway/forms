@@ -86,6 +86,8 @@ const StoreStateJson = (props: any): JSX.Element => {
         });
     }, [store]);
 
+    const jsonState = state;
+
     useEffect(() => {
         setInterval(() => {
             // store.update((_, helpers) => {
@@ -103,26 +105,28 @@ const StoreStateJson = (props: any): JSX.Element => {
     return (
         <div {...props}>
             <div className="fields">
-                <JSONTree
-                    data={state}
-                    theme="bright"
-                    invertTheme
-                    shouldExpandNode={() => true}
-                    hideRoot
-                    // labelRenderer={(keyPath: string[], nodeType?: string, expanded?: boolean, expandable?: boolean): JSX.Element => {
-                    //     return <div>{nodeType}</div>;
-                    // }}
-                    valueRenderer={(displayValue, value) => {
-                        if (typeof value === "function") {
-                            const functionValue = value as Function;
-                            if (functionValue.name !== "") {
-                                return <span>{`${functionValue.name}() => {}`}</span>;
+                {jsonState == null ? null : (
+                    <JSONTree
+                        data={jsonState}
+                        theme="bright"
+                        invertTheme
+                        shouldExpandNode={() => true}
+                        hideRoot
+                        // labelRenderer={(keyPath: string[], nodeType?: string, expanded?: boolean, expandable?: boolean): JSX.Element => {
+                        //     return <div>{nodeType}</div>;
+                        // }}
+                        valueRenderer={(displayValue, value) => {
+                            if (typeof value === "function") {
+                                const functionValue = value as Function;
+                                if (functionValue.name !== "") {
+                                    return <span>{`${functionValue.name}() => {}`}</span>;
+                                }
+                                return <span>{"<anonymous>() => {}"}</span>;
                             }
-                            return <span>{"<anonymous>() => {}"}</span>;
-                        }
-                        return <span>{displayValue}</span>;
-                    }}
-                />
+                            return <span>{displayValue}</span>;
+                        }}
+                    />
+                )}
             </div>
         </div>
     );
@@ -391,7 +395,7 @@ const ValidatorsOrderTest = (): JSX.Element => {
     };
 
     const onClickValidate = useCallback(() => {
-        store.update((_, helpers) => {
+        store.update(helpers => {
             if (testFieldRef.fieldId == null) {
                 throw new Error("testFieldRef.fieldId is undefined.");
             }
@@ -403,7 +407,7 @@ const ValidatorsOrderTest = (): JSX.Element => {
 
     return (
         <>
-            <label>
+            {/* <label>
                 Test:
                 <Text name="test" fieldRef={testFieldRef} initialValue="Holla">
                     {testValidators}
@@ -418,8 +422,8 @@ const ValidatorsOrderTest = (): JSX.Element => {
                     Validate
                 </button>
                 <ValidationResults fieldId={testFieldRef.fieldId} />
-            </label>
-            {/* <Group name="person" fieldRef={personFieldRef}>
+            </label> */}
+            <Group name="person" fieldRef={personFieldRef}>
                 <label>
                     First name
                     <Text name="firstName" initialValue="Jane" fieldRef={firstNameRef}>
@@ -449,7 +453,7 @@ const ValidatorsOrderTest = (): JSX.Element => {
                 </label>
             </Group>
 
-            <ValidationResults fieldId={personFieldRef.fieldId} /> */}
+            <ValidationResults fieldId={personFieldRef.fieldId} />
 
             <Reset />
             <Clear />
@@ -487,7 +491,7 @@ const App = (): JSX.Element => {
 
                     console.log("Errors from server:", errorsFromServer);
 
-                    store.update((_, helpers) => {
+                    store.update(helpers => {
                         const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                         validationUpdater.setFormErrors(errorsFromServer);
                     });

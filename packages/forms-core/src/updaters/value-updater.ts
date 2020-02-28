@@ -10,6 +10,7 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
             assertFieldIsDefined(fieldState, fieldId);
 
             if (!isInputFieldData(fieldState.data)) {
+                // TODO: Review
                 throw new Error("Not implemented.");
             }
 

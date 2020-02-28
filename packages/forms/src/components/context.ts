@@ -21,14 +21,14 @@ export interface FieldContextData {
     parentId: string | undefined;
     store: Store<FieldState<any, any>>;
     permanent: boolean;
-    helpers?: FieldHelpers;
+    parentHelpers?: FieldHelpers;
 }
 
 export const FieldContext = createContext<FieldContextData>({
     parentId: StubId,
     store: StubStore,
     permanent: false,
-    helpers: {
+    parentHelpers: {
         orderGuards: {
             reportValidatorIndex: throwError
         },

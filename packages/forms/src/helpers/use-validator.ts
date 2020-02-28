@@ -3,7 +3,7 @@ import { Validator, ValidationUpdater, ValidatorFactory } from "@reactway/forms-
 import { useFieldContext } from "../components";
 
 export function useValidator<TValue>(name: string, validatorFactory: () => ValidatorFactory<TValue>, deps: DependencyList): void {
-    const { store, parentId, helpers: parentHelpers } = useFieldContext();
+    const { store, parentId, parentHelpers } = useFieldContext();
     const validator = useMemo(validatorFactory, deps);
     const [validatorId, setValidatorId] = useState<string>();
 
@@ -12,7 +12,7 @@ export function useValidator<TValue>(name: string, validatorFactory: () => Valid
             return;
         }
 
-        store.update((_draft, helpers) => {
+        store.update(helpers => {
             const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
             const shouldValidate = validator.shouldValidate ?? (() => true);
 
@@ -33,7 +33,7 @@ export function useValidator<TValue>(name: string, validatorFactory: () => Valid
         }
 
         return () => {
-            store.update((_, helpers) => {
+            store.update(helpers => {
                 const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                 validationUpdater.unregisterValidator(parentId, validatorId);
             });
@@ -45,7 +45,7 @@ export function useValidator<TValue>(name: string, validatorFactory: () => Valid
             return;
         }
 
-        store.update((_, helpers) => {
+        store.update(helpers => {
             const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             validationUpdater.validateField(parentId);

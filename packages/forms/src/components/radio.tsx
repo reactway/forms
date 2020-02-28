@@ -31,7 +31,7 @@ export const Radio = (props: RadioProps): JSX.Element => {
                 const isChecked = event.currentTarget.checked;
 
                 if (isChecked) {
-                    store.update((_draft, helpers) => {
+                    store.update(helpers => {
                         const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                         valueUpdater.updateFieldValue(parentId, props.value);
                         // throw new Error("Not implemented.");

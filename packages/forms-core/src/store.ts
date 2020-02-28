@@ -169,7 +169,7 @@ export class Store<TState extends FieldState<any, any>> {
         }
     };
 
-    public update(updater: (draft: Draft<TState>, helpers: UpdateStoreHelpers) => void): void {
+    public update(updater: (helpers: UpdateStoreHelpers, draft: Draft<TState>) => void): void {
         const patches: Patch[] = [];
 
         count++;
@@ -177,7 +177,7 @@ export class Store<TState extends FieldState<any, any>> {
         const newState = produce(
             this.state,
             draft => {
-                updater(draft, constructUpdateStoreHelpers(this, draft, this.updaters, {}));
+                updater(constructUpdateStoreHelpers(this, draft, this.updaters, {}), draft);
             },
             updatePatches => {
                 patches.push(...updatePatches);

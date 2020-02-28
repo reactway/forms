@@ -12,7 +12,7 @@ export const Reset = (props: ResetProps): JSX.Element => {
     const { children = "Reset" } = props;
 
     const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
-        store.update((draft, helpers) => {
+        store.update((helpers, draft) => {
             const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
             resetField(draft, valueUpdater);
         });
@@ -26,7 +26,6 @@ export const Reset = (props: ResetProps): JSX.Element => {
 };
 
 function resetField(state: FieldState<any, any>, valueUpdater: ValueUpdater): void {
-    console.log(`Resetting ${state.id}...`);
     if (isInputFieldData(state.data)) {
         valueUpdater.resetFieldValue(state.id);
     }
