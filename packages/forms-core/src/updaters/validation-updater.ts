@@ -9,7 +9,8 @@ import {
     ValidationResultOrString,
     CancellationToken,
     NestedDictionary,
-    ValidatorHelpers
+    ValidatorHelpers,
+    Dictionary
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers";
 import shortid from "shortid";
@@ -32,11 +33,14 @@ export function ValidationUpdaterFactory(
 
             const id = shortid.generate();
 
-            const mutableValidators = fieldState.validation.validators as FieldValidator<any>[];
-            mutableValidators.push({
+            const mutableValidators = fieldState.validation.validators as Dictionary<FieldValidator<any>>;
+            mutableValidators[id] = {
                 ...validator,
                 id: id
-            });
+            };
+
+            const mutableValidatorsOrder = fieldState.validation.validatorsOrder as string[];
+            mutableValidatorsOrder.push(id);
 
             return id;
         },
@@ -44,15 +48,24 @@ export function ValidationUpdaterFactory(
             const fieldState = helpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
 
-            const validatorIndex = fieldState.validation.validators.findIndex(x => x.id === validatorId);
-
-            if (validatorIndex === -1) {
+            if (fieldState.validation.validators[validatorId] == null) {
                 // Gracefully return if the validator is not found, no need to throw.
                 return;
             }
 
-            const mutableValidators = fieldState.validation.validators as FieldValidator<any>[];
-            mutableValidators.splice(validatorIndex, 1);
+            const mutableValidators = fieldState.validation.validators as Dictionary<FieldValidator<any>>;
+            // TODO: Review. Setting key to undefined, the key itself stays in the object.
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            delete mutableValidators[validatorId];
+            // mutableValidators[validatorId] = undefined;
+
+            const validatorOrderIndex = fieldState.validation.validatorsOrder.findIndex(x => x === validatorId);
+            if (validatorOrderIndex === -1) {
+                return;
+            }
+
+            const mutableValidatorsOrder = fieldState.validation.validatorsOrder as string[];
+            mutableValidatorsOrder.splice(validatorOrderIndex, 1);
         },
         setFormErrors: errors => {
             setFormErrors(state, errors);
@@ -73,14 +86,22 @@ async function validateField(
         fieldState.validation.currentValidation.cancellationToken.cancel();
     }
 
-    if (fieldState.validation.validators.length === 0) {
+    const validatorsKeys = Object.keys(fieldState.validation.validators);
+    if (validatorsKeys.length === 0) {
         return;
     }
 
     // Copy validators because we're in an asynchronous context
     // and their proxy into current state might be revoked by immer.
     const validators = [];
-    for (const validator of fieldState.validation.validators) {
+    for (const validatorId of fieldState.validation.validatorsOrder) {
+        const validator = fieldState.validation.validators[validatorId];
+
+        if (validator == null) {
+            // TODO: Should we throw if the validator is not found?
+            continue;
+        }
+
         validators.push({
             ...validator
         });

@@ -54,7 +54,7 @@ export const Group = (props: GroupProps): JSX.Element => {
     const [previousValue, setPreviousValue] = useState<string>(JSON.stringify(undefined));
 
     useEffect(() => {
-        if (state.validation.validators.length === 0) {
+        if (Object.keys(state.validation.validators).length === 0) {
             return;
         }
 

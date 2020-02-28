@@ -13,10 +13,10 @@ export const WaitValidator = (props: WaitValidatorProps): null => {
         () => {
             return {
                 validate: async (_): Promise<ValidationResultOrString[]> => {
-                    console.log(`WaitValidator waiting for ${time}`);
+                    // console.log(`WaitValidator waiting for ${time}`);
                     await new Promise(resolve => setTimeout(resolve, time));
-                    console.log(`WaitValidator waiting done.`);
-                    return [];
+                    // console.log(`WaitValidator waiting done.`);
+                    return ["Wait validator error"];
                 }
             };
         },

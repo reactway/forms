@@ -58,7 +58,8 @@ export interface StoreUpdatersFactories {
 
 export interface FieldValidation<TValue> {
     results: ReadonlyArray<ValidationResult>;
-    validators: ReadonlyArray<FieldValidator<TValue>>;
+    validators: Readonly<Dictionary<FieldValidator<TValue>>>;
+    validatorsOrder: ReadonlyArray<string>;
     // TODO: Status + Date or just Date?
     currentValidation?: Validation;
 }

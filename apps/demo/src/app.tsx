@@ -347,21 +347,130 @@ const TestApp1 = (): JSX.Element => {
     );
 };
 
-const App = (): JSX.Element => {
+const ValidatorsOrderTest = (): JSX.Element => {
+    const { store } = useStoreState(["test"]);
+
     const personFieldRef = useFieldRef();
     const firstNameRef = useFieldRef();
     const lastNameRef = useFieldRef();
 
+    const errorValidator = (
+        <Validator
+            key="error-test-validator"
+            validate={(validatorValue, helpers) => [helpers.error(`Error for ${validatorValue}`)]}
+            name="ErrorValidator"
+        />
+    );
+
+    const testFieldRef = useFieldRef();
+    const waitValidator = <WaitValidator key="wait-test-validator" time={1000} />;
+    const warningValidator = (
+        <Validator
+            key="warning-test-validator"
+            validate={(validatorValue, helpers) => [helpers.warning(`Warning for ${validatorValue}`)]}
+            name="WarningValidator"
+        />
+    );
+
+    const [testValidators, setTestValidators] = useState<JSX.Element[]>();
+
+    const onClickOrder1 = (): void => {
+        // console.group("Validating Order #1...");
+        setTestValidators([errorValidator, waitValidator, warningValidator]);
+        // setTimeout(() => {
+        //     console.groupEnd();
+        // }, 0);
+    };
+
+    const onClickOrder2 = (): void => {
+        // console.group("Validating Order #2...");
+        setTestValidators([warningValidator, waitValidator, errorValidator]);
+        // setTimeout(() => {
+        //     console.groupEnd();
+        // }, 0);
+    };
+
+    const onClickValidate = useCallback(() => {
+        store.update((_, helpers) => {
+            if (testFieldRef.fieldId == null) {
+                throw new Error("testFieldRef.fieldId is undefined.");
+            }
+            const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            validationUpdater.validateField(testFieldRef.fieldId);
+        });
+    }, [store, testFieldRef.fieldId]);
+
+    return (
+        <>
+            <label>
+                Test:
+                <Text name="test" fieldRef={testFieldRef} initialValue="Holla">
+                    {testValidators}
+                </Text>
+                <button type="button" onClick={onClickOrder1}>
+                    Order #1
+                </button>
+                <button type="button" onClick={onClickOrder2}>
+                    Order #2
+                </button>
+                <button type="button" onClick={onClickValidate}>
+                    Validate
+                </button>
+                <ValidationResults fieldId={testFieldRef.fieldId} />
+            </label>
+            {/* <Group name="person" fieldRef={personFieldRef}>
+                <label>
+                    First name
+                    <Text name="firstName" initialValue="Jane" fieldRef={firstNameRef}>
+                        <WaitValidator time={800} />
+                        <Validator<string>
+                            shouldValidate={value => value != null && value.length > 0}
+                            validate={(value, helpers) => {
+                                if (value !== "Jane") {
+                                    return [
+                                        helpers.error(`First name ${value} is already taken.`),
+                                        helpers.warning(
+                                            `Going for a walk is a good way to boost your creativity. You consider trying that.`
+                                        )
+                                    ];
+                                }
+
+                                return [];
+                            }}
+                        />
+                    </Text>
+                    <ValidationResults fieldId={firstNameRef.fieldId} />
+                </label>
+                <label>
+                    Last name
+                    <Text name="lastName" initialValue="Doe" fieldRef={lastNameRef} />
+                    <ValidationResults fieldId={lastNameRef.fieldId} />
+                </label>
+            </Group>
+
+            <ValidationResults fieldId={personFieldRef.fieldId} /> */}
+
+            <Reset />
+            <Clear />
+            <Submit />
+
+            <StoreResult />
+        </>
+    );
+};
+
+const App = (): JSX.Element => {
     type FormValue = {
         person: {
             firstName: string;
             lastName: string;
         };
     };
-
     return (
         <>
-            <Layout
+            <Form
+                className="form-debug-container"
                 onSubmit={async (event, store, validationHelpers) => {
                     const formValue = store.helpers.getFormValue() as FormValue;
                     console.log(JSON.stringify(formValue, null, 4));
@@ -384,58 +493,15 @@ const App = (): JSX.Element => {
                     });
                 }}
             >
-                <Group name="person" fieldRef={personFieldRef}>
-                    <label>
-                        First name
-                        <Text name="firstName" initialValue="Jane" fieldRef={firstNameRef}>
-                            <WaitValidator time={800} />
-                            <Validator<string>
-                                shouldValidate={value => value != null && value.length > 0}
-                                validate={(value, helpers) => {
-                                    if (value !== "Jane") {
-                                        return [
-                                            helpers.error(`First name ${value} is already taken.`),
-                                            helpers.warning(
-                                                `Going for a walk is a good way to boost your creativity. You consider trying that.`
-                                            )
-                                        ];
-                                    }
-
-                                    return [];
-                                }}
-                            />
-                        </Text>
-                        <ValidationResults fieldId={firstNameRef.fieldId} />
-                    </label>
-                    <label>
-                        Last name
-                        <Text name="lastName" initialValue="Doe" fieldRef={lastNameRef} />
-                        <ValidationResults fieldId={lastNameRef.fieldId} />
-                    </label>
-                </Group>
-
-                <ValidationResults fieldId={personFieldRef.fieldId} />
-
-                <Reset />
-                <Clear />
-                <Submit />
-
-                <StoreResult />
-            </Layout>
-            {/* <Form>
-                <label>
-                    First name
-                    <Text name="firstName" />
-                </label>
-                <label>
-                    Last name
-                    <Text name="lastName" />
-                </label>
-
-                <Reset />
-
-                <StoreResult />
-            </Form> */}
+                <div className="form-container">
+                    {/* <pre>
+                        Form stores:
+                        <FormsRegistry />
+                    </pre> */}
+                    <ValidatorsOrderTest />
+                </div>
+                <StoreStateJson className="form-store-container" />
+            </Form>
         </>
     );
 };

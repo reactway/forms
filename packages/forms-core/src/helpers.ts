@@ -102,7 +102,8 @@ export function getDefaultUpdatersFactories(): StoreUpdatersFactories {
 export function getDefaultValidation(): FieldValidation<any> {
     return {
         results: [],
-        validators: []
+        validators: {},
+        validatorsOrder: []
     };
 }
 

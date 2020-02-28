@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData, FieldHelpers } from "@reactway/forms-core";
 import { useInputField, FieldRef } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
@@ -39,7 +39,7 @@ export const Text = (props: TextProps): JSX.Element => {
 
     const { store, permanent } = useFieldContext();
 
-    const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
+    const { id: fieldId, inputElementProps, orderGuards } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
     useEffect(() => {
         store.update((_, helpers) => {
@@ -69,6 +69,16 @@ export const Text = (props: TextProps): JSX.Element => {
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
+    const helpers: FieldHelpers = {
+        registerValidator: validator => {
+            throw new Error("Not implemented.");
+        },
+        unregisterValidator: validator => {
+            throw new Error("Not implemented.");
+        },
+        orderGuards
+    };
+
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (
         <>
@@ -78,7 +88,8 @@ export const Text = (props: TextProps): JSX.Element => {
                 value={{
                     parentId: fieldId,
                     permanent: permanent,
-                    store: store
+                    store: store,
+                    helpers: helpers
                 }}
             >
                 {children}

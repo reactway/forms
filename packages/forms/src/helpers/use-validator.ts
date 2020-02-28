@@ -3,7 +3,7 @@ import { Validator, ValidationUpdater, ValidatorFactory } from "@reactway/forms-
 import { useFieldContext } from "../components";
 
 export function useValidator<TValue>(name: string, validatorFactory: () => ValidatorFactory<TValue>, deps: DependencyList): void {
-    const { store, parentId } = useFieldContext();
+    const { store, parentId, helpers: parentHelpers } = useFieldContext();
     const validator = useMemo(validatorFactory, deps);
     const [validatorId, setValidatorId] = useState<string>();
 
@@ -51,4 +51,8 @@ export function useValidator<TValue>(name: string, validatorFactory: () => Valid
             validationUpdater.validateField(parentId);
         });
     }, [parentId, store]);
+
+    if (validatorId != null) {
+        parentHelpers?.orderGuards.reportValidatorIndex(validatorId);
+    }
 }

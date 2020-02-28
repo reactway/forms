@@ -1,7 +1,8 @@
-import { FieldState, Initial, generateFieldId, StatusUpdater } from "@reactway/forms-core";
+import { FieldState, Initial, generateFieldId, StatusUpdater, FieldOrderGuards } from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
 import { FieldRef, MutableFieldRef } from "./use-field-ref";
+import { useOrderGuards } from "./use-order-guards";
 
 function fieldNameCompliance(fieldName: string): void {
     // TODO: Maybe we should throw errors with links to docs?
@@ -19,6 +20,7 @@ export interface UseFieldResult<TElement, TFieldState extends FieldState<any, an
 
     id: string;
     state: TFieldState;
+    orderGuards: FieldOrderGuards;
 }
 
 export function useFieldId(fieldName: string, parentId: string | undefined): string {
@@ -66,6 +68,8 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
         mutableRef.setFieldId(fieldId);
     }
 
+    const orderGuards = useOrderGuards(fieldId);
+
     useEffect(() => {
         return () => {
             if (fieldRef != null) {
@@ -90,10 +94,10 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
             };
 
             /*
-        Synchronous updates occur in child component renders, because field is registered during the first render
-        and store listener is added in useEffect, which fires asynchronously. The change action is emitted in-between,
-        thus, a manual (i.e. not coming from the store) initial update is needed here.
-        */
+            Synchronous updates occur in child component renders, because field is registered during the first render
+            and store listener is added in useEffect, which fires asynchronously. The change action is emitted in-between,
+            thus, a manual (i.e. not coming from the store) initial update is needed here.
+            */
             storeUpdated();
 
             const removeListener = store.addListener(storeUpdated, [fieldId]);
@@ -101,7 +105,6 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
             return () => {
                 removeListener();
                 store.update((_draft, helpers) => {
-                    console.warn("Unregistering", fieldId);
                     helpers.unregisterField(fieldId);
                 });
             };
@@ -127,6 +130,7 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
     return {
         // store: store,
         id: fieldId,
-        state: state
+        state: state,
+        orderGuards
     };
 }
