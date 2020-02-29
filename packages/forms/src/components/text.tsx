@@ -6,9 +6,10 @@ import {
     assertFieldIsDefined,
     InputFieldData,
     FieldHelpers,
-    ValidationUpdater
+    ValidationUpdater,
+    constructInputFieldHelpers
 } from "@reactway/forms-core";
-import { useInputField, FieldRef } from "../helpers";
+import { useInputField, FieldRef, useValidatorsOrderGuard, useModifiersOrderGuard } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
 export interface TextProps {
@@ -47,7 +48,7 @@ export const Text = (props: TextProps): JSX.Element => {
 
     const { store, permanent } = useFieldContext();
 
-    const { id: fieldId, inputElementProps, orderGuards } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
+    const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
 
     useEffect(() => {
         store.update(helpers => {
@@ -77,24 +78,10 @@ export const Text = (props: TextProps): JSX.Element => {
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
-    const helpers: FieldHelpers = {
-        registerValidator: validator => {
-            // Will be overwritten synchronously.
-            let validatorId = "";
-            store.update(registerHelpers => {
-                const validationUpdater = registerHelpers.getUpdater<ValidationUpdater>("validation");
-                validatorId = validationUpdater.registerValidator(fieldId, validator);
-            });
-            return validatorId;
-        },
-        unregisterValidator: validator => {
-            store.update(unregisterHelpers => {
-                const validationUpdater = unregisterHelpers.getUpdater<ValidationUpdater>("validation");
-                validationUpdater.unregisterValidator(fieldId, validator);
-            });
-        },
-        orderGuards
-    };
+    const helpers = constructInputFieldHelpers(fieldId, {
+        reportValidatorIndex,
+        reportModifierIndex
+    });
 
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (

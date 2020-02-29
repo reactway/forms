@@ -2,7 +2,6 @@ import { FieldState, Initial, generateFieldId, StatusUpdater, FieldOrderGuards }
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
 import { FieldRef, MutableFieldRef } from "./use-field-ref";
-import { useOrderGuards } from "./use-order-guards";
 
 function fieldNameCompliance(fieldName: string): void {
     // TODO: Maybe we should throw errors with links to docs?
@@ -20,7 +19,6 @@ export interface UseFieldResult<TElement, TFieldState extends FieldState<any, an
 
     id: string;
     state: TFieldState;
-    orderGuards: FieldOrderGuards;
 }
 
 export function useFieldId(fieldName: string, parentId: string | undefined): string {
@@ -67,8 +65,6 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
         const mutableRef = fieldRef as MutableFieldRef;
         mutableRef.setFieldId(fieldId);
     }
-
-    const orderGuards = useOrderGuards(fieldId);
 
     useEffect(() => {
         return () => {
@@ -130,7 +126,6 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
     return {
         // store: store,
         id: fieldId,
-        state: state,
-        orderGuards
+        state: state
     };
 }

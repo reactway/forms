@@ -1,14 +1,6 @@
-import {
-    FieldStatus,
-    InputFieldData,
-    StoreUpdatersFactories,
-    FieldValidation,
-    FieldState,
-    StoreUpdater,
-    DefaultFieldState
-} from "./contracts";
-import { IdSeparator } from "./constants";
-import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "./updaters";
+import { FieldStatus, InputFieldData, UpdatersFactories, FieldValidation, FieldState, Updater, DefaultFieldState } from "../contracts";
+import { IdSeparator } from "../constants";
+import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "../updaters";
 
 export function isPromise(candidate: any): candidate is Promise<any> {
     return candidate.then != null && candidate.catch != null;
@@ -39,9 +31,9 @@ export function assertFieldIsDefined<TField extends FieldState<any, any>>(
     }
 }
 
-export function assertUpdaterIsDefined<TUpdater extends StoreUpdater>(
+export function assertUpdaterIsDefined<TUpdater extends Updater>(
     updater: TUpdater | undefined,
-    updaterId?: TUpdater extends StoreUpdater<infer TId> ? TId : never
+    updaterId?: TUpdater extends Updater<infer TId> ? TId : never
 ): asserts updater is NonNullable<TUpdater> {
     if (updater == null) {
         throw new Error(`Updater '${updaterId}' does not exist.`);
@@ -87,11 +79,12 @@ export function getDefaultValues<TValue, TRenderValue>(
         initialValue,
         currentValue,
         transientValue,
-        modifiers: []
+        modifiers: {},
+        modifiersOrder: []
     };
 }
 
-export function getDefaultUpdatersFactories(): StoreUpdatersFactories {
+export function getDefaultUpdatersFactories(): UpdatersFactories {
     return {
         validation: ValidationUpdaterFactory,
         value: ValueUpdaterFactory,

@@ -1,5 +1,5 @@
-import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier } from "../contracts";
-import { assertFieldIsDefined, isInputFieldData } from "../helpers";
+import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary } from "../contracts";
+import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 import shortid from "shortid";
 
 export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): ValueUpdater {
@@ -16,7 +16,8 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
 
             const modifiers = fieldState.data.modifiers;
 
-            if (modifiers.length === 0) {
+            const modifiersKeys = Object.keys(modifiers);
+            if (modifiersKeys.length === 0) {
                 // No modifiers found, thus a value is set directly to currentValue.
                 fieldState.data.currentValue = value;
 
@@ -30,7 +31,13 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
             let newValue = value;
             let transientValue: unknown | undefined = undefined;
 
-            for (const modifier of modifiers) {
+            for (const modifierKey of modifiersKeys) {
+                const modifier = modifiers[modifierKey];
+
+                if (modifier == null) {
+                    throw new Error("Should never happen");
+                }
+
                 const result = modifier.parse(newValue);
                 newValue = result.currentValue;
 
@@ -77,11 +84,11 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
 
             const modifiers = fieldState.data.modifiers;
 
-            const mutableModifiers = modifiers as FieldModifier<any, any>[];
-            mutableModifiers.push({
+            const mutableModifiers = modifiers as Dictionary<FieldModifier<any, any>>;
+            mutableModifiers[id] = {
                 ...modifier,
                 id
-            });
+            };
 
             return id;
         },
@@ -95,15 +102,19 @@ export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: Update
 
             const modifiers = fieldState.data.modifiers;
 
-            const modifierIndex = modifiers.findIndex(x => x.id === modifierId);
-
-            if (modifierIndex === -1) {
+            if (modifiers[modifierId] == null) {
                 // Gracefully return if the modifier is not found, no need to throw.
                 return;
             }
 
-            const mutableValidators = modifiers as FieldModifier<any, any>[];
-            mutableValidators.splice(modifierIndex, 1);
+            const modifierOrderIndex = fieldState.data.modifiersOrder.findIndex(x => x === modifierId);
+
+            if (modifierOrderIndex === -1) {
+                return;
+            }
+
+            const mutableModifiersOrder = fieldState.data.modifiersOrder as string[];
+            mutableModifiersOrder.splice(modifierOrderIndex, 1);
         }
     };
 

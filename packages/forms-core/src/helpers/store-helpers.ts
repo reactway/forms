@@ -1,20 +1,20 @@
 import { Draft } from "immer";
-import { IdSeparator } from "./constants";
+import { IdSeparator } from "../constants";
 import {
     FieldState,
     Initial,
     Dictionary,
     StoreHelpers,
     UpdateStoreHelpers,
-    StoreUpdatersFactories,
-    StoreUpdater,
+    UpdatersFactories,
+    Updater,
     FormState,
     StatusUpdater,
     UpdaterId,
     GetUpdaterReturnType
-} from "./contracts";
-import { Store } from "./store";
-import { getFieldNameFromId, getDefaultState, isInputFieldData } from "./helpers";
+} from "../contracts";
+import { Store } from "../store";
+import { getFieldNameFromId, getDefaultState, isInputFieldData } from "./generic";
 
 export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): StoreHelpers {
     const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
@@ -55,7 +55,7 @@ export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: 
 export function constructUpdateStoreHelpers(
     store: Store<FieldState<any, any>>,
     draft: Draft<FieldState<any, any>>,
-    updaters: StoreUpdatersFactories,
+    updaters: UpdatersFactories,
     fieldsCache: Dictionary<FieldState<any, any>>
 ): UpdateStoreHelpers {
     const fieldStoreHelpers = constructStoreHelpers(draft, fieldsCache);
@@ -141,11 +141,11 @@ function unregisterField(state: FieldState<any, any>, id: string): void {
     mutableFields[fieldName] = undefined;
 }
 
-function getUpdater<TUpdater extends StoreUpdater<string>>(
+function getUpdater<TUpdater extends Updater<string>>(
     fieldState: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
     store: Store<FieldState<any, any>>,
-    updaters: StoreUpdatersFactories,
+    updaters: UpdatersFactories,
     updaterId: UpdaterId<TUpdater>
 ): GetUpdaterReturnType<typeof updaterId, TUpdater> {
     type ResultType = GetUpdaterReturnType<typeof updaterId, TUpdater>;

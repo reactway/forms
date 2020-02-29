@@ -1,4 +1,4 @@
-import { FieldState, Initial, StoreUpdater, FieldStatus, StoreUpdatersFactories, UpdaterId } from "./field-state";
+import { FieldState, Initial, Updater, FieldStatus, UpdatersFactories, UpdaterId } from "./field-state";
 import { Store } from "..";
 
 export interface StoreHelpers {
@@ -11,8 +11,8 @@ export interface StoreHelpers {
 
 export type GetUpdaterReturnType<
     TUpdaterId extends string,
-    TUpdater extends StoreUpdater<string>
-> = undefined extends StoreUpdatersFactories[TUpdaterId] ? TUpdater | undefined : TUpdater;
+    TUpdater extends Updater<string>
+> = undefined extends UpdatersFactories[TUpdaterId] ? TUpdater | undefined : TUpdater;
 
 export interface UpdateStoreHelpers extends StoreHelpers {
     registerField<TFieldState extends FieldState<any, any>>(fieldId: string, initialFieldState: Initial<TFieldState>): void;
@@ -22,7 +22,7 @@ export interface UpdateStoreHelpers extends StoreHelpers {
     updateFieldStatus(fieldId: string, updater: (status: FieldStatus) => void): void;
 
     // TODO: Add registerUpdater.
-    getUpdater<TUpdater extends StoreUpdater<string>>(updaterId: UpdaterId<TUpdater>): GetUpdaterReturnType<typeof updaterId, TUpdater>;
+    getUpdater<TUpdater extends Updater<string>>(updaterId: UpdaterId<TUpdater>): GetUpdaterReturnType<typeof updaterId, TUpdater>;
 
     enqueueUpdate: Store<FieldState<any, any>>["update"];
 }

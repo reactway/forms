@@ -21,7 +21,7 @@ export interface FieldContextData {
     parentId: string | undefined;
     store: Store<FieldState<any, any>>;
     permanent: boolean;
-    parentHelpers?: FieldHelpers;
+    parentHelpers: FieldHelpers;
 }
 
 export const FieldContext = createContext<FieldContextData>({
@@ -29,9 +29,7 @@ export const FieldContext = createContext<FieldContextData>({
     store: StubStore,
     permanent: false,
     parentHelpers: {
-        orderGuards: {
-            reportValidatorIndex: throwError
-        },
+        reportValidatorIndex: throwError,
         registerValidator: throwError,
         unregisterValidator: throwError
     }

@@ -1,22 +1,28 @@
 import { useEffect, DependencyList, useMemo } from "react";
-import { ValidationUpdater, assertFieldIsDefined, FieldOrderGuards, OrderGuard } from "@reactway/forms-core";
+import {
+    ValidationUpdater,
+    assertFieldIsDefined,
+    OrderGuard,
+    ValidatorsOrderGuard,
+    ModifiersOrderGuard,
+    StoreHelpers,
+    FieldState,
+    isInputFieldData,
+    ValueUpdater
+} from "@reactway/forms-core";
 import { useFieldContext } from "../components";
 
-export function useOrderGuards(fieldId: string): FieldOrderGuards {
+export function useValidatorsOrderGuard(fieldId: string): ValidatorsOrderGuard {
     const { store } = useFieldContext();
 
     const { reportIndex } = useOrderGuard(() => {
         return {
-            getCurrentOrder: () => {
-                const currentFieldState = store.helpers.selectField(fieldId);
+            getCurrentOrder: helpers => {
+                const currentFieldState = helpers.selectField(fieldId);
                 assertFieldIsDefined(currentFieldState, fieldId);
                 return currentFieldState.validation.validatorsOrder;
             },
             orderUpdater: newOrder => {
-                if (fieldId == null) {
-                    return;
-                }
-
                 store.update(helpers => {
                     const fieldState = helpers.selectField(fieldId);
                     assertFieldIsDefined(fieldState, fieldId);
@@ -35,12 +41,51 @@ export function useOrderGuards(fieldId: string): FieldOrderGuards {
     };
 }
 
+export function useModifiersOrderGuard(fieldId: string): ModifiersOrderGuard {
+    const { store } = useFieldContext();
+
+    const { reportIndex } = useOrderGuard(() => {
+        return {
+            getCurrentOrder: helpers => {
+                const currentFieldState = helpers.selectField(fieldId);
+                assertFieldIsDefined(currentFieldState, fieldId);
+
+                if (!isInputFieldData(currentFieldState.data)) {
+                    throw new Error("Only input fields support modifiers.");
+                }
+
+                return currentFieldState.data.modifiersOrder;
+            },
+            orderUpdater: newOrder => {
+                store.update(helpers => {
+                    const fieldState = helpers.selectField(fieldId);
+                    assertFieldIsDefined(fieldState, fieldId);
+
+                    if (!isInputFieldData(fieldState.data)) {
+                        throw new Error("Only input fields support modifiers.");
+                    }
+
+                    fieldState.data.modifiersOrder = newOrder;
+
+                    const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
+                    // TODO: Update value?
+                });
+            }
+        };
+    }, [fieldId, store]);
+
+    return {
+        reportModifierIndex: reportIndex
+    };
+}
+
 interface OrderGuardCallbacks {
-    getCurrentOrder: () => readonly string[] | void;
+    getCurrentOrder: (helpers: StoreHelpers, state: FieldState<any, any>) => readonly string[] | void;
     orderUpdater: (newOrder: readonly string[]) => void;
 }
 
 function useOrderGuard(callbacksFactory: () => OrderGuardCallbacks, deps: DependencyList): OrderGuard {
+    const { store } = useFieldContext();
     const callbacks = useMemo(callbacksFactory, deps);
 
     const mutableOrder: string[] = [];
@@ -49,7 +94,7 @@ function useOrderGuard(callbacksFactory: () => OrderGuardCallbacks, deps: Depend
     };
 
     useEffect(() => {
-        const currentOrder = callbacks.getCurrentOrder();
+        const currentOrder = callbacks.getCurrentOrder(store.helpers, store.getState());
 
         if (currentOrder == null || isOrderUpToDate(currentOrder, mutableOrder)) {
             return;

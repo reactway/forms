@@ -53,6 +53,6 @@ export function useValidator<TValue>(name: string, validatorFactory: () => Valid
     }, [parentId, store]);
 
     if (validatorId != null) {
-        parentHelpers?.orderGuards.reportValidatorIndex(validatorId);
+        parentHelpers?.reportValidatorIndex(validatorId);
     }
 }

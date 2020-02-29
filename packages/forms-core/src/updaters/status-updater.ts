@@ -1,5 +1,5 @@
 import { StatusUpdater, FieldStatus, FieldState, UpdateStoreHelpers } from "../contracts";
-import { assertFieldIsDefined } from "../helpers";
+import { assertFieldIsDefined } from "../helpers/generic";
 import produce, { Patch } from "immer";
 
 export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): StatusUpdater {

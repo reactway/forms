@@ -1,4 +1,4 @@
-import { CancellationToken } from "./contracts";
+import { CancellationToken } from "../contracts";
 
 export type CancellationCallback = () => void;
 

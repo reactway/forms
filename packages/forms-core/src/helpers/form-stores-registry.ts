@@ -1,6 +1,6 @@
 import { TinyEmitter } from "@reactway/tiny-emitter";
-import { Dictionary, FormState } from "./contracts";
-import { Store } from "./store";
+import { Dictionary, FormState } from "../contracts";
+import { Store } from "../store";
 
 class StoresRegistry extends TinyEmitter {
     private storesRegistry: Dictionary<Store<FormState>> = {};

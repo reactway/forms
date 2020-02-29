@@ -1,11 +1,13 @@
 import { TinyEmitter } from "@reactway/tiny-emitter";
 import produce, { Draft, Patch } from "immer";
-import { FieldState, StoreHelpers, UpdateStoreHelpers, StoreUpdatersFactories, Dictionary, SpecificKey } from "./contracts";
-import { constructStoreHelpers, constructUpdateStoreHelpers } from "./store-helpers";
-import { getDefaultUpdatersFactories } from "./helpers";
+import { FieldState, StoreHelpers, UpdateStoreHelpers, UpdatersFactories, Dictionary, SpecificKey } from "./contracts";
+import { constructStoreHelpers, constructUpdateStoreHelpers } from "./helpers/store-helpers";
+import { getDefaultUpdatersFactories } from "./helpers/generic";
 import { IdSeparator } from "./constants";
 
 export type StoreListener = (lastUpdatePatches: Patch[]) => void;
+
+export type StoreUpdater<TState extends FieldState<any, any>> = (helpers: UpdateStoreHelpers, draft: Draft<TState>) => void;
 
 let count = 0;
 let handlerCallsCount = 0;
@@ -16,7 +18,7 @@ setInterval(() => {
 }, 1000);
 
 export class Store<TState extends FieldState<any, any>> {
-    constructor(initialStateFactory: () => TState, updatersFactories?: StoreUpdatersFactories) {
+    constructor(initialStateFactory: () => TState, updatersFactories?: UpdatersFactories) {
         // super();
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -29,7 +31,7 @@ export class Store<TState extends FieldState<any, any>> {
     private readonly emitter = new TinyEmitter<StoreListener>();
     private _state!: TState;
     private _helpers!: StoreHelpers;
-    private readonly updaters: StoreUpdatersFactories;
+    private readonly updaters: UpdatersFactories;
 
     private get state(): TState {
         return this._state;
@@ -169,7 +171,7 @@ export class Store<TState extends FieldState<any, any>> {
         }
     };
 
-    public update(updater: (helpers: UpdateStoreHelpers, draft: Draft<TState>) => void): void {
+    public update(updater: StoreUpdater<TState>): void {
         const patches: Patch[] = [];
 
         count++;

@@ -36,35 +36,36 @@ export interface InputFieldData<TValue, TRenderValue> {
     defaultValue: TValue;
     transientValue?: TRenderValue;
 
-    modifiers: ReadonlyArray<FieldModifier<TValue, TRenderValue>>;
+    modifiers: Dictionary<FieldModifier<TValue, TRenderValue>>;
+    modifiersOrder: ReadonlyArray<string>;
 }
 
-export type StoreUpdaterFactory<TStoreUpdater extends StoreUpdater> = (
+export type UpdaterFactory<TUpdater extends Updater> = (
     state: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
     store: Store<FieldState<any, any>>
-) => TStoreUpdater;
+) => TUpdater;
 
-export interface StoreUpdater<TId extends string = string> {
+export interface Updater<TId extends string = string> {
     id: TId;
 }
 
-export interface StoreUpdatersFactories {
-    [key: string]: StoreUpdaterFactory<StoreUpdater> | undefined;
-    [ValidationUpdater]: StoreUpdaterFactory<ValidationUpdater>;
-    [ValueUpdater]: StoreUpdaterFactory<ValueUpdater>;
-    [StatusUpdater]: StoreUpdaterFactory<StatusUpdater>;
+export interface UpdatersFactories {
+    [key: string]: UpdaterFactory<Updater> | undefined;
+    [ValidationUpdater]: UpdaterFactory<ValidationUpdater>;
+    [ValueUpdater]: UpdaterFactory<ValueUpdater>;
+    [StatusUpdater]: UpdaterFactory<StatusUpdater>;
 }
 
 export interface FieldValidation<TValue> {
     results: ReadonlyArray<ValidationResult>;
     validators: Readonly<Dictionary<FieldValidator<TValue>>>;
     validatorsOrder: ReadonlyArray<string>;
-    // TODO: Status + Date or just Date?
     currentValidation?: Validation;
 }
 
 export interface Validation {
+    // TODO: Currently running validator
     started: Date;
     cancellationToken: CancellationToken;
 }
@@ -84,7 +85,7 @@ export type Initial<TFieldState extends FieldState<any, any>> = Omit<
 >;
 
 // Partial<Pick<TFieldState, keyof DefaultFieldState>>;
-export type UpdaterId<TUpdater extends StoreUpdater> = TUpdater extends StoreUpdater<infer TId> ? TId : never;
+export type UpdaterId<TUpdater extends Updater> = TUpdater extends Updater<infer TId> ? TId : never;
 
 export type FieldStateValue<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
 export type FieldStateData<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<any, infer TData> ? TData : never;
