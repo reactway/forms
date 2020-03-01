@@ -8,33 +8,34 @@ import {
     StoreHelpers,
     FieldState,
     isInputFieldData,
-    ValueUpdater
+    ValueUpdater,
+    FieldSelector
 } from "@reactway/forms-core";
 import { useFieldContext } from "../components";
 
-export function useValidatorsOrderGuard(fieldId: string): ValidatorsOrderGuard {
+export function useValidatorsOrderGuard(fieldSelector: FieldSelector): ValidatorsOrderGuard {
     const { store } = useFieldContext();
 
     const { reportIndex } = useOrderGuard(() => {
         return {
             getCurrentOrder: helpers => {
-                const currentFieldState = helpers.selectField(fieldId);
-                assertFieldIsDefined(currentFieldState, fieldId);
+                const currentFieldState = helpers.selectField(fieldSelector);
+                assertFieldIsDefined(currentFieldState, fieldSelector);
                 return currentFieldState.validation.validatorsOrder;
             },
             orderUpdater: newOrder => {
                 store.update(helpers => {
-                    const fieldState = helpers.selectField(fieldId);
-                    assertFieldIsDefined(fieldState, fieldId);
+                    const fieldState = helpers.selectField(fieldSelector);
+                    assertFieldIsDefined(fieldState, fieldSelector);
                     fieldState.validation.validatorsOrder = newOrder;
 
                     const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    validationUpdater.validateField(fieldId);
+                    validationUpdater.validateField(fieldSelector);
                 });
             }
         };
-    }, [fieldId, store]);
+    }, [fieldSelector, store]);
 
     return {
         reportValidatorIndex: reportIndex

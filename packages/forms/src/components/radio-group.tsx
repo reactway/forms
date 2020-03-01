@@ -1,6 +1,6 @@
 import React from "react";
 import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
-import { useField, FieldRef } from "../helpers";
+import { useField, FieldRef, useFieldHelpers } from "../helpers";
 import { FieldContext, useFieldContext } from "./context";
 
 export type RadioGroupValue = string | number | null;
@@ -38,7 +38,10 @@ export const RadioGroup: React.FC<RadioGroupProps> = props => {
     const { store, permanent } = useFieldContext();
 
     // TODO: Use deps array to update initialStateFactory.
-    const { state: fieldState } = useField<Element, RadioGroupState>(name, props.fieldRef, () => initialState(defaultValue, initialValue));
+    const { id: fieldId, state: fieldState } = useField<Element, RadioGroupState>(name, props.fieldRef, () =>
+        initialState(defaultValue, initialValue)
+    );
+    const helpers = useFieldHelpers(fieldId);
 
     return (
         <>
@@ -46,7 +49,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = props => {
                 value={{
                     store: store,
                     parentId: fieldState.id,
-                    permanent
+                    permanent,
+                    parentHelpers: helpers
                 }}
             >
                 {props.children}

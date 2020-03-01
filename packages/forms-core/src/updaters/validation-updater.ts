@@ -11,7 +11,8 @@ import {
     CancellationToken,
     NestedDictionary,
     ValidatorHelpers,
-    Dictionary
+    Dictionary,
+    FieldSelector
 } from "../contracts";
 import { assertFieldIsDefined, isPromise } from "../helpers/generic";
 import { Store } from "../store";
@@ -24,12 +25,12 @@ export function ValidationUpdaterFactory(
 ): ValidationUpdater {
     return {
         id: "validation",
-        validateField: async fieldId => {
-            return validateField(state, helpers, store, fieldId);
+        validateField: async fieldSelector => {
+            return validateField(state, helpers, store, fieldSelector);
         },
-        registerValidator: (fieldId, validator) => {
-            const fieldState = helpers.selectField(fieldId);
-            assertFieldIsDefined(fieldState, fieldId);
+        registerValidator: (fieldSelector, validator) => {
+            const fieldState = helpers.selectField(fieldSelector);
+            assertFieldIsDefined(fieldState, fieldSelector);
 
             const id = shortid.generate();
 
@@ -76,10 +77,10 @@ async function validateField(
     _draft: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
     store: Store<FieldState<any, any>>,
-    fieldId: string
+    fieldSelector: FieldSelector
 ): Promise<void> {
-    const fieldState = helpers.selectField(fieldId);
-    assertFieldIsDefined(fieldState, fieldId);
+    const fieldState = helpers.selectField(fieldSelector);
+    assertFieldIsDefined(fieldState, fieldSelector);
 
     if (fieldState.validation.currentValidation != null) {
         fieldState.validation.currentValidation.cancellationToken.cancel();
@@ -112,7 +113,7 @@ async function validateField(
     const validationStarted = new Date();
     const cancellationToken = new CancellationTokenImpl(() => {
         store.update(asyncHelpers => {
-            const asyncFieldState = asyncHelpers.selectField(fieldId);
+            const asyncFieldState = asyncHelpers.selectField(fieldSelector);
             if (asyncFieldState == null) {
                 return;
             }
@@ -172,13 +173,13 @@ async function validateField(
         // Construct proper ValidationResults in case any strings are in results.
         const validationResults = results.map(x => resolveValidationResult(x, validator.name));
 
-        updateFieldAsync(fieldId, store, cancellationToken, state => {
+        updateFieldAsync(fieldSelector, store, cancellationToken, state => {
             const mutableValidationResults = state.validation.results as ValidationResult[];
             mutableValidationResults.push(...validationResults);
         });
     }
 
-    updateFieldAsync(fieldId, store, cancellationToken, state => {
+    updateFieldAsync(fieldSelector, store, cancellationToken, state => {
         state.validation.currentValidation = undefined;
     });
 }
@@ -208,7 +209,7 @@ export function constructValidatorHelpers(origin: ValidationResultOrigin, valida
 }
 
 function updateFieldAsync(
-    fieldId: string,
+    fieldSelector: FieldSelector,
     store: Store<FieldState<any, any>>,
     cancellationToken: CancellationToken,
     updater: (fieldState: FieldState<any, any>) => void
@@ -223,7 +224,7 @@ function updateFieldAsync(
             return;
         }
         store.update(helpers => {
-            const fieldState = helpers.selectField(fieldId);
+            const fieldState = helpers.selectField(fieldSelector);
             if (fieldState == null) {
                 return;
             }

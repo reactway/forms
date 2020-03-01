@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FieldState, Initial, NestedDictionary, ValidationUpdater, assertFieldIsDefined } from "@reactway/forms-core";
-import { useField, FieldRef } from "../helpers";
+import { useField, FieldRef, useFieldHelpers } from "../helpers";
 import { FieldContext, useFieldContext } from "./context";
 
 export interface GroupProps {
@@ -50,6 +50,7 @@ const initialState = (): Initial<GroupFieldState> => {
 export const Group = (props: GroupProps): JSX.Element => {
     const { store, permanent: parentPermanent } = useFieldContext();
     const { id: fieldId, state: groupState } = useField<never, GroupFieldState>(props.name, props.fieldRef, () => initialState());
+    const helpers = useFieldHelpers(fieldId);
 
     const [previousValue, setPreviousValue] = useState<string>(JSON.stringify(undefined));
 
@@ -59,8 +60,8 @@ export const Group = (props: GroupProps): JSX.Element => {
         }
 
         const validate = (): void => {
-            store.update(helpers => {
-                const fieldState = helpers.selectField(fieldId);
+            store.update(updateHelpers => {
+                const fieldState = updateHelpers.selectField(fieldId);
                 assertFieldIsDefined(fieldState, fieldId);
 
                 const currentValue = JSON.stringify(fieldState.getValue(fieldState));
@@ -79,7 +80,7 @@ export const Group = (props: GroupProps): JSX.Element => {
                     fieldState.validation.currentValidation.cancellationToken.cancel();
                 }
 
-                const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+                const validationUpdater = updateHelpers.getUpdater<ValidationUpdater>("validation");
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 validationUpdater.validateField(fieldId);
             });
@@ -103,7 +104,8 @@ export const Group = (props: GroupProps): JSX.Element => {
             value={{
                 store: store,
                 parentId: fieldId,
-                permanent: props.permanent ?? parentPermanent
+                permanent: props.permanent ?? parentPermanent,
+                parentHelpers: helpers
             }}
         >
             {props.children}

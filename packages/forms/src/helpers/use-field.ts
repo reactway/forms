@@ -1,7 +1,16 @@
-import { FieldState, Initial, generateFieldId, StatusUpdater, FieldOrderGuards } from "@reactway/forms-core";
+import {
+    FieldState,
+    Initial,
+    generateFieldId,
+    StatusUpdater,
+    FieldHelpers,
+    constructFieldHelpers,
+    FieldSelector
+} from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
 import { FieldRef, MutableFieldRef } from "./use-field-ref";
+import { useValidatorsOrderGuard } from "./use-order-guards";
 
 function fieldNameCompliance(fieldName: string): void {
     // TODO: Maybe we should throw errors with links to docs?
@@ -42,13 +51,13 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
     initialStateFactory: () => Initial<TFieldState>
 ): UseFieldResult<TElement, TFieldState> {
     fieldNameCompliance(fieldName);
+
     const { store, parentId, permanent } = useFieldContext();
     const fieldId = useFieldId(fieldName, parentId);
 
     const [state, setState] = useState<TFieldState>(() => {
         store.update(helpers => {
             const initialState = initialStateFactory();
-
             helpers.registerField(fieldId, initialState);
         });
 
@@ -124,8 +133,13 @@ export function useField<TElement, TFieldState extends FieldState<any, any>>(
     }, [fieldId, permanent, state.status.permanent, store]);
 
     return {
-        // store: store,
         id: fieldId,
         state: state
     };
+}
+
+export function useFieldHelpers(fieldSelector: FieldSelector): FieldHelpers {
+    return constructFieldHelpers(fieldSelector, {
+        ...useValidatorsOrderGuard(fieldSelector)
+    });
 }

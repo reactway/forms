@@ -1,19 +1,19 @@
 import React from "react";
-import { ValidationResultType } from "@reactway/forms-core";
+import { ValidationResultType, FieldSelector } from "@reactway/forms-core";
 import { useStoreState } from "../helpers";
 
 export interface ValidationResultsProps {
-    fieldId: string | undefined;
+    fieldSelector: FieldSelector | undefined;
 }
 
 export const ValidationResults = (props: ValidationResultsProps): JSX.Element | null => {
     const { store } = useStoreState();
 
-    if (props.fieldId == null) {
+    if (props.fieldSelector == null) {
         return null;
     }
 
-    const fieldState = store.helpers.selectField(props.fieldId);
+    const fieldState = store.helpers.selectField(props.fieldSelector);
     if (fieldState == null) {
         return null;
     }

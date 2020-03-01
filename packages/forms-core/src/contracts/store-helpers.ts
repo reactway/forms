@@ -1,11 +1,14 @@
 import { FieldState, Initial, Updater, FieldStatus, UpdatersFactories, UpdaterId } from "./field-state";
+import { FormSelector } from "../constants";
 import { Store } from "..";
 
+export type FieldSelector = string | typeof FormSelector;
+
 export interface StoreHelpers {
-    selectField(fieldId: string): FieldState<any, any> | undefined;
-    selectFieldParent(fieldId: string): FieldState<any, any> | undefined;
+    selectField(fieldSelector: FieldSelector): FieldState<any, any> | undefined;
+    selectFieldParent(fieldSelector: FieldSelector): FieldState<any, any> | undefined;
     getActiveFieldId(): string | undefined;
-    getFieldParentId(fieldId: string): string | undefined;
+    getFieldParentId(fieldSelector: FieldSelector): FieldSelector | undefined;
     getFormValue(): {};
 }
 
@@ -19,9 +22,8 @@ export interface UpdateStoreHelpers extends StoreHelpers {
     unregisterField(fieldId: string): void;
 
     setActiveFieldId(fieldId: string | undefined): void;
-    updateFieldStatus(fieldId: string, updater: (status: FieldStatus) => void): void;
+    updateFieldStatus(fieldSelector: FieldSelector, updater: (status: FieldStatus) => void): void;
 
-    // TODO: Add registerUpdater.
     getUpdater<TUpdater extends Updater<string>>(updaterId: UpdaterId<TUpdater>): GetUpdaterReturnType<typeof updaterId, TUpdater>;
 
     enqueueUpdate: Store<FieldState<any, any>>["update"];

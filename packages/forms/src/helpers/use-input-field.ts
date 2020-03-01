@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
     FieldState,
     Initial,
@@ -6,11 +7,13 @@ import {
     InputFieldData,
     RenderValue,
     FieldStateData,
-    FieldStateValue
+    FieldStateValue,
+    constructInputFieldHelpers,
+    InputFieldHelpers
 } from "@reactway/forms-core";
-import { useCallback } from "react";
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
+import { useValidatorsOrderGuard, useModifiersOrderGuard } from "./use-order-guards";
 import { FieldRef } from ".";
 
 export interface InputElementProps<TElement, TFieldState extends FieldState<any, any>> {
@@ -83,21 +86,28 @@ export interface UseInputFieldEventHooks<TElement> {
     getValueFromChangeEvent?: (event: React.ChangeEvent<TElement>) => any;
 }
 
-export function getRenderValue<TFieldState extends FieldState<any, any>>(
+export function getRenderValue<TFieldState extends FieldState<any, InputFieldData<any, any>>>(
     fieldState: TFieldState
 ): RenderValue<FieldStateData<TFieldState>> {
     if (fieldState.data.transientValue != null) {
         return fieldState.data.transientValue;
     }
 
-    const modifiers = fieldState.data.modifiers;
-    if (modifiers.length === 0) {
+    const modifiersKeys = Object.keys(fieldState.data.modifiers);
+    if (modifiersKeys.length === 0) {
+        // Field has no modifiers, thus nothing to do here.
         return fieldState.data.currentValue;
     }
 
     let renderValue = fieldState.data.currentValue;
 
-    for (const modifier of modifiers) {
+    for (const modifierKey of modifiersKeys) {
+        const modifier = fieldState.data.modifiers[modifierKey];
+
+        if (modifier == null) {
+            throw new Error("Should never happen.");
+        }
+
         renderValue = modifier.format(renderValue);
     }
 
@@ -170,4 +180,11 @@ export function useInputField<TElement extends InputElement, TFieldState extends
             value
         }
     };
+}
+
+export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
+    return constructInputFieldHelpers(fieldId, {
+        ...useValidatorsOrderGuard(fieldId),
+        ...useModifiersOrderGuard(fieldId)
+    });
 }

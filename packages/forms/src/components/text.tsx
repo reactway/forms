@@ -1,15 +1,6 @@
 import React, { useRef, useEffect } from "react";
-import {
-    FieldState,
-    Initial,
-    getDefaultValues,
-    assertFieldIsDefined,
-    InputFieldData,
-    FieldHelpers,
-    ValidationUpdater,
-    constructInputFieldHelpers
-} from "@reactway/forms-core";
-import { useInputField, FieldRef, useValidatorsOrderGuard, useModifiersOrderGuard } from "../helpers";
+import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
 import { useFieldContext, FieldContext } from "./context";
 
 export interface TextProps {
@@ -49,6 +40,7 @@ export const Text = (props: TextProps): JSX.Element => {
     const { store, permanent } = useFieldContext();
 
     const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
+    const helpers = useInputFieldHelpersF(fieldId);
 
     useEffect(() => {
         store.update(helpers => {
@@ -77,11 +69,6 @@ export const Text = (props: TextProps): JSX.Element => {
             focusWhenActive();
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
-
-    const helpers = constructInputFieldHelpers(fieldId, {
-        reportValidatorIndex,
-        reportModifierIndex
-    });
 
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (

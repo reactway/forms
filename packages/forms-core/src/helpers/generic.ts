@@ -1,4 +1,13 @@
-import { FieldStatus, InputFieldData, UpdatersFactories, FieldValidation, FieldState, Updater, DefaultFieldState } from "../contracts";
+import {
+    FieldStatus,
+    InputFieldData,
+    UpdatersFactories,
+    FieldValidation,
+    FieldState,
+    Updater,
+    DefaultFieldState,
+    FieldSelector
+} from "../contracts";
 import { IdSeparator } from "../constants";
 import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "../updaters";
 
@@ -24,10 +33,10 @@ export function getFieldNameFromId(fieldId: string): string {
 
 export function assertFieldIsDefined<TField extends FieldState<any, any>>(
     field: TField | undefined,
-    fieldId?: string
+    fieldSelector?: FieldSelector
 ): asserts field is NonNullable<TField> {
     if (field == null) {
-        throw new Error(`Field '${fieldId}' does not exist in a given state.`);
+        throw new Error(`Field '${String(fieldSelector)}' does not exist in a given state.`);
     }
 }
 
@@ -100,12 +109,14 @@ export function getDefaultValidation(): FieldValidation<any> {
     };
 }
 
-export function isInputFieldData(candidate: any): candidate is InputFieldData<any, any> {
+export function isInputFieldData(candidate: {}): candidate is InputFieldData<any, any> {
     const inputValues = candidate as InputFieldData<any, any>;
     return (
         inputValues.defaultValue !== undefined &&
         inputValues.initialValue !== undefined &&
         inputValues.currentValue !== undefined &&
-        Array.isArray(inputValues.modifiers)
+        inputValues.modifiers !== undefined &&
+        typeof inputValues.modifiers === "object" &&
+        Array.isArray(inputValues.modifiersOrder)
     );
 }

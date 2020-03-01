@@ -1,14 +1,14 @@
-import { StatusUpdater, FieldStatus, FieldState, UpdateStoreHelpers } from "../contracts";
+import { StatusUpdater, FieldStatus, FieldState, UpdateStoreHelpers, FieldSelector } from "../contracts";
 import { assertFieldIsDefined } from "../helpers/generic";
 import produce, { Patch } from "immer";
 
 export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): StatusUpdater {
     return {
         id: "status",
-        updateFieldStatus: (fieldId, updater) => {
-            const fieldState = helpers.selectField(fieldId);
+        updateFieldStatus: (fieldSelector, updater) => {
+            const fieldState = helpers.selectField(fieldSelector);
 
-            assertFieldIsDefined(fieldState, fieldId);
+            assertFieldIsDefined(fieldState, fieldSelector);
 
             const prevStatus = produce(fieldState.status, () => {});
 
@@ -30,13 +30,13 @@ export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: Updat
             };
 
             if (newStatus.touched && statusChanged("touched")) {
-                updateDependentStatusUpwards(state, helpers, fieldId, status => {
+                updateDependentStatusUpwards(state, helpers, fieldSelector, status => {
                     status.touched = true;
                 });
             }
 
             if (statusChanged("pristine")) {
-                updateDependentStatusUpwards(state, helpers, fieldId, status => {
+                updateDependentStatusUpwards(state, helpers, fieldSelector, status => {
                     status.pristine = newStatus.pristine;
                 });
             }
@@ -57,9 +57,8 @@ export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: Updat
 }
 
 function updateDependentStatusDownwards(fieldState: FieldState<any, any>, updater: (status: FieldStatus) => void): void {
-    // updater(fieldState.status);
+    // TODO: Review
     for (const key of Object.keys(fieldState.fields)) {
-        console.log(key);
         const child = fieldState.fields[key];
         if (child == null) {
             continue;
@@ -72,17 +71,17 @@ function updateDependentStatusDownwards(fieldState: FieldState<any, any>, update
 function updateDependentStatusUpwards(
     state: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
-    fieldId: string,
+    fieldSelector: FieldSelector,
     updater: (status: FieldStatus) => void
 ): void {
-    const fieldState = helpers.selectField(fieldId);
-    assertFieldIsDefined(fieldState, fieldId);
+    const fieldState = helpers.selectField(fieldSelector);
+    assertFieldIsDefined(fieldState, fieldSelector);
 
     // Update all parents (that have id) statuses.
-    let parentId: string | undefined = fieldId;
+    let parentId: FieldSelector | undefined = fieldSelector;
     while ((parentId = helpers.getFieldParentId(parentId)) != null) {
         const field = helpers.selectField(parentId);
-        assertFieldIsDefined(field, fieldId);
+        assertFieldIsDefined(field, fieldSelector);
 
         updater(field.status);
     }

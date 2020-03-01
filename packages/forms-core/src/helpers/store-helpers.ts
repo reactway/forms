@@ -1,5 +1,5 @@
 import { Draft } from "immer";
-import { IdSeparator } from "../constants";
+import { IdSeparator, FormSelector } from "../constants";
 import {
     FieldState,
     Initial,
@@ -11,29 +11,34 @@ import {
     FormState,
     StatusUpdater,
     UpdaterId,
-    GetUpdaterReturnType
+    GetUpdaterReturnType,
+    FieldSelector
 } from "../contracts";
 import { Store } from "../store";
 import { getFieldNameFromId, getDefaultState, isInputFieldData } from "./generic";
 
 export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: Dictionary<FieldState<any, any>>): StoreHelpers {
-    const cachedSelectField: StoreHelpers["selectField"] = fieldId => {
-        const cachedField = fieldsCache[fieldId];
+    const cachedSelectField: StoreHelpers["selectField"] = fieldSelector => {
+        if (fieldSelector === FormSelector) {
+            return state;
+        }
+
+        const cachedField = fieldsCache[fieldSelector];
         if (cachedField != null) {
             return cachedField;
         }
 
-        const selectedField = selectField(state, fieldId);
+        const selectedField = selectField(state, fieldSelector);
         if (selectedField != null) {
-            fieldsCache[fieldId] = selectedField;
+            fieldsCache[fieldSelector] = selectedField;
         }
         return selectedField;
     };
 
     const helpers: StoreHelpers = {
         selectField: cachedSelectField,
-        selectFieldParent: fieldId => {
-            const parentId = getFieldParentId(fieldId);
+        selectFieldParent: fieldSelector => {
+            const parentId = getFieldParentId(fieldSelector);
             if (parentId == null) {
                 return undefined;
             }
@@ -71,9 +76,9 @@ export function constructUpdateStoreHelpers(
             const formState = draft as Draft<FormState>;
             formState.data.activeFieldId = fieldId;
         },
-        updateFieldStatus: (fieldId, updater) => {
+        updateFieldStatus: (fieldSelector, updater) => {
             const statusUpdater = updateStoreHelpers.getUpdater<StatusUpdater>("status");
-            statusUpdater.updateFieldStatus(fieldId, updater);
+            statusUpdater.updateFieldStatus(fieldSelector, updater);
         },
         getUpdater: updaterId => {
             return getUpdater(draft, updateStoreHelpers, store, updaters, updaterId);
@@ -158,21 +163,6 @@ function getUpdater<TUpdater extends Updater<string>>(
     return undefined as ResultType;
 }
 
-// TODO: Should access to updater function be proxied from helpers?
-// TODO: If so, to all of them or some? What if there are multiple functions in the updater?
-// function updateFieldStatus(
-//     state: Draft<FieldState<any, any>>,
-//     helpers: UpdateStoreHelpers,
-//     fieldId: string,
-//     updater: (status: FieldStatus) => void
-// ): void {
-//     const statusUpdater = helpers.getUpdater<StatusUpdater>("status");
-//     if (statusUpdater == null) {
-//         throw new Error("Status updater was not found.");
-//     }
-//     statusUpdater.updateFieldStatus(fieldId, updater);
-// }
-
 function selectRegistrationParent(state: FieldState<any, any>, fieldId: string): FieldState<any, any> | undefined {
     const separatorIndex = fieldId.indexOf(IdSeparator);
     if (separatorIndex === -1) {
@@ -191,10 +181,11 @@ function selectRegistrationParent(state: FieldState<any, any>, fieldId: string):
 }
 
 // TODO: Do we need recursion here?
-export function selectField(state: FieldState<any, any>, fieldId: string | undefined): FieldState<any, any> | undefined {
-    if (fieldId == null) {
-        return undefined;
+export function selectField(state: FieldState<any, any>, selector: FieldSelector): FieldState<any, any> | undefined {
+    if (selector === FormSelector) {
+        return state;
     }
+    const fieldId = selector;
 
     const firstSeparatorIndex = fieldId.indexOf(IdSeparator);
 
@@ -212,14 +203,18 @@ export function selectField(state: FieldState<any, any>, fieldId: string | undef
     }
 }
 
-export function getFieldParentId(fieldId: string): string | undefined {
-    const lastSeparatorIndex = fieldId.lastIndexOf(IdSeparator);
-
-    if (lastSeparatorIndex === -1) {
+export function getFieldParentId(fieldSelector: FieldSelector): FieldSelector | undefined {
+    if (fieldSelector === FormSelector) {
         return undefined;
     }
 
-    return fieldId.slice(0, lastSeparatorIndex);
+    const lastSeparatorIndex = fieldSelector.lastIndexOf(IdSeparator);
+
+    if (lastSeparatorIndex === -1) {
+        return FormSelector;
+    }
+
+    return fieldSelector.slice(0, lastSeparatorIndex);
 }
 
 export function selectFieldParent(state: FieldState<any, any>, fieldId: string): FieldState<any, any> | undefined {
