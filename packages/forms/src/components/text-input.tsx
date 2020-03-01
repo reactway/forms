@@ -1,24 +1,25 @@
 import React, { useRef, useEffect } from "react";
 import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
 import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
-import { useFieldContext, FieldContext } from "./context";
+import { useFieldContext, FieldContext } from "./field-context";
 
-export interface TextProps {
+export interface TextInputProps {
     name: string;
     fieldRef?: FieldRef;
     initialValue?: string;
     defaultValue?: string;
     autoFocus?: boolean;
+    inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 
     children?: React.ReactNode;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface TextFieldData extends InputFieldData<string, string> {}
+export interface TextInputData extends InputFieldData<string, string> {}
 
-export type TextFieldState = FieldState<string, TextFieldData>;
+export type TextInputState = FieldState<string, TextInputData>;
 
-const initialState = (defaultValue: string, initialValue: string | undefined): Initial<TextFieldState> => {
+const initialState = (defaultValue: string, initialValue: string | undefined): Initial<TextInputState> => {
     return {
         computedValue: false,
         data: {
@@ -34,20 +35,20 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
     };
 };
 
-export const Text = (props: TextProps): JSX.Element => {
+export const TextInput = (props: TextInputProps): JSX.Element => {
     const { name, defaultValue = "", initialValue, children, fieldRef, ...restProps } = props;
 
     const { store, permanent } = useFieldContext();
 
     const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
-    const helpers = useInputFieldHelpersF(fieldId);
+    const helpers = useInputFieldHelpers(fieldId);
 
     useEffect(() => {
-        store.update(helpers => {
-            const fieldState = helpers.selectField(fieldId);
+        store.update(updateHelpers => {
+            const fieldState = updateHelpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
 
-            const textState = fieldState as TextFieldState;
+            const textState = fieldState as TextInputState;
             textState.data.initialValue = initialValue ?? defaultValue;
         });
     }, [defaultValue, fieldId, initialValue, store]);

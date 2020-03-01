@@ -15,7 +15,7 @@ import {
     ValidationResultOrigin
 } from "@reactway/forms-core";
 import { useFieldHelpers } from "../helpers";
-import { FieldContext } from "./context";
+import { FieldContext } from "./field-context";
 
 export type FormSubmitEventHandler = (
     event: React.FormEvent,

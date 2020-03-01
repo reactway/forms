@@ -1,6 +1,6 @@
 import React from "react";
 import { selectField, ValueUpdater } from "@reactway/forms-core";
-import { useFieldContext } from "./context";
+import { useFieldContext } from "./field-context";
 import { RadioGroupState, RadioGroup } from "./radio-group";
 
 export type RadioValue = string | number;
@@ -9,7 +9,7 @@ export interface RadioProps {
     value: RadioValue;
 }
 
-export const Radio = (props: RadioProps): JSX.Element => {
+export const RadioButton = (props: RadioProps): JSX.Element => {
     const { parentId, store } = useFieldContext();
 
     if (parentId == null) {

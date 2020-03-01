@@ -2,17 +2,28 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import JSONTree from "react-json-tree";
 
-import { FormProps, Form, Text, Number, useFieldContext, useStoreState, useFieldRef, ValidationResults } from "@reactway/forms";
+import {
+    FormProps,
+    Form,
+    TextInput,
+    useFieldContext,
+    useStoreState,
+    useFieldRef,
+    ValidationResults,
+    NumberInput,
+    Group
+} from "@reactway/forms";
 
 import { ErrorBoundary } from "./error-boundary";
 import { FormsRegistry } from "./forms-registry";
+import { LengthValidator } from "./validators/length-validator";
+import { ValidatorsOrderTest } from "./examples/validators-order-test";
 
 import "./app.scss";
-import { LengthValidator } from "./validators/length-validator";
 
 const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
     const { children, ...restProps } = props;
-    // setTimeout(() => console.clear());
+
     return (
         <Form className="form-debug-container" {...restProps}>
             <div className="form-container">
@@ -27,7 +38,6 @@ const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element =
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const StoreStateJson = (props: any): JSX.Element => {
     const { store } = useFieldContext();
     const [state, setState] = useState(store.getState());
@@ -83,27 +93,47 @@ const StoreResult = (): JSX.Element => {
 
 const App = (): JSX.Element => {
     const firstNameRef = useFieldRef();
+
     return (
-        <Layout>
+        <>
             <label>
                 First name
-                <Text name="firstName" fieldRef={firstNameRef}>
+                <TextInput name="firstName" fieldRef={firstNameRef}>
                     <LengthValidator min={5} max={10} />
-                </Text>
-                <ValidationResults fieldSelector={firstNameRef.fieldId} />
+                </TextInput>
+                <ValidationResults fieldSelector={firstNameRef.fieldSelector} />
             </label>
             <label>
                 Age
-                <Number name="age" />
+                <NumberInput name="age" />
             </label>
             <StoreResult />
+            <Group name="validatorsOrderTest">
+                <ValidatorsOrderTest />
+            </Group>
+        </>
+    );
+};
+
+const LayoutShell = (): JSX.Element => {
+    return (
+        <Layout>
+            <App />
         </Layout>
+    );
+};
+
+const FormShell = (): JSX.Element => {
+    return (
+        <Form>
+            <App />
+        </Form>
     );
 };
 
 ReactDOM.render(
     <ErrorBoundary>
-        <App />
+        <FormShell />
     </ErrorBoundary>,
     document.getElementById("root")
 );

@@ -6,7 +6,7 @@ export interface SubmitProps {
     children?: React.ReactNode;
 }
 
-export const Submit = (props: SubmitProps): JSX.Element => {
+export const SubmitButton = (props: SubmitProps): JSX.Element => {
     const { state } = useStoreState();
     const formData = state as FormState;
 

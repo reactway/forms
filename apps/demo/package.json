@@ -46,6 +46,6 @@
         "build:tools": "tsc -b ./tools && echo Tools compiled",
         "start": "npm run watch",
         "test": "eslint \"src/**/*.ts*\"",
-        "watch": "npm run build:tools && cross-env NODE_ENV=development webpack-dev-server --config webpack.config.js"
+        "watch": "npm run build:tools && cross-env NODE_ENV=development webpack-dev-server --config webpack.config.js --host 0.0.0.0"
     }
 }

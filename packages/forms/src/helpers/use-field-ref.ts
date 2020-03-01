@@ -6,14 +6,14 @@ export interface MutableFieldRef extends FieldRef {
 }
 
 export interface FieldRef {
-    readonly fieldId?: FieldSelector;
+    readonly fieldSelector?: FieldSelector;
 }
 
 export function useFieldRef(): FieldRef {
     const [fieldId, setFieldId] = useState<string>();
 
     const mutableFieldRef: MutableFieldRef = {
-        fieldId: fieldId,
+        fieldSelector: fieldId,
         setFieldId: setFieldId
     };
 

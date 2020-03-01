@@ -14,9 +14,9 @@ export type CheckboxValue = boolean | null;
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CheckboxData extends InputFieldData<CheckboxValue, undefined> {}
 
-export type CheckboxFieldState = FieldState<CheckboxValue, CheckboxData>;
+export type CheckboxState = FieldState<CheckboxValue, CheckboxData>;
 
-const initialState = (defaultValue: CheckboxValue, initialValue: CheckboxValue | undefined): Initial<CheckboxFieldState> => {
+const initialState = (defaultValue: CheckboxValue, initialValue: CheckboxValue | undefined): Initial<CheckboxState> => {
     return {
         computedValue: false,
         data: {
@@ -39,7 +39,7 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
     const { name, defaultValue = false, initialValue, fieldRef } = props;
-    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxFieldState>(
+    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>(
         name,
         fieldRef,
         () => initialState(defaultValue, initialValue),

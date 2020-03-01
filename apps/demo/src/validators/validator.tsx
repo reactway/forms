@@ -5,9 +5,9 @@ import { useValidator } from "@reactway/forms";
 export interface ValidatorProps<TValue> extends PartialKeys<ValidatorInterface<TValue>, "shouldValidate" | "name"> {}
 
 export const Validator = <TValue,>(props: ValidatorProps<TValue>): null => {
-    const { name, validate, shouldValidate } = props;
+    const { validate, name, shouldValidate } = props;
 
-    useValidator(
+    useValidator<TValue>(
         name ?? Validator.name,
         () => {
             return {

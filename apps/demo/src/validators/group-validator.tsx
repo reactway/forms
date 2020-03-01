@@ -11,7 +11,6 @@ export const GroupValidator = (props: GroupValidatorProps): null => {
             return {
                 shouldValidate: () => true,
                 validate: (value: any) => {
-                    console.log("Group validator has been fired.");
                     if (value.firstName === "Jane") {
                         return ["We can't accept another Jane."];
                     }

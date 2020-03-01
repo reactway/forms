@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FieldState, Initial, NestedDictionary, ValidationUpdater, assertFieldIsDefined } from "@reactway/forms-core";
 import { useField, FieldRef, useFieldHelpers } from "../helpers";
-import { FieldContext, useFieldContext } from "./context";
+import { FieldContext, useFieldContext } from "./field-context";
 
 export interface GroupProps {
     name: string;
@@ -11,9 +11,9 @@ export interface GroupProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GroupFieldState extends FieldState<NestedDictionary<unknown>, {}> {}
+export interface GroupState extends FieldState<NestedDictionary<unknown>, {}> {}
 
-const initialState = (): Initial<GroupFieldState> => {
+const initialState = (): Initial<GroupState> => {
     return {
         computedValue: true,
         data: {},
@@ -49,7 +49,7 @@ const initialState = (): Initial<GroupFieldState> => {
 
 export const Group = (props: GroupProps): JSX.Element => {
     const { store, permanent: parentPermanent } = useFieldContext();
-    const { id: fieldId, state: groupState } = useField<never, GroupFieldState>(props.name, props.fieldRef, () => initialState());
+    const { id: fieldId, state: groupState } = useField<never, GroupState>(props.name, props.fieldRef, () => initialState());
     const helpers = useFieldHelpers(fieldId);
 
     const [previousValue, setPreviousValue] = useState<string>(JSON.stringify(undefined));
