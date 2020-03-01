@@ -19,8 +19,8 @@ import { Store } from "../store";
 import { CancellationTokenImpl } from "../helpers";
 
 export function ValidationUpdaterFactory(
-    state: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
+    state: FieldState<any, any>,
     store: Store<FieldState<any, any>>
 ): ValidationUpdater {
     return {

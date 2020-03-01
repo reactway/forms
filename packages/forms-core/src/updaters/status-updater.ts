@@ -2,7 +2,7 @@ import { StatusUpdater, FieldStatus, FieldState, UpdateStoreHelpers, FieldSelect
 import { assertFieldIsDefined } from "../helpers/generic";
 import produce, { Patch } from "immer";
 
-export function StatusUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): StatusUpdater {
+export function StatusUpdaterFactory(helpers: UpdateStoreHelpers, state: FieldState<any, any>): StatusUpdater {
     return {
         id: "status",
         updateFieldStatus: (fieldSelector, updater) => {

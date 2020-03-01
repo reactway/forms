@@ -169,7 +169,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         [store]
     );
 
-    const value = getRenderValue<TFieldState>(fieldState);
+    const value = getRenderValue(fieldState);
 
     return {
         ...fieldResult,

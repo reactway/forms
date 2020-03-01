@@ -68,8 +68,9 @@ export function useModifiersOrderGuard(fieldId: string): ModifiersOrderGuard {
 
                     fieldState.data.modifiersOrder = newOrder;
 
+                    const value = fieldState.data.transientValue ?? fieldState.data.currentValue;
                     const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
-                    // TODO: Update value?
+                    valueUpdater.updateFieldValue(fieldId, value);
                 });
             }
         };
