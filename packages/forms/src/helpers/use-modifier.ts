@@ -1,7 +1,8 @@
-import { Modifier } from "@reactway/forms-core";
+import { Modifier, isInputFieldData } from "@reactway/forms-core";
 import { DependencyList, useMemo, useState, useLayoutEffect, useEffect } from "react";
 import { ValueUpdater, assertFieldIsDefined } from "@reactway/forms-core";
 import { useFieldContext } from "../components";
+import { getRenderValue } from "./use-input-field";
 
 // TODO: Should name be added just like for validators? What could the use-cases be?
 export function useModifier<TValue, TRenderValue = any>(modifierFactory: () => Modifier<TValue, TRenderValue>, deps: DependencyList): void {
@@ -34,8 +35,13 @@ export function useModifier<TValue, TRenderValue = any>(modifierFactory: () => M
             const parentState = helpers.selectField(parentId);
             assertFieldIsDefined(parentState, parentId);
 
+            if (!isInputFieldData(parentState.data)) {
+                throw new Error("Modifiers can be used only on input fields.");
+            }
+
+            const value = parentState.data.transientValue ?? parentState.data.currentValue;
             const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
-            valueUpdater.updateFieldValue(parentId, parentState.getValue(parentState));
+            valueUpdater.updateFieldValue(parentId, value);
         });
     }, [modifier, parentId, store]);
 

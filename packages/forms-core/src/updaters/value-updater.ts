@@ -2,7 +2,7 @@ import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary
 import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 import shortid from "shortid";
 
-export function ValueUpdaterFactory(state: FieldState<any, any>, helpers: UpdateStoreHelpers): ValueUpdater {
+export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldState<any, any>): ValueUpdater {
     const valueUpdater: ValueUpdater = {
         id: "value",
         updateFieldValue: (fieldId, value) => {

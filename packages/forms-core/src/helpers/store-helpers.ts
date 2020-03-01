@@ -58,9 +58,9 @@ export function constructStoreHelpers(state: FieldState<any, any>, fieldsCache: 
 }
 
 export function constructUpdateStoreHelpers(
-    store: Store<FieldState<any, any>>,
-    draft: Draft<FieldState<any, any>>,
     updaters: UpdatersFactories,
+    draft: Draft<FieldState<any, any>>,
+    store: Store<FieldState<any, any>>,
     fieldsCache: Dictionary<FieldState<any, any>>
 ): UpdateStoreHelpers {
     const fieldStoreHelpers = constructStoreHelpers(draft, fieldsCache);
@@ -81,7 +81,7 @@ export function constructUpdateStoreHelpers(
             statusUpdater.updateFieldStatus(fieldSelector, updater);
         },
         getUpdater: updaterId => {
-            return getUpdater(draft, updateStoreHelpers, store, updaters, updaterId);
+            return getUpdater(updateStoreHelpers, draft, store, updaters, updaterId);
         },
         enqueueUpdate: updater => {
             setTimeout(() => store.update(updater), 0);
@@ -147,8 +147,8 @@ function unregisterField(state: FieldState<any, any>, id: string): void {
 }
 
 function getUpdater<TUpdater extends Updater<string>>(
-    fieldState: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
+    fieldState: FieldState<any, any>,
     store: Store<FieldState<any, any>>,
     updaters: UpdatersFactories,
     updaterId: UpdaterId<TUpdater>
@@ -157,7 +157,7 @@ function getUpdater<TUpdater extends Updater<string>>(
     const factory = updaters[updaterId];
 
     if (factory != null) {
-        return factory(fieldState, helpers, store) as ResultType;
+        return factory(helpers, fieldState, store) as ResultType;
     }
 
     return undefined as ResultType;
@@ -171,6 +171,7 @@ function selectRegistrationParent(state: FieldState<any, any>, fieldId: string):
         const firstChildName = fieldId.slice(0, separatorIndex);
         const nextChildId = fieldId.slice(separatorIndex + IdSeparator.length);
 
+        // TODO: Review
         const child = state.fields[firstChildName];
         if (child == null) {
             return undefined;
