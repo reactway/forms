@@ -22,5 +22,5 @@
         "composite": true,
         "lib": ["es6", "es2015.iterable", "ES2019"]
     },
-    "exclude": ["**/__tests__", "**/dist", "**/src/backup"]
+    "exclude": ["**/__tests__", "**/dist"]
 }

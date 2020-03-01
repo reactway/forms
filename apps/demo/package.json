@@ -2,8 +2,8 @@
     "name": "demo",
     "dependencies": {
         "@reactway/eslint-config": "^1.0.1",
-        "@reactway/forms": "5.0.0-alpha",
-        "@reactway/forms-core": "5.0.0-alpha",
+        "@reactway/forms": "1.0.0-alpha.1",
+        "@reactway/forms-core": "1.0.0-alpha.1",
         "prettier": "^1.19.1",
         "react": "^16.12.0",
         "react-dom": "^16.12.0",

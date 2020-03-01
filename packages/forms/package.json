@@ -5,7 +5,7 @@
   "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
   "dependencies": {
     "@reactway/eslint-config": "^1.0.1",
-    "@reactway/forms-core": "5.0.0-alpha",
+    "@reactway/forms-core": "1.0.0-alpha.1",
     "@types/shortid": "^0.0.29",
     "immer": "^5.2.1",
     "shortid": "^2.2.15"
