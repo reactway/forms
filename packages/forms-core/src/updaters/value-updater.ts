@@ -1,6 +1,6 @@
-import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary } from "../contracts";
-import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 import shortid from "shortid";
+import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelection } from "../contracts";
+import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 
 export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldState<any, any>): ValueUpdater {
     const valueUpdater: ValueUpdater = {
@@ -31,6 +31,8 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
             let newValue = value;
             let transientValue: unknown | undefined = undefined;
 
+            let newSelection: TextSelection | undefined = undefined;
+
             for (const modifierKey of modifiersKeys) {
                 const modifier = modifiers[modifierKey];
 
@@ -38,8 +40,12 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
                     throw new Error("Should never happen");
                 }
 
-                const result = modifier.parse(newValue);
+                const result = modifier.parse(newValue, newSelection ?? fieldState.data.selection);
                 newValue = result.currentValue;
+
+                if (result.selection != null) {
+                    newSelection = result.selection;
+                }
 
                 if (transientValue != null || result.transientValue == null) {
                     continue;
@@ -51,6 +57,22 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
 
             fieldState.data.currentValue = newValue;
             fieldState.data.transientValue = transientValue;
+
+            if (newSelection != null) {
+                newSelection = {
+                    ...newSelection
+                };
+            }
+
+            helpers.enqueueUpdate(asyncHelpers => {
+                const asyncFieldState = asyncHelpers.selectField(fieldId);
+                if (asyncFieldState == null) {
+                    // Field has been unregistered.
+                    return;
+                }
+
+                asyncFieldState.data.selection = newSelection;
+            });
         },
         resetFieldValue: fieldId => {
             const fieldState = helpers.selectField(fieldId);

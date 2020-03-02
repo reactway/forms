@@ -1,5 +1,13 @@
-import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import React, { useRef, useEffect, SyntheticEvent } from "react";
+import {
+    FieldState,
+    Initial,
+    getDefaultValues,
+    assertFieldIsDefined,
+    InputFieldData,
+    TextSelection,
+    SpecificKey
+} from "@reactway/forms-core";
 import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
 
@@ -57,9 +65,12 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
 
     useEffect(() => {
         const focusWhenActive = (): void => {
-            // TODO: This focuses field on any store change.
+            if (textRef.current == null) {
+                return;
+            }
+
             const activeFieldId = store.helpers.getActiveFieldId();
-            if (activeFieldId === fieldId && textRef.current != null) {
+            if (activeFieldId === fieldId) {
                 textRef.current.focus();
             }
         };
@@ -71,10 +82,70 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
+    useEffect(() => {
+        const updateSelection = (): void => {
+            const activeFieldId = store.helpers.getActiveFieldId();
+            if (textRef.current == null || activeFieldId !== fieldId) {
+                return;
+            }
+
+            const fieldState = store.helpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
+
+            const textState = fieldState as TextInputState;
+
+            const selection = textState.data.selection;
+            if (selection == null) {
+                // textRef.current.blur();
+                return;
+            }
+
+            console.log("Setting selection range...", JSON.stringify(selection, null, 4));
+            textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd, selection.selectionDirection);
+        };
+
+        updateSelection();
+
+        const selectionDependencyPart: SpecificKey<InputFieldData<any, any>, "selection"> = "selection";
+
+        return store.addListener(() => {
+            updateSelection();
+        }, [`${fieldId}.data.${selectionDependencyPart}`]);
+    });
+
+    const onSelect: React.ReactEventHandler<HTMLInputElement> = event => {
+        event.persist();
+        store.update(updateHelpers => {
+            const fieldState = updateHelpers.selectField(fieldId);
+            assertFieldIsDefined(fieldState, fieldId);
+
+            const textState = fieldState as TextInputState;
+
+            const selectionStart = event.currentTarget.selectionStart;
+            const selectionEnd = event.currentTarget.selectionEnd;
+            const selectionDirection: TextSelection["selectionDirection"] =
+                (event.currentTarget.selectionDirection as TextSelection["selectionDirection"]) ?? "none";
+
+            if (selectionStart == null || selectionEnd == null) {
+                textState.data.selection = undefined;
+                return;
+            }
+
+            const newSelection = {
+                selectionStart: selectionStart,
+                selectionEnd: selectionEnd,
+                selectionDirection: selectionDirection
+            };
+
+            console.warn("onSelect", newSelection);
+            textState.data.selection = newSelection;
+        });
+    };
+
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (
         <>
-            <input {...inputElementProps} type="text" {...restProps} ref={textRef} />
+            <input {...inputElementProps} type="text" {...restProps} onSelect={onSelect} ref={textRef} />
             {/* TODO: <FieldChildren>? */}
             <FieldContext.Provider
                 value={{

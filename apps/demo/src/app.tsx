@@ -105,7 +105,7 @@ const App = (): JSX.Element => {
             </label>
             <label>
                 Age
-                <NumberInput name="age" />
+                <NumberInput name="age" initialValue={123.45} />
             </label>
             <StoreResult />
             <Group name="validatorsOrderTest">

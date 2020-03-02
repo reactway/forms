@@ -38,7 +38,17 @@ export interface InputFieldData<TValue, TRenderValue> {
 
     modifiers: Dictionary<FieldModifier<TValue, TRenderValue>>;
     modifiersOrder: ReadonlyArray<string>;
+
+    selection?: TextSelection;
 }
+
+export interface TextSelection {
+    selectionDirection: SelectionDirection;
+    selectionEnd: number;
+    selectionStart: number;
+}
+
+export type SelectionDirection = "forward" | "backward" | "none";
 
 export type UpdaterFactory<TUpdater extends Updater> = (
     helpers: UpdateStoreHelpers,

@@ -136,6 +136,13 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const onChange = useCallback<Result["onChange"]>(
         event => {
             const value = getValueFromChangeEvent(event);
+
+            console.error("change", {
+                start: event.currentTarget.selectionStart,
+                end: event.currentTarget.selectionEnd,
+                direction: event.currentTarget.selectionDirection
+            });
+
             store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 valueUpdater.updateFieldValue(fieldId, value);

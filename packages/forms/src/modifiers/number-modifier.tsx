@@ -1,4 +1,4 @@
-import { ParseResult } from "@reactway/forms-core";
+import { ParseResult, TextSelection } from "@reactway/forms-core";
 import { useModifier } from "../helpers";
 
 export interface NumberModifierProps {
@@ -8,6 +8,7 @@ export interface NumberModifierProps {
 
 function parseNumber(
     value: string,
+    selection: TextSelection | undefined,
     decimalSeparator: string,
     thousandsSeparator: string,
     takeLastSeparator = true
@@ -18,6 +19,8 @@ function parseNumber(
         // @ts-ignore
         value = value.toString();
     }
+
+    console.log(`Number modifier got selection: ${JSON.stringify(selection, null, 4)}`);
 
     let parsedValue: number;
 
@@ -40,7 +43,8 @@ function parseNumber(
         console.groupEnd();
         return {
             currentValue: parsedValue,
-            transientValue: parsedValue.toString() !== value ? value : undefined
+            transientValue: parsedValue.toString() !== value ? value : undefined,
+            selection: selection
         };
     }
 
@@ -74,9 +78,11 @@ function parseNumber(
 
     if (!Number.isNaN((parsedValue = Number(value)))) {
         console.log(parsedValue);
+        console.log(JSON.stringify(selection));
         console.groupEnd();
         return {
-            currentValue: parsedValue
+            currentValue: parsedValue,
+            selection: selection
         };
     }
 
@@ -100,7 +106,8 @@ function parseNumber(
         console.groupEnd();
         return {
             currentValue: parsedValue,
-            transientValue: lastValueIsSeparator ? value : undefined
+            transientValue: lastValueIsSeparator ? value : undefined,
+            selection: selection
         };
     }
     console.log(0);
@@ -112,7 +119,7 @@ function parseNumber(
 
 export const NumberModifier = (props: NumberModifierProps): null => {
     if (props.thousandsSeparator != null) {
-        throw new Error("thousandsSeparator is not implemnted.");
+        throw new Error("thousandsSeparator is not implemented.");
     }
     const { decimalSeparator = ".", thousandsSeparator = "," } = props;
 
@@ -121,8 +128,8 @@ export const NumberModifier = (props: NumberModifierProps): null => {
             format: currentValue => {
                 return currentValue.toString();
             },
-            parse: value => {
-                return parseNumber(value, decimalSeparator, thousandsSeparator);
+            parse: (value, selection) => {
+                return parseNumber(value, selection, decimalSeparator, thousandsSeparator);
             }
         };
     }, [decimalSeparator, thousandsSeparator]);
