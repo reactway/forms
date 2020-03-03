@@ -12,7 +12,7 @@ export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputO
     return {
         input: "src/index.ts",
         output: [
-            {
+        {
                 file: "dist/index.js",
                 format: "cjs"
             },
