@@ -17,6 +17,7 @@
         "@types/shortid": "^0.0.29",
         "immer": "^5.2.1",
         "prettier": "^1.19.1",
+        "rollup-plugin-terser": "^5.2.0",
         "shortid": "^2.2.15"
     },
     "devDependencies": {

@@ -2,7 +2,7 @@
     "compilerOptions": {
         // TODO: Choose module system
         "module": "ES2015",
-        "target": "es5",
+        "target": "ES2015",
         "jsx": "react",
         "strict": true,
         "sourceMap": true,
@@ -19,8 +19,8 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "downlevelIteration": true,
-        "composite": true,
-        "lib": ["es6", "es2015.iterable"]
+        "lib": ["es6", "es2015.iterable"],
+        "composite": true
     },
     "exclude": ["**/__tests__", "**/dist"]
 }

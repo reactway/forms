@@ -5,6 +5,7 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc -b .",
+        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly",
         "watch": "tsc -b . -w"
     },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
@@ -15,12 +16,15 @@
         "@types/shortid": "^0.0.29",
         "immer": "^5.2.1",
         "prettier": "^1.19.1",
+        "rollup-plugin-terser": "^5.2.0",
         "shortid": "^2.2.15"
     },
     "devDependencies": {
+        "@reactway-tools/rollup": "0.0.0",
         "@reactway/eslint-config": "1.0.1",
         "eslint": "6.8.0",
         "prettier": "1.19.1",
+        "rollup": "1.32.0",
         "typescript": "3.7.4"
     }
 }
