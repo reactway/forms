@@ -1,11 +1,11 @@
-import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary } from "../contracts";
-import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 import shortid from "shortid";
+import { ValueUpdater, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelection, ParseValue } from "../contracts";
+import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 
-export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldState<any, any>): ValueUpdater {
+export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
     const valueUpdater: ValueUpdater = {
         id: "value",
-        updateFieldValue: (fieldId, value) => {
+        updateFieldValue: (fieldId, value, selection?: TextSelection) => {
             const fieldState = helpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
 
@@ -20,6 +20,7 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
             if (modifiersKeys.length === 0) {
                 // No modifiers found, thus a value is set directly to currentValue.
                 fieldState.data.currentValue = value;
+                fieldState.data.selection = selection;
 
                 helpers.updateFieldStatus(fieldId, status => {
                     status.touched = true;
@@ -28,20 +29,42 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
                 return;
             }
 
+            // Modifiers found, firing up the modifiers mechanism.
+
+            const previousParseValue: ParseValue<any> = {
+                value: fieldState.data.transientValue ?? fieldState.data.currentValue,
+                caretPosition: fieldState.data.selection?.selectionStart
+            };
+
             let newValue = value;
             let transientValue: unknown | undefined = undefined;
+
+            let newCaretPosition: number | undefined = selection?.selectionStart;
 
             for (const modifierKey of modifiersKeys) {
                 const modifier = modifiers[modifierKey];
 
                 if (modifier == null) {
-                    throw new Error("Should never happen");
+                    throw new Error("Should never happen.");
                 }
 
-                const result = modifier.parse(newValue);
+                const newParseValue: ParseValue<any> = {
+                    value: newValue,
+                    caretPosition: newCaretPosition
+                };
+
+                const result = modifier.parse(newParseValue, previousParseValue);
                 newValue = result.currentValue;
 
+                // If modifier returned selection
+                if (result.caretPosition != null) {
+                    // It becomes our newSelection.
+                    newCaretPosition = result.caretPosition;
+                }
+
+                // If transientValue was is null or was already set before
                 if (transientValue != null || result.transientValue == null) {
+                    // Do nothing.
                     continue;
                 }
 
@@ -49,8 +72,22 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
                 transientValue = result.transientValue;
             }
 
+            let newSelection: TextSelection | undefined = undefined;
+
+            if (newCaretPosition != null) {
+                newSelection = {
+                    selectionStart: newCaretPosition,
+                    selectionEnd: newCaretPosition,
+                    selectionDirection: "none"
+                };
+            }
+
             fieldState.data.currentValue = newValue;
             fieldState.data.transientValue = transientValue;
+            console.group("Setting new selection to:");
+            console.log(Object.assign({}, newSelection));
+            console.groupEnd();
+            fieldState.data.selection = newSelection;
         },
         resetFieldValue: fieldId => {
             const fieldState = helpers.selectField(fieldId);

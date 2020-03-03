@@ -1,12 +1,12 @@
-import { FieldStatus, Updater } from "./field-state";
+import { FieldStatus, Updater, TextSelection } from "./field-state";
 import { Validator, ValidationResultOrString } from "./validation";
 import { Modifier } from "./modifiers";
 import { NestedDictionary } from "./type-helpers";
-import { FieldSelector } from ".";
+import { FieldSelector } from "./store-helpers";
 
 export const ValueUpdater = "value" as const;
 export interface ValueUpdater extends Updater<typeof ValueUpdater> {
-    updateFieldValue(fieldSelector: FieldSelector, value: any): void;
+    updateFieldValue(fieldSelector: FieldSelector, value: any, selection?: TextSelection): void;
     resetFieldValue(fieldSelector: FieldSelector): void;
     clearFieldValue(fieldSelector: FieldSelector): void;
     registerModifier<TValue, TRenderValue>(fieldSelector: FieldSelector, modifier: Modifier<TValue, TRenderValue>): string;
