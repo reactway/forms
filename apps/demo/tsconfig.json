@@ -1,9 +1,13 @@
 {
     "extends": "../../tsconfig-lib.json",
     "compilerOptions": {
-        "lib": ["dom", "es6", "es2015.iterable"],
+        "lib": ["dom", "es6", "es2015.iterable", "ES2019"],
         "rootDir": "src",
-        "outDir": "dist"
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": ["src/assets/*"]
+        }
     },
     "references": [
         {
@@ -13,5 +17,5 @@
             "path": "../../packages/forms-core"
         }
     ],
-    "exclude": ["tools", "dist"]
+    "exclude": ["tools", "dist", "src/backup"]
 }

@@ -1,26 +1,24 @@
 {
     "name": "@reactway/forms-core",
-    "version": "5.0.0-alpha",
     "description": "React forms.",
+    "version": "1.0.0-alpha.1",
+    "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
+    "dependencies": {
+        "@reactway/tiny-emitter": "^1.0.2",
+        "@types/shortid": "^0.0.29",
+        "immer": "^5.2.1",
+        "shortid": "^2.2.15"
+    },
+    "devDependencies": {
+        "@reactway/eslint-config": "^1.0.1",
+        "eslint": "^6.8.0",
+        "prettier": "^1.19.1",
+        "typescript": "^3.7.5"
+    },
+    "license": "MIT",
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc -b .",
         "watch": "tsc -b . -w"
-    },
-    "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
-    "license": "MIT",
-    "dependencies": {
-        "@reactway/eslint-config": "^1.0.1",
-        "@reactway/tiny-emitter": "^1.0.2",
-        "@types/shortid": "^0.0.29",
-        "immer": "^5.2.1",
-        "prettier": "^1.19.1",
-        "shortid": "^2.2.15"
-    },
-    "devDependencies": {
-        "@reactway/eslint-config": "1.0.1",
-        "eslint": "6.8.0",
-        "prettier": "1.19.1",
-        "typescript": "3.7.4"
     }
 }
