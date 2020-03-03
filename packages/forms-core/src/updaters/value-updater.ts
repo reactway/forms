@@ -36,8 +36,6 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
                 caretPosition: fieldState.data.selection?.selectionStart
             };
 
-            console.log("previousParseValue", previousParseValue);
-
             let newValue = value;
             let transientValue: unknown | undefined = undefined;
 
@@ -90,22 +88,6 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
             console.log(Object.assign({}, newSelection));
             console.groupEnd();
             fieldState.data.selection = newSelection;
-
-            // if (newSelection != null) {
-            //     newSelection = {
-            //         ...newSelection
-            //     };
-            // }
-
-            // helpers.enqueueUpdate(asyncHelpers => {
-            //     const asyncFieldState = asyncHelpers.selectField(fieldId);
-            //     if (asyncFieldState == null) {
-            //         // Field has been unregistered.
-            //         return;
-            //     }
-
-            //     asyncFieldState.data.selection = newSelection;
-            // });
         },
         resetFieldValue: fieldId => {
             const fieldState = helpers.selectField(fieldId);

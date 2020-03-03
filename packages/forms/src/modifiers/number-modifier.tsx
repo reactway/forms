@@ -22,11 +22,6 @@ export function parseNumber(
         current.value = value.toString();
     }
 
-    // What should we do when an error happens?
-    // Does modifier care about an incorrectness of the value? E.g. 123.a
-    // Or should it just replace all invalid characters and leave only the valid ones?
-    // E.g. "123.a" => "123." => "123"
-
     // We try to minimize the effort and get the best result.
     // 1. Start by simply parsing value as Number.
     // 2. Try matching valid characters with regex.
@@ -35,12 +30,9 @@ export function parseNumber(
     // 3. Trying to find and eliminate multiple decimal separators.
     // 4. Bail out with a default value of 0.
 
-    //#region Parsing as number
-
     let parsedResult: ParseResult<string, number> | undefined;
 
     console.log("1. Parsing as number...");
-    //#endregion
     // Short version of trying to parse the number. Return it if the parse is successful.
     parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition);
     if (parsedResult != null) {
@@ -113,8 +105,8 @@ function tryParsing(
     currentCaretPosition: number | undefined,
     previousCaretPosition: number | undefined
 ): ParseResult<string, number> | undefined {
-    let parsedValue: number;
-    if (!Number.isNaN((parsedValue = Number(value)))) {
+    const parsedValue = Number(value);
+    if (!Number.isNaN(parsedValue)) {
         if (previousValue.toString() === parsedValue.toString()) {
             return {
                 currentValue: parsedValue,

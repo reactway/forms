@@ -76,39 +76,34 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
-    useLayoutEffect(
-        () => {
-            const activeFieldId = store.helpers.getActiveFieldId();
-            if (textRef.current == null || activeFieldId !== fieldId) {
-                return;
-            }
+    useLayoutEffect(() => {
+        const activeFieldId = store.helpers.getActiveFieldId();
+        if (textRef.current == null || activeFieldId !== fieldId) {
+            return;
+        }
 
-            const fieldState = store.helpers.selectField(fieldId);
-            assertFieldIsDefined(fieldState, fieldId);
+        const fieldState = store.helpers.selectField(fieldId);
+        assertFieldIsDefined(fieldState, fieldId);
 
-            const textState = fieldState as TextInputState;
+        const textState = fieldState as TextInputState;
 
-            const selection = textState.data.selection;
-            if (selection == null || textRef.current == null) {
-                return;
-            }
+        const selection = textState.data.selection;
+        if (selection == null || textRef.current == null) {
+            return;
+        }
 
-            // If nothing has changed
-            if (
-                textRef.current.selectionStart === selection.selectionStart &&
-                textRef.current.selectionEnd === selection.selectionEnd &&
-                textRef.current.selectionDirection === selection.selectionDirection
-            ) {
-                // Bail out and do nothing.
-                return;
-            }
+        // If nothing has changed
+        if (
+            textRef.current.selectionStart === selection.selectionStart &&
+            textRef.current.selectionEnd === selection.selectionEnd &&
+            textRef.current.selectionDirection === selection.selectionDirection
+        ) {
+            // Bail out and do nothing.
+            return;
+        }
 
-            textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd);
-        },
-        // Without store.helpers dependency, the selection update happens just a bit later and thus,
-        // the cursor jumps to the end of the input first and _only then_ to the correct position.
-        [fieldId, store.helpers]
-    );
+        textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd);
+    }, [fieldId, store.helpers]);
 
     const onSelect: React.ReactEventHandler<HTMLInputElement> = event => {
         if (selectionUpdateGuard.updated) {
