@@ -1,11 +1,11 @@
 import shortid from "shortid";
-import { ValueUpdater, FieldState, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelection } from "../contracts";
+import { ValueUpdater, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelection, ParseValue } from "../contracts";
 import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 
-export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldState<any, any>): ValueUpdater {
+export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
     const valueUpdater: ValueUpdater = {
         id: "value",
-        updateFieldValue: (fieldId, value) => {
+        updateFieldValue: (fieldId, value, selection?: TextSelection) => {
             const fieldState = helpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
 
@@ -20,6 +20,7 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
             if (modifiersKeys.length === 0) {
                 // No modifiers found, thus a value is set directly to currentValue.
                 fieldState.data.currentValue = value;
+                fieldState.data.selection = selection;
 
                 helpers.updateFieldStatus(fieldId, status => {
                     status.touched = true;
@@ -28,26 +29,44 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
                 return;
             }
 
+            // Modifiers found, firing up the modifiers mechanism.
+
+            const previousParseValue: ParseValue<any> = {
+                value: fieldState.data.transientValue ?? fieldState.data.currentValue,
+                caretPosition: fieldState.data.selection?.selectionStart
+            };
+
+            console.log("previousParseValue", previousParseValue);
+
             let newValue = value;
             let transientValue: unknown | undefined = undefined;
 
-            let newSelection: TextSelection | undefined = undefined;
+            let newCaretPosition: number | undefined = selection?.selectionStart;
 
             for (const modifierKey of modifiersKeys) {
                 const modifier = modifiers[modifierKey];
 
                 if (modifier == null) {
-                    throw new Error("Should never happen");
+                    throw new Error("Should never happen.");
                 }
 
-                const result = modifier.parse(newValue, newSelection ?? fieldState.data.selection);
+                const newParseValue: ParseValue<any> = {
+                    value: newValue,
+                    caretPosition: newCaretPosition
+                };
+
+                const result = modifier.parse(newParseValue, previousParseValue);
                 newValue = result.currentValue;
 
-                if (result.selection != null) {
-                    newSelection = result.selection;
+                // If modifier returned selection
+                if (result.caretPosition != null) {
+                    // It becomes our newSelection.
+                    newCaretPosition = result.caretPosition;
                 }
 
+                // If transientValue was is null or was already set before
                 if (transientValue != null || result.transientValue == null) {
+                    // Do nothing.
                     continue;
                 }
 
@@ -55,24 +74,38 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers, _state: FieldSt
                 transientValue = result.transientValue;
             }
 
-            fieldState.data.currentValue = newValue;
-            fieldState.data.transientValue = transientValue;
+            let newSelection: TextSelection | undefined = undefined;
 
-            if (newSelection != null) {
+            if (newCaretPosition != null) {
                 newSelection = {
-                    ...newSelection
+                    selectionStart: newCaretPosition,
+                    selectionEnd: newCaretPosition,
+                    selectionDirection: "none"
                 };
             }
 
-            helpers.enqueueUpdate(asyncHelpers => {
-                const asyncFieldState = asyncHelpers.selectField(fieldId);
-                if (asyncFieldState == null) {
-                    // Field has been unregistered.
-                    return;
-                }
+            fieldState.data.currentValue = newValue;
+            fieldState.data.transientValue = transientValue;
+            console.group("Setting new selection to:");
+            console.log(Object.assign({}, newSelection));
+            console.groupEnd();
+            fieldState.data.selection = newSelection;
 
-                asyncFieldState.data.selection = newSelection;
-            });
+            // if (newSelection != null) {
+            //     newSelection = {
+            //         ...newSelection
+            //     };
+            // }
+
+            // helpers.enqueueUpdate(asyncHelpers => {
+            //     const asyncFieldState = asyncHelpers.selectField(fieldId);
+            //     if (asyncFieldState == null) {
+            //         // Field has been unregistered.
+            //         return;
+            //     }
+
+            //     asyncFieldState.data.selection = newSelection;
+            // });
         },
         resetFieldValue: fieldId => {
             const fieldState = helpers.selectField(fieldId);

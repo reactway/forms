@@ -20,6 +20,7 @@ import { LengthValidator } from "./validators/length-validator";
 import { ValidatorsOrderTest } from "./examples/validators-order-test";
 
 import "./app.scss";
+import { CustomShell } from "./examples/custom-shell";
 
 const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
     const { children, ...restProps } = props;
@@ -105,7 +106,7 @@ const App = (): JSX.Element => {
             </label>
             <label>
                 Age
-                <NumberInput name="age" initialValue={123.45} />
+                <NumberInput name="age" initialValue={123.4567} />
             </label>
             <StoreResult />
             <Group name="validatorsOrderTest">

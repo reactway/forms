@@ -1,14 +1,6 @@
-import React, { useRef, useEffect, SyntheticEvent } from "react";
-import {
-    FieldState,
-    Initial,
-    getDefaultValues,
-    assertFieldIsDefined,
-    InputFieldData,
-    TextSelection,
-    SpecificKey
-} from "@reactway/forms-core";
-import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
+import React, { useRef, useEffect, useLayoutEffect } from "react";
+import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import { useInputField, FieldRef, useInputFieldHelpers, extractTextSelection } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
 
 export interface TextInputProps {
@@ -48,7 +40,9 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
 
     const { store, permanent } = useFieldContext();
 
-    const { id: fieldId, inputElementProps } = useInputField(name, fieldRef, () => initialState(defaultValue, initialValue));
+    const { id: fieldId, inputElementProps, selectionUpdateGuard, renderId } = useInputField(name, fieldRef, () =>
+        initialState(defaultValue, initialValue)
+    );
     const helpers = useInputFieldHelpers(fieldId);
 
     useEffect(() => {
@@ -82,8 +76,8 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
         }, ["data.activeFieldId"]);
     }, [fieldId, store]);
 
-    useEffect(() => {
-        const updateSelection = (): void => {
+    useLayoutEffect(
+        () => {
             const activeFieldId = store.helpers.getActiveFieldId();
             if (textRef.current == null || activeFieldId !== fieldId) {
                 return;
@@ -95,50 +89,41 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
             const textState = fieldState as TextInputState;
 
             const selection = textState.data.selection;
-            if (selection == null) {
-                // textRef.current.blur();
+            if (selection == null || textRef.current == null) {
                 return;
             }
 
-            console.log("Setting selection range...", JSON.stringify(selection, null, 4));
-            textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd, selection.selectionDirection);
-        };
+            // If nothing has changed
+            if (
+                textRef.current.selectionStart === selection.selectionStart &&
+                textRef.current.selectionEnd === selection.selectionEnd &&
+                textRef.current.selectionDirection === selection.selectionDirection
+            ) {
+                // Bail out and do nothing.
+                return;
+            }
 
-        updateSelection();
-
-        const selectionDependencyPart: SpecificKey<InputFieldData<any, any>, "selection"> = "selection";
-
-        return store.addListener(() => {
-            updateSelection();
-        }, [`${fieldId}.data.${selectionDependencyPart}`]);
-    });
+            textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd);
+        },
+        // Without store.helpers dependency, the selection update happens just a bit later and thus,
+        // the cursor jumps to the end of the input first and _only then_ to the correct position.
+        [fieldId, store.helpers]
+    );
 
     const onSelect: React.ReactEventHandler<HTMLInputElement> = event => {
+        if (selectionUpdateGuard.updated) {
+            console.warn("IT WAS HANDLED BEFORE onSelect!");
+            return;
+        }
         event.persist();
         store.update(updateHelpers => {
             const fieldState = updateHelpers.selectField(fieldId);
             assertFieldIsDefined(fieldState, fieldId);
-
+            const newSelection = extractTextSelection(event);
             const textState = fieldState as TextInputState;
-
-            const selectionStart = event.currentTarget.selectionStart;
-            const selectionEnd = event.currentTarget.selectionEnd;
-            const selectionDirection: TextSelection["selectionDirection"] =
-                (event.currentTarget.selectionDirection as TextSelection["selectionDirection"]) ?? "none";
-
-            if (selectionStart == null || selectionEnd == null) {
-                textState.data.selection = undefined;
-                return;
-            }
-
-            const newSelection = {
-                selectionStart: selectionStart,
-                selectionEnd: selectionEnd,
-                selectionDirection: selectionDirection
-            };
-
-            console.warn("onSelect", newSelection);
+            console.log("onSelect:", newSelection);
             textState.data.selection = newSelection;
+            selectionUpdateGuard.markAsUpdated();
         });
     };
 

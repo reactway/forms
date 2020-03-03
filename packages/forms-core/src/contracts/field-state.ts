@@ -43,12 +43,12 @@ export interface InputFieldData<TValue, TRenderValue> {
 }
 
 export interface TextSelection {
-    selectionDirection: SelectionDirection;
+    selectionDirection: TextSelectionDirection;
     selectionEnd: number;
     selectionStart: number;
 }
 
-export type SelectionDirection = "forward" | "backward" | "none";
+export type TextSelectionDirection = "forward" | "backward" | "none";
 
 export type UpdaterFactory<TUpdater extends Updater> = (
     helpers: UpdateStoreHelpers,

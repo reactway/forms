@@ -9,8 +9,12 @@ import {
     FieldStateData,
     FieldStateValue,
     constructInputFieldHelpers,
-    InputFieldHelpers
+    InputFieldHelpers,
+    TextSelection,
+    TextSelectionDirection,
+    assertFieldIsDefined
 } from "@reactway/forms-core";
+import shortid from "shortid";
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
 import { useValidatorsOrderGuard, useModifiersOrderGuard } from "./use-order-guards";
@@ -78,6 +82,8 @@ export interface InputElementProps<TElement, TFieldState extends FieldState<any,
 
 export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
     inputElementProps: InputElementProps<TElement, TFieldState>;
+    selectionUpdateGuard: SingleUpdateGuard;
+    renderId: string;
 }
 
 export type InputElement = HTMLInputElement;
@@ -133,26 +139,22 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     const getValueFromChangeEvent = eventHooks?.getValueFromChangeEvent ?? getValueFromEventDefault;
 
+    const renderId = shortid.generate();
+    const selectionUpdateGuard = new SingleUpdateGuard(renderId);
     const onChange = useCallback<Result["onChange"]>(
         event => {
             const value = getValueFromChangeEvent(event);
-
-            console.error("change", {
-                start: event.currentTarget.selectionStart,
-                end: event.currentTarget.selectionEnd,
-                direction: event.currentTarget.selectionDirection
-            });
-
             store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
-                valueUpdater.updateFieldValue(fieldId, value);
+                valueUpdater.updateFieldValue(fieldId, value, extractTextSelection(event));
+                selectionUpdateGuard.markAsUpdated();
 
                 const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 validationUpdater.validateField(fieldId);
             });
         },
-        [fieldId, getValueFromChangeEvent, store]
+        [fieldId, getValueFromChangeEvent, selectionUpdateGuard, store]
     );
 
     const onFocus = useCallback<Result["onFocus"]>(
@@ -171,15 +173,22 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         _event => {
             store.update(helpers => {
                 helpers.setActiveFieldId(undefined);
+                const blurFieldState = helpers.selectField(fieldId);
+                assertFieldIsDefined(blurFieldState, fieldId);
+
+                const inputState = blurFieldState as TFieldState;
+                inputState.data.selection = undefined;
             });
         },
-        [store]
+        [fieldId, store]
     );
 
     const value = getRenderValue(fieldState);
 
     return {
         ...fieldResult,
+        renderId,
+        selectionUpdateGuard,
         inputElementProps: {
             onChange,
             onFocus,
@@ -194,4 +203,45 @@ export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
         ...useValidatorsOrderGuard(fieldId),
         ...useModifiersOrderGuard(fieldId)
     });
+}
+
+export function extractTextSelection(
+    event: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent<HTMLInputElement, Event>
+): TextSelection | undefined {
+    const selectionStart = event.currentTarget.selectionStart;
+    const selectionEnd = event.currentTarget.selectionEnd;
+
+    let selectionDirection: TextSelectionDirection = "none";
+
+    if (event.currentTarget.selectionDirection != null) {
+        selectionDirection = event.currentTarget.selectionDirection as TextSelectionDirection;
+    }
+
+    if (selectionStart == null || selectionEnd == null) {
+        return undefined;
+    }
+
+    return {
+        selectionStart: selectionStart,
+        selectionEnd: selectionEnd,
+        selectionDirection: selectionDirection
+    };
+}
+
+export class SingleUpdateGuard {
+    constructor(public renderId: string) {}
+
+    protected isUpdateHandled = false;
+
+    public get updated(): boolean {
+        return this.isUpdateHandled;
+    }
+
+    public markAsUpdated(): void {
+        if (this.isUpdateHandled) {
+            console.error("The update was applied more than once :(");
+            return;
+        }
+        this.isUpdateHandled = true;
+    }
 }
