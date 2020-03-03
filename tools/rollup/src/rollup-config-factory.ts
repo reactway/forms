@@ -8,13 +8,19 @@ export interface RollupConfigFactoryOptions {
     dependencies: string[];
 }
 
-export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputOptions & { output: OutputOptions } {
+export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputOptions & { output: OutputOptions[] } {
     return {
         input: "src/index.ts",
-        output: {
-            file: "dist/bundle.js",
-            format: "cjs"
-        },
+        output: [
+            {
+                file: "dist/index.js",
+                format: "cjs"
+            },
+            {
+                file: "dist/index.es.js",
+                format: "es"
+            }
+        ],
         external: [...builtins, ...options.dependencies],
         // prettier-ignore
         plugins: [

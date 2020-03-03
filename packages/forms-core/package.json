@@ -3,6 +3,8 @@
     "version": "5.0.0-alpha",
     "description": "React forms.",
     "main": "dist/index.js",
+    "module": "dist/index.es.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc -b .",
         "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly",
