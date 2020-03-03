@@ -2,6 +2,7 @@
     "name": "root",
     "private": true,
     "scripts": {
+        "build:prod": "lerna run build:prod --scope @reactway/*",
         "build:tools": "lerna run build --scope @reactway-tools/*",
         "watch": "run-p watch:demo watch:forms",
         "watch:demo": "cd ./apps/demo && npm run watch",

@@ -13,6 +13,13 @@
     },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
     "license": "MIT",
+    "files": [
+        "dist",
+        "*.js",
+        "*.d.ts",
+        "!*.config.js",
+        "!dist/_debug*"
+    ],
     "dependencies": {
         "@reactway/tiny-emitter": "^1.0.2",
         "@types/shortid": "^0.0.29",

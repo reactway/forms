@@ -13,12 +13,17 @@
     },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
     "license": "MIT",
+    "files": [
+        "dist",
+        "*.js",
+        "*.d.ts",
+        "!*.config.js",
+        "!dist/_debug*"
+    ],
     "dependencies": {
-        "@reactway/eslint-config": "^1.0.1",
         "@reactway/forms-core": "1.0.0-alpha.1",
         "@types/shortid": "^0.0.29",
         "immer": "^5.2.1",
-        "prettier": "^1.19.1",
         "shortid": "^2.2.15"
     },
     "peerDependencies": {
