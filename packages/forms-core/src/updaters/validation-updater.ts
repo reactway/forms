@@ -26,7 +26,7 @@ export function ValidationUpdaterFactory(
     return {
         id: "validation",
         validateField: async fieldSelector => {
-            return validateField(state, helpers, store, fieldSelector);
+            return validateField(helpers, state, store, fieldSelector);
         },
         registerValidator: (fieldSelector, validator) => {
             const fieldState = helpers.selectField(fieldSelector);
@@ -74,8 +74,8 @@ export function ValidationUpdaterFactory(
 }
 
 async function validateField(
-    _draft: FieldState<any, any>,
     helpers: UpdateStoreHelpers,
+    _draft: FieldState<any, any>,
     store: Store<FieldState<any, any>>,
     fieldSelector: FieldSelector
 ): Promise<void> {

@@ -7,6 +7,8 @@ export interface ThousandsModifierProps {
 export const ThousandsModifier = (props: ThousandsModifierProps): null => {
     const { thousandsSeparator = "," } = props;
 
+    console.error("DO NOT USE. FOR TESTING MODIFIERS ONLY. NOT PRODUCTION READY AT ALL.")
+
     useModifier<string, string>(() => {
         return {
             format: currentValue => {

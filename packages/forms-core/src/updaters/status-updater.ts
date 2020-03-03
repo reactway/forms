@@ -50,8 +50,6 @@ export function StatusUpdaterFactory(helpers: UpdateStoreHelpers, state: FieldSt
             if (prevStatus === newStatus) {
                 return;
             }
-
-            // TODO: Recalculate all statuses
         }
     };
 }
@@ -87,5 +85,6 @@ function updateDependentStatusUpwards(
     }
 
     // Update form (upper-most) status too.
+    // TODO: Review if this is needed and/or FormSelector should be used.
     updater(state.status);
 }

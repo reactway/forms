@@ -115,7 +115,6 @@ export class Store<TState extends FieldState<any, any>> {
         };
     }
 
-    protected done = 0;
     protected fieldHandlersListener = (patches: Patch[]): void => {
         const fieldsKeys = Object.keys(this.handlerIdsByFieldId);
         if (fieldsKeys.length === 0) {

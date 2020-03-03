@@ -1,4 +1,3 @@
-import { TextSelection } from "./field-state";
 import { DeepReadonly } from "./type-helpers";
 
 export interface ParseResult<TRenderValue, TValue> {

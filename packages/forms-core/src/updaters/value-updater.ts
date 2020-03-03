@@ -30,7 +30,6 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
             }
 
             // Modifiers found, firing up the modifiers mechanism.
-
             const previousParseValue: ParseValue<any> = {
                 value: fieldState.data.transientValue ?? fieldState.data.currentValue,
                 caretPosition: fieldState.data.selection?.selectionStart
