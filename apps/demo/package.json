@@ -42,7 +42,6 @@
         "react": "^16.12.0",
         "react-dom": "^16.12.0",
         "react-spring": "8.0.27",
-        "reinspect": "^1.0.2",
-        "rollup-plugin-terser": "^5.2.0"
+        "reinspect": "^1.0.2"
     }
 }
