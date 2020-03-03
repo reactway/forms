@@ -1,0 +1,49 @@
+trigger: none
+pr: none
+
+pool:
+    vmImage: "ubuntu-latest"
+
+steps:
+    - task: NodeTool@0
+      inputs:
+          versionSpec: "12.x"
+      displayName: "Install Node.js"
+
+    - script: |
+          npm install
+      displayName: "npm install"
+
+    - script: |
+          npm run build
+      displayName: "npm run build"
+
+    - script: |
+          npm test
+      displayName: "npm test"
+
+    - script: |
+          npx lerna version 0.0.0-canary.$(git rev-parse --short HEAD) --no-push --no-git-tag-version --no-commit-hooks -y
+          npm run pack
+      displayName: "Set canary version and pack"
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    - script: |
+          npm run pack
+      displayName: "npm run pack"
+      condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  
+    - script: |
+          mkdir $(Build.ArtifactStagingDirectory)/packages
+          mv packages/**/*.tgz $(Build.ArtifactStagingDirectory)/packages
+      displayName: "Move tgz to artifacts folder"
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Artifact: packages"
+      inputs:
+          PathtoPublish: "$(Build.ArtifactStagingDirectory)/packages"
+          ArtifactName: packages
+
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Artifact: lerna.json"
+      inputs:
+          PathtoPublish: "$(System.DefaultWorkingDirectory)/lerna.json"
+          ArtifactName: lerna

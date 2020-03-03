@@ -6,7 +6,9 @@
         "watch": "run-p watch:demo watch:forms",
         "watch:demo": "cd ./apps/demo && npm run watch",
         "watch:forms": "cd ./packages/forms && npm run watch",
-        "postinstall": "lerna bootstrap && npm run build:tools"
+        "postinstall": "lerna bootstrap && npm run build:tools",
+        "test": "lerna run test --no-private",
+        "pack": "lerna exec --no-private -- npm pack"
     },
     "devDependencies": {
         "lerna": "^3.20.2",
