@@ -1,19 +1,20 @@
-import { Draft } from "immer";
-import { Dictionary, JsonValue, NestedDictionary } from "./helpers";
+import { Store } from "../store";
+import { Dictionary, PartialKeys, JsonValue } from "./type-helpers";
+import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
+import { ValidationResult, Validator, CancellationToken } from "./validation";
+import { UpdateStoreHelpers } from "./store-helpers";
 import { Modifier } from "./modifiers";
-import { Validator, ValidationResult } from "./validators";
 
-// TODO: THydrationValue example with DraftJS: TValue = DraftJsState, THydrationValue = object.
-// TODO: Add Hydration.
 export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue, FieldState<TValue, TData>> {
-    readonly id: string;
-    readonly name: string;
+    id: string;
+    name: string;
+    status: FieldStatus;
 
-    readonly data: TData;
-    readonly status: FieldStatus;
-    readonly validation: FieldValidation<TValue>;
+    computedValue: boolean;
+    data: TData;
+    validation: FieldValidation<TValue>;
 
-    readonly fields: Readonly<Dictionary<FieldState<unknown, any>>>;
+    fields: Dictionary<FieldState<any, any>>;
 }
 
 export interface FieldValue<TValue, TFieldState extends FieldState<any, any>> {
@@ -22,7 +23,6 @@ export interface FieldValue<TValue, TFieldState extends FieldState<any, any>> {
 }
 
 export interface FieldStatus {
-    focused: boolean;
     touched: boolean;
     pristine: boolean;
     disabled: boolean;
@@ -30,48 +30,81 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
+export interface InputFieldData<TValue, TRenderValue> {
+    currentValue: TValue;
+    initialValue: TValue;
+    defaultValue: TValue;
+    transientValue?: TRenderValue;
+
+    modifiers: Dictionary<FieldModifier<TValue, TRenderValue>>;
+    modifiersOrder: ReadonlyArray<string>;
+
+    selection?: TextSelection;
+}
+
+export interface TextSelection {
+    selectionDirection: TextSelectionDirection;
+    selectionEnd: number;
+    selectionStart: number;
+}
+
+export type TextSelectionDirection = "forward" | "backward" | "none";
+
+export type UpdaterFactory<TUpdater extends Updater> = (
+    helpers: UpdateStoreHelpers,
+    state: FieldState<any, any>,
+    store: Store<FieldState<any, any>>
+) => TUpdater;
+
+export interface Updater<TId extends string = string> {
+    id: TId;
+}
+
+export interface UpdatersFactories {
+    [key: string]: UpdaterFactory<Updater> | undefined;
+    [ValidationUpdater]: UpdaterFactory<ValidationUpdater>;
+    [ValueUpdater]: UpdaterFactory<ValueUpdater>;
+    [StatusUpdater]: UpdaterFactory<StatusUpdater>;
+}
+
 export interface FieldValidation<TValue> {
     results: ReadonlyArray<ValidationResult>;
-    validators: ReadonlyArray<FieldValidator<TValue>>;
-    // TODO: Status + Date or just Date?
-    validationStarted?: Date;
+    validators: Readonly<Dictionary<FieldValidator<TValue>>>;
+    validatorsOrder: ReadonlyArray<string>;
+    currentValidation?: Validation;
+}
+
+export interface Validation {
+    // TODO: Currently running validator
+    started: Date;
+    cancellationToken: CancellationToken;
 }
 
 export interface FieldValidator<TValue> extends Validator<TValue> {
     id: string;
 }
 
-export interface InputFieldData<TValue = unknown, TRenderValue = unknown> {
-    currentValue: TValue;
-    initialValue: TValue;
-    defaultValue: TValue;
-    transientValue?: TRenderValue;
-
-    modifier?: Modifier<TValue, TRenderValue>;
+export interface FieldModifier<TValue, TRenderValue> extends Modifier<TValue, TRenderValue> {
+    id: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface InputFieldState<TData extends InputFieldData<any, any>> extends FieldState<InputFieldValue<TData>, TData> {}
-
-export interface HydrationState<TState extends FieldState<any, any>, THydrationValue extends JsonValue = JsonValue> {
+// TODO: For later (Not used yet)
+interface HydrationState<TState extends FieldState<any, any>, THydrationValue extends JsonValue = JsonValue> {
     dehydrate: (state: TState) => THydrationValue;
     hydrate: (value: THydrationValue) => void;
 }
 
-export interface FormStateData {
-    submitCallback?: () => void;
-    dehydratedState: NestedDictionary<unknown>;
-}
+export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
+export type Initial<TFieldState extends FieldState<any, any>> = Omit<
+    PartialKeys<TFieldState, keyof DefaultFieldState>,
+    "id" | "name" | "fields"
+>;
 
-export type InitialFieldState<TFieldState extends FieldState<any, any>> = Omit<TFieldState, "id" | "fields">;
+// Partial<Pick<TFieldState, keyof DefaultFieldState>>;
+export type UpdaterId<TUpdater extends Updater> = TUpdater extends Updater<infer TId> ? TId : never;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FormState<TData extends object = FormStateData> extends FieldState<NestedDictionary<unknown>, TData> {}
-
-export type DraftUpdater<TBase> = (draft: Draft<TBase>) => void;
-
-export type InputFieldValue<TInputFieldData> = TInputFieldData extends InputFieldData<infer TValue, any> ? TValue : never;
-export type InputFieldRenderValue<TInputFieldData> = TInputFieldData extends InputFieldData<any, infer TRenderValue> ? TRenderValue : never;
-export type FieldStateValue<TFieldState> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
-export type FieldStateData<TFieldState> = TFieldState extends FieldState<any, infer TData> ? TData : never;
-export type FieldStateRenderValue<TFieldState> = InputFieldRenderValue<FieldStateData<TFieldState>>;
+export type FieldStateValue<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
+export type FieldStateData<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<any, infer TData> ? TData : never;
+export type RenderValue<TData extends InputFieldData<any, any>> = TData extends InputFieldData<any, infer TRenderValue>
+    ? TRenderValue
+    : never;

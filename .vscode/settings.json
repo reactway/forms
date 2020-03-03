@@ -11,10 +11,16 @@
         "**/package-lock.json": true,
         "**/tsconfig.tsbuildinfo": true
     },
-    "cSpell.words": ["immer", "reactway"],
+    "cSpell.words": [
+        "Unregistering",
+        "immer",
+        "lifecycle",
+        "reactway"
+    ],
     "eslint.workingDirectories": [
         "./packages/forms-core",
         "./packages/forms",
         "./apps/demo",
-    ]
+    ],
+    "eslint.enable": true
 }

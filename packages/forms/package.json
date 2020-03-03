@@ -1,6 +1,6 @@
 {
     "name": "@reactway/forms",
-    "version": "5.0.0-alpha",
+    "version": "1.0.0-alpha.1",
     "description": "React forms.",
     "main": "dist/index.js",
     "module": "dist/index.es.js",
@@ -15,7 +15,7 @@
     "license": "MIT",
     "dependencies": {
         "@reactway/eslint-config": "^1.0.1",
-        "@reactway/forms-core": "5.0.0-alpha",
+        "@reactway/forms-core": "1.0.0-alpha.1",
         "@types/shortid": "^0.0.29",
         "immer": "^5.2.1",
         "prettier": "^1.19.1",
@@ -35,6 +35,6 @@
         "jest": "^24.9.0",
         "prettier": "^1.19.1",
         "ts-jest": "^24.3.0",
-        "typescript": "^3.7.4"
+        "typescript": "^3.7.5"
     }
 }
