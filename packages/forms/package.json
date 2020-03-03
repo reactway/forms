@@ -3,10 +3,12 @@
     "version": "5.0.0-alpha",
     "description": "React forms.",
     "main": "dist/index.js",
+    "module": "dist/index.es.js",
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc -b .",
         "test": "eslint \"src/**/*.ts*\"",
+        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly",
         "watch": "tsc -b . -w"
     },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
@@ -21,6 +23,8 @@
         "shortid": "^2.2.15"
     },
     "devDependencies": {
+        "@reactway-tools/rollup": "0.0.0",
+        "rollup": "1.32.0",
         "@reactway/eslint-config": "1.0.1",
         "@types/jest": "^24.0.25",
         "@types/node": "^13.1.6",
