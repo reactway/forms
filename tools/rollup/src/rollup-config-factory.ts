@@ -26,7 +26,8 @@ export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputO
         plugins: [
             commonjs(),
             typescript({
-                composite: false
+                composite: false,
+                target: "ES2015"
             }),
             terser()
         ]
