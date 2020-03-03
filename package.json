@@ -2,10 +2,11 @@
     "name": "root",
     "private": true,
     "scripts": {
+        "build:tools": "lerna run build --scope @reactway-tools/*",
         "watch": "run-p watch:demo watch:forms",
         "watch:demo": "cd ./apps/demo && npm run watch",
         "watch:forms": "cd ./packages/forms && npm run watch",
-        "postinstall": "lerna bootstrap"
+        "postinstall": "lerna bootstrap && npm run build:tools"
     },
     "devDependencies": {
         "lerna": "^3.20.2",

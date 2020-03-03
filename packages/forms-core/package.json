@@ -1,8 +1,18 @@
 {
     "name": "@reactway/forms-core",
-    "description": "React forms.",
     "version": "1.0.0-alpha.1",
+    "description": "React forms.",
+    "main": "dist/index.js",
+    "module": "dist/index.es.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -b .",
+        "test": "eslint \"src/**/*.ts*\"",
+        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly",
+        "watch": "tsc -b . -w"
+    },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
+    "license": "MIT",
     "dependencies": {
         "@reactway/tiny-emitter": "^1.0.2",
         "@types/shortid": "^0.0.29",
@@ -10,15 +20,11 @@
         "shortid": "^2.2.15"
     },
     "devDependencies": {
-        "@reactway/eslint-config": "^1.0.1",
-        "eslint": "^6.8.0",
-        "prettier": "^1.19.1",
-        "typescript": "^3.7.5"
-    },
-    "license": "MIT",
-    "main": "dist/index.js",
-    "scripts": {
-        "build": "tsc -b .",
-        "watch": "tsc -b . -w"
+        "@reactway-tools/rollup": "0.0.0",
+        "rollup": "1.32.0",
+        "@reactway/eslint-config": "1.0.1",
+        "eslint": "6.8.0",
+        "prettier": "1.19.1",
+        "typescript": "3.7.5"
     }
 }
