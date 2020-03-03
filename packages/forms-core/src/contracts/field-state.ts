@@ -1,5 +1,5 @@
 import { Store } from "../store";
-import { Dictionary, PartialKeys } from "./type-helpers";
+import { Dictionary, PartialKeys, JsonValue } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator, CancellationToken } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
@@ -86,6 +86,12 @@ export interface FieldValidator<TValue> extends Validator<TValue> {
 
 export interface FieldModifier<TValue, TRenderValue> extends Modifier<TValue, TRenderValue> {
     id: string;
+}
+
+// TODO: For later (Not used yet)
+interface HydrationState<TState extends FieldState<any, any>, THydrationValue extends JsonValue = JsonValue> {
+    dehydrate: (state: TState) => THydrationValue;
+    hydrate: (value: THydrationValue) => void;
 }
 
 export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
