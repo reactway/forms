@@ -1,0 +1,17 @@
+.navigation-bar {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    background-color: #d3d3d3;
+    padding: 0 0.5rem;
+
+    > a {
+        padding-right: 0.5rem;
+        text-decoration: none;
+        color: #221e22;
+
+        &.active {
+            text-decoration: underline;
+        }
+    }
+}
