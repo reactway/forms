@@ -31,16 +31,16 @@ export interface UseFieldResult<TElement, TFieldState extends FieldState<any, an
 }
 
 export function useFieldId(fieldName: string, parentId: string | undefined): string {
-    const [fieldId] = useState(generateFieldId(fieldName, parentId));
+    const [fieldId] = useState(() => generateFieldId(fieldName, parentId));
 
-    // Compliance check.
-    useEffect(() => {
-        return () => {
-            throw new Error(
-                `Field name and its parentId should never change during the lifecycle of the field. parentId: ${parentId}, fieldName: ${fieldName}`
-            );
-        };
-    }, [fieldName, parentId]);
+    // TODO: Compliance check.
+    // useEffect(() => {
+    //     return () => {
+    //         throw new Error(
+    //             `Field name and its parentId should never change during the lifecycle of the field. parentId: ${parentId}, fieldName: ${fieldName}`
+    //         );
+    //     };
+    // }, [fieldName, parentId]);
 
     return fieldId;
 }

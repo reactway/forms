@@ -107,7 +107,6 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
 
     const onSelect: React.ReactEventHandler<HTMLInputElement> = event => {
         if (selectionUpdateGuard.updated) {
-            console.warn("IT WAS HANDLED BEFORE onSelect!");
             return;
         }
         event.persist();
@@ -116,7 +115,7 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
             assertFieldIsDefined(fieldState, fieldId);
             const newSelection = extractTextSelection(event);
             const textState = fieldState as TextInputState;
-            console.log("onSelect:", newSelection);
+
             textState.data.selection = newSelection;
             selectionUpdateGuard.markAsUpdated();
         });
