@@ -38,7 +38,16 @@ const configToExport = new Builder(__dirname, {
     })
     .use(StylesPlugin)
     .use(ImagesPlugin, {})
-    .use(webpackDevServer)
+    .use(webpackDevServer, {
+        compress: true,
+        host: "0.0.0.0",
+        quiet: false,
+        port: 3000,
+        historyApiFallback: {
+            index: "index.html"
+        },
+        contentBase: path.join(__dirname, "dist")
+    })
     .use(HtmlPlugin, {
         inject: false,
         appMountId: "root",
