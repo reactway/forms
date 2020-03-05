@@ -30,12 +30,14 @@ export interface FieldStatus {
     permanent: boolean;
 }
 
-export interface InputFieldData<TValue, TRenderValue> {
+export interface InputValues<TValue, TRenderValue> {
     currentValue: TValue;
     initialValue: TValue;
     defaultValue: TValue;
     transientValue?: TRenderValue;
+}
 
+export interface InputFieldData<TValue, TRenderValue> extends InputValues<TValue, TRenderValue> {
     modifiers: Dictionary<FieldModifier<TValue, TRenderValue>>;
     modifiersOrder: ReadonlyArray<string>;
 
