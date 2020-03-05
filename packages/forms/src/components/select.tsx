@@ -87,6 +87,7 @@ interface SelectBaseProps {
 export type SelectProps = SelectBaseProps & (SelectMultiple | SelectNotMultiple);
 
 export const Select = (props: SelectProps): JSX.Element => {
+    // TODO: Check, where to put empty array.
     const {
         name,
         defaultValue = props.multiple === true ? [] : "",
