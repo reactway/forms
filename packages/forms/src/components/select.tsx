@@ -44,6 +44,28 @@ const eventHooks: UseInputFieldEventHooks<HTMLSelectElement> = {
     }
 };
 
+function isOptionComponent(component: React.ReactNode): component is React.ReactElement<{ value: string; selected?: boolean }> {
+    const x = component as any;
+    return typeof x === "object" && x != null && x.type != null && typeof x.props.value === "string";
+}
+
+function resolveValueFromChildren(children: React.ReactNode, multiple = false): string | string[] | undefined {
+    const options = React.Children.toArray(children)
+        .filter(isOptionComponent)
+        .map(x => ({ value: x.props.value, selected: x.props.selected }));
+
+    if (multiple) {
+        return options.filter(x => x.selected === true).map(x => x.value);
+    }
+
+    if (options.length === 0) {
+        return undefined;
+    }
+
+    // If select does not have multiple options, then we need to get the first option value.
+    return options[0].value;
+}
+
 interface SelectMultiple {
     multiple: true;
     defaultValue?: string[];
@@ -65,7 +87,13 @@ interface SelectBaseProps {
 export type SelectProps = SelectBaseProps & (SelectMultiple | SelectNotMultiple);
 
 export const Select = (props: SelectProps): JSX.Element => {
-    const { name, defaultValue = props.multiple === true ? [] : "", initialValue, fieldRef, ...restProps } = props;
+    const {
+        name,
+        defaultValue = props.multiple === true ? [] : "",
+        initialValue = resolveValueFromChildren(props.children, props.multiple),
+        fieldRef,
+        ...restProps
+    } = props;
 
     const selectRef = useRef<HTMLSelectElement>(null);
     const { store, permanent } = useFieldContext();

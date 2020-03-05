@@ -35,8 +35,16 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                         </label>
                     </RadioGroup>
                 </FieldWrapper>
-                <FieldWrapper label="Amount">
+                <FieldWrapper label="Cars">
                     <Select name="cars">
+                        <option value="volvo">Volvo</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </Select>
+                </FieldWrapper>
+                <FieldWrapper label="Cars Multiple">
+                    <Select name="carsMultiple" multiple>
                         <option value="volvo">Volvo</option>
                         <option value="saab">Saab</option>
                         <option value="mercedes">Mercedes</option>
