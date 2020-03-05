@@ -1,67 +1,50 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InputFieldData, FieldState, assertFieldIsDefined } from "@reactway/forms-core";
 import { useFieldContext } from "../components/field-context";
 
 type InputFieldState = FieldState<unknown, InputFieldData<unknown, unknown>> | undefined;
 
-// TODO: WORK IN PROGRESS.
 export function useFieldValueEffect<TValue>(fieldId: string, defaultValue: TValue, initialValue?: TValue, currentValue?: TValue): void {
     const { store } = useFieldContext();
+    const [{ prevDefaultValue, prevInitialValue, prevCurrentValue }, setPrevValues] = useState(() => ({
+        prevDefaultValue: defaultValue,
+        prevInitialValue: initialValue,
+        prevCurrentValue: currentValue
+    }));
 
     useEffect(() => {
-        const fieldState = store.helpers.selectField(fieldId) as InputFieldState;
-        if (fieldState == null) {
-            // What we should do in this case?
+        // prettier-ignore
+        if (
+            prevDefaultValue === defaultValue && 
+            prevInitialValue === initialValue && 
+            prevCurrentValue === currentValue
+        ) {
             return;
         }
 
-        if (fieldState.data.defaultValue !== defaultValue) {
-            store.update(helpers => {
-                const state = helpers.selectField(fieldId) as InputFieldState;
-                assertFieldIsDefined(state);
-                state.data.defaultValue = defaultValue;
-            });
-        }
-    }, [store, fieldId, defaultValue]);
+        store.update(helpers => {
+            const fieldState = helpers.selectField(fieldId) as InputFieldState;
+            assertFieldIsDefined(fieldState);
+
+            fieldState.data.defaultValue = defaultValue;
+            fieldState.data.initialValue = initialValue;
+            fieldState.data.currentValue = currentValue;
+        });
+
+        setPrevValues({
+            prevDefaultValue: defaultValue,
+            prevInitialValue: initialValue,
+            prevCurrentValue: currentValue
+        });
+    }, [store, fieldId, prevDefaultValue, defaultValue, prevInitialValue, initialValue, prevCurrentValue, currentValue]);
 
     useEffect(() => {
-        if (initialValue === undefined) {
-            return;
+        if (
+            (prevCurrentValue === undefined && currentValue !== undefined) ||
+            (prevCurrentValue !== undefined && currentValue === undefined)
+        ) {
+            // TODO: Normal errors.
+            throw new Error("A component is changing controlled field to be uncontrolled.");
         }
-
-        const fieldState = store.helpers.selectField(fieldId) as InputFieldState;
-        if (fieldState == null) {
-            // What we should do in this case?
-            return;
-        }
-
-        if (fieldState.data.initialValue !== initialValue) {
-            store.update(helpers => {
-                const state = helpers.selectField(fieldId) as InputFieldState;
-                assertFieldIsDefined(state);
-                state.data.initialValue = initialValue;
-            });
-        }
-    }, [store, fieldId, initialValue]);
-
-    useEffect(() => {
-        // TODO: We need additional check for controlled value.
-        if (currentValue === undefined) {
-            return;
-        }
-
-        const fieldState = store.helpers.selectField(fieldId) as InputFieldState;
-        if (fieldState == null) {
-            // What we should do in this case?
-            return;
-        }
-
-        if (fieldState.data.currentValue !== currentValue) {
-            store.update(helpers => {
-                const state = helpers.selectField(fieldId) as InputFieldState;
-                assertFieldIsDefined(state);
-                state.data.currentValue = currentValue;
-            });
-        }
-    }, [store, fieldId, currentValue]);
+    }, [prevCurrentValue, currentValue]);
 }
