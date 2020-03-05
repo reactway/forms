@@ -44,13 +44,12 @@ export const HiddenInput = (props: HiddenProps): JSX.Element => {
 
     useEffect(() => {
         if (state.data.currentValue === props.value)
+            store.update(helpers => {
+                const fieldState = helpers.selectField(fieldId) as HiddenState;
+                assertFieldIsDefined(fieldState);
 
-        store.update(helpers => {
-            const fieldState = helpers.selectField(fieldId) as HiddenState;
-            assertFieldIsDefined(fieldState);
-            
-            fieldState.data.currentValue = value;
-        });
+                fieldState.data.currentValue = value;
+            });
     }, [fieldId, defaultValue, initialValue, value]);
 
     return (

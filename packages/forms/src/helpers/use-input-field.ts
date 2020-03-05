@@ -214,8 +214,8 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         [fieldId, selectionUpdateGuard, store]
     );
 
-    useFieldFocusEffect(fieldId, elementRef);
     useFieldSelectionEffect(fieldId, elementRef);
+    useFieldFocusEffect(fieldId, elementRef);
 
     const value = getRenderValue(fieldState);
 
