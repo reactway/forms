@@ -1,17 +1,17 @@
 import React, { useRef } from "react";
-import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
+import { FieldState, Initial, getInitialInputData, InputFieldData } from "@reactway/forms-core";
 import { FieldRef, useFieldHelpers, useInputField, UseInputFieldEventHooks } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
 
 export type SelectValue = string | string[];
-type SelectData = InputFieldData<SelectValue, string>;
+type SelectData = InputFieldData<SelectValue, SelectValue>;
 export type SelectState = FieldState<SelectValue, SelectData>;
 
 const initialState = (defaultValue: SelectValue, initialValue: SelectValue | undefined): Initial<SelectState> => {
     return {
         computedValue: false,
         data: {
-            ...getDefaultValues(defaultValue, initialValue)
+            ...getInitialInputData(defaultValue, initialValue)
         },
         getValue: state => {
             return state.data.currentValue;

@@ -67,7 +67,7 @@ export function getDefaultStatuses(): FieldStatus {
     };
 }
 
-export function getDefaultValues<TValue, TRenderValue>(
+export function getInitialInputData<TValue, TRenderValue>(
     defaultValue: TValue,
     initialValue?: TValue,
     currentValue?: TValue,

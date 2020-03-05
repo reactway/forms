@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
+import { FieldState, Initial, getInitialInputData, InputFieldData } from "@reactway/forms-core";
 import { useInputField, UseInputFieldEventHooks, FieldRef } from "../helpers";
 
 export interface CheckboxProps {
@@ -20,7 +20,7 @@ const initialState = (defaultValue: CheckboxValue, initialValue: CheckboxValue |
     return {
         computedValue: false,
         data: {
-            ...getDefaultValues(defaultValue, initialValue)
+            ...getInitialInputData(defaultValue, initialValue)
         },
         getValue: state => {
             return state.data.currentValue;

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
+import { FieldState, Initial, getInitialInputData, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
 
 import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
 
@@ -27,7 +27,7 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
     return {
         computedValue: false,
         data: {
-            ...getDefaultValues(defaultValue, initialValue)
+            ...getInitialInputData(defaultValue, initialValue)
         },
         getValue: state => {
             return state.data.currentValue;

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import shortid from "shortid";
 import {
     FieldState,
     Initial,
@@ -86,7 +85,6 @@ export interface InputElementProps<TElement, TFieldState extends FieldState<any,
 export interface UseInputFieldResult<TElement, TFieldState extends FieldState<any, any>> extends UseFieldResult<TElement, TFieldState> {
     inputElementProps: InputElementProps<TElement, TFieldState>;
     selectionUpdateGuard: SingleUpdateGuard;
-    renderId: string;
 }
 
 export type InputTextElement = HTMLInputElement | HTMLTextAreaElement;
@@ -154,8 +152,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     const getValueFromChangeEvent = eventHooks?.getValueFromChangeEvent ?? getValueFromEventDefault;
 
-    const renderId = shortid.generate();
-    const selectionUpdateGuard = new SingleUpdateGuard(renderId);
+    const selectionUpdateGuard = new SingleUpdateGuard();
     const onChange = useCallback<Result["onChange"]>(
         event => {
             const value = getValueFromChangeEvent(event);
@@ -224,7 +221,6 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     return {
         ...fieldResult,
-        renderId,
         selectionUpdateGuard,
         inputElementProps: {
             onChange,
@@ -265,8 +261,6 @@ export function extractTextSelection(element: InputTextElement): TextSelection |
 }
 
 export class SingleUpdateGuard {
-    constructor(public renderId: string) {}
-
     protected isUpdateHandled = false;
 
     public get updated(): boolean {
