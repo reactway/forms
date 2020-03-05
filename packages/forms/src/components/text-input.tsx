@@ -7,6 +7,7 @@ import { useFieldContext, FieldContext } from "./field-context";
 
 export interface TextInputProps {
     name: string;
+    type?: "text" | "password";
     fieldRef?: FieldRef;
     initialValue?: string;
     defaultValue?: string;
@@ -38,7 +39,9 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
 };
 
 export const TextInput = (props: TextInputProps): JSX.Element => {
-    const { name, defaultValue = "", initialValue, children, fieldRef, ...restProps } = props;
+    const { name, defaultValue = "", initialValue, children, fieldRef, type = "text", ...restProps } = props;
+
+    // TODO: Check `type` prop if we support it. (Only text and password).
 
     const textRef = useRef<HTMLInputElement>(null);
     const { store, permanent } = useFieldContext();
@@ -64,7 +67,7 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (
         <>
-            <input {...inputElementProps} type="text" {...restProps} ref={textRef} />
+            <input {...inputElementProps} {...restProps} type={type} ref={textRef} />
             {/* TODO: <FieldChildren>? */}
             <FieldContext.Provider
                 value={{
