@@ -26,12 +26,13 @@ steps:
           npx lerna version 0.0.0-canary.$(git rev-parse --short HEAD) --no-push --no-git-tag-version --no-commit-hooks -y
           npm run pack
       displayName: "Set canary version and pack"
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), eq(variables['BUILD_TYPE'], 'canary')))
+
     - script: |
           npm run pack
       displayName: "npm run pack"
       condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/dev'))
-  
+
     - script: |
           mkdir $(Build.ArtifactStagingDirectory)/packages
           mv packages/**/*.tgz $(Build.ArtifactStagingDirectory)/packages
