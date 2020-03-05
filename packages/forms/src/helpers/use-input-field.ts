@@ -89,7 +89,12 @@ export interface UseInputFieldResult<TElement, TFieldState extends FieldState<an
     renderId: string;
 }
 
-export type InputElement = HTMLInputElement;
+export type InputTextElement = HTMLInputElement | HTMLTextAreaElement;
+export type InputElement = InputTextElement | HTMLSelectElement;
+
+export function isInputTextElement(element: InputElement): element is InputTextElement {
+    return element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement;
+}
 
 export interface UseInputFieldEventHooks<TElement> {
     getValueFromChangeEvent?: (event: React.ChangeEvent<TElement>) => any;
@@ -156,7 +161,8 @@ export function useInputField<TElement extends InputElement, TFieldState extends
             const value = getValueFromChangeEvent(event);
             store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
-                valueUpdater.updateFieldValue(fieldId, value, extractTextSelection(event));
+                const textSelection = isInputTextElement(event.currentTarget) ? extractTextSelection(event.currentTarget) : undefined;
+                valueUpdater.updateFieldValue(fieldId, value, textSelection);
                 selectionUpdateGuard.markAsUpdated();
 
                 const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
@@ -202,9 +208,8 @@ export function useInputField<TElement extends InputElement, TFieldState extends
             store.update(updateHelpers => {
                 const storeFieldState = updateHelpers.selectField(fieldId);
                 assertFieldIsDefined(storeFieldState, fieldId);
-                const newSelection = extractTextSelection(event);
+                const newSelection = isInputTextElement(event.currentTarget) ? extractTextSelection(event.currentTarget) : undefined;
                 const textState = storeFieldState;
-
                 textState.data.selection = newSelection;
                 selectionUpdateGuard.markAsUpdated();
             });
@@ -238,16 +243,14 @@ export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
     });
 }
 
-export function extractTextSelection(
-    event: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent<HTMLInputElement, Event>
-): TextSelection | undefined {
-    const selectionStart = event.currentTarget.selectionStart;
-    const selectionEnd = event.currentTarget.selectionEnd;
+export function extractTextSelection(element: InputTextElement): TextSelection | undefined {
+    const selectionStart = element.selectionStart;
+    const selectionEnd = element.selectionEnd;
 
     let selectionDirection: TextSelectionDirection = "none";
 
-    if (event.currentTarget.selectionDirection != null) {
-        selectionDirection = event.currentTarget.selectionDirection as TextSelectionDirection;
+    if (element.selectionDirection != null) {
+        selectionDirection = element.selectionDirection as TextSelectionDirection;
     }
 
     if (selectionStart == null || selectionEnd == null) {

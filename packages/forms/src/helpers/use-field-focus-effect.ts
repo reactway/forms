@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useFieldContext } from "../components";
+import { InputElement } from "./use-input-field";
 
-export function useFieldFocusEffect(fieldId: string, elementRef: React.RefObject<HTMLInputElement>): void {
+export function useFieldFocusEffect(fieldId: string, elementRef: React.RefObject<InputElement>): void {
     const { store } = useFieldContext();
 
     useEffect(() => {

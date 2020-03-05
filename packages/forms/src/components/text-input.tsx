@@ -11,6 +11,7 @@ export interface TextInputProps {
     fieldRef?: FieldRef;
     initialValue?: string;
     defaultValue?: string;
+    // TODO: AutoFocus?
     autoFocus?: boolean;
     inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 

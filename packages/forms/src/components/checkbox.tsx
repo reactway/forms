@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
 import { useInputField, UseInputFieldEventHooks, FieldRef } from "../helpers";
 
@@ -39,14 +39,17 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
     const { name, defaultValue = false, initialValue, fieldRef } = props;
-    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>(
-        name,
-        fieldRef,
-        () => initialState(defaultValue, initialValue),
+
+    const checkboxRef = useRef<HTMLInputElement>(null);
+    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>({
+        fieldName: name,
+        fieldRef: fieldRef,
+        elementRef: checkboxRef,
+        initialStateFactory: () => initialState(defaultValue, initialValue),
         eventHooks
-    );
+    });
 
     const { value, ...rest } = inputElementProps;
 
-    return <input {...rest} type="checkbox" checked={value != null ? value : undefined} />;
+    return <input {...rest} type="checkbox" checked={value != null ? value : undefined} ref={checkboxRef} />;
 };
