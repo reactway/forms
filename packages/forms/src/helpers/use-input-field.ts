@@ -131,13 +131,11 @@ export interface InputFieldOptions<TElement extends InputElement, TFieldState ex
     eventHooks?: UseInputFieldEventHooks<TElement>;
 }
 
-export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>({
-    fieldName,
-    fieldRef,
-    elementRef,
-    initialStateFactory,
-    eventHooks
-}: InputFieldOptions<TElement, TFieldState>): UseInputFieldResult<TElement, TFieldState> {
+export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>(
+    options: InputFieldOptions<TElement, TFieldState>
+): UseInputFieldResult<TElement, TFieldState> {
+    const { fieldName, fieldRef, elementRef, initialStateFactory, eventHooks } = options;
+
     type Result = UseInputFieldResult<TElement, TFieldState>["inputElementProps"];
     const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
     const { state: fieldState, id: fieldId } = fieldResult;
