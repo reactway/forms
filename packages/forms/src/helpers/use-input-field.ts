@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import shortid from "shortid";
 import {
     FieldState,
     Initial,
@@ -14,11 +15,13 @@ import {
     TextSelectionDirection,
     assertFieldIsDefined
 } from "@reactway/forms-core";
-import shortid from "shortid";
+
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
 import { useValidatorsOrderGuard, useModifiersOrderGuard } from "./use-order-guards";
-import { FieldRef } from ".";
+import { useFieldFocusEffect } from "./use-field-focus-effect";
+import { useFieldSelectionEffect } from "./use-field-selection-effect";
+import { FieldRef } from "./use-field-ref";
 
 export interface InputElementProps<TElement, TFieldState extends FieldState<any, any>> {
     value: FieldStateValue<TFieldState> | RenderValue<FieldStateData<TFieldState>>;
@@ -61,7 +64,7 @@ export interface InputElementProps<TElement, TFieldState extends FieldState<any,
     // onMouseUp?: React.MouseEventHandler<TElement>;
 
     // Selection Events
-    onSelect?: React.ReactEventHandler<TElement>;
+    onSelect: React.ReactEventHandler<TElement>;
 
     // Touch Events
     onTouchCancel?: React.TouchEventHandler<TElement>;
@@ -120,12 +123,21 @@ export function getRenderValue<TFieldState extends FieldState<any, InputFieldDat
     return renderValue;
 }
 
-export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>(
-    fieldName: string,
-    fieldRef: FieldRef | undefined,
-    initialStateFactory: () => Initial<TFieldState>,
-    eventHooks?: UseInputFieldEventHooks<TElement>
-): UseInputFieldResult<TElement, TFieldState> {
+export interface InputFieldOptions<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>> {
+    fieldName: string;
+    fieldRef: FieldRef | undefined;
+    elementRef: React.RefObject<TElement>;
+    initialStateFactory: () => Initial<TFieldState>;
+    eventHooks?: UseInputFieldEventHooks<TElement>;
+}
+
+export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>({
+    fieldName,
+    fieldRef,
+    elementRef,
+    initialStateFactory,
+    eventHooks
+}: InputFieldOptions<TElement, TFieldState>): UseInputFieldResult<TElement, TFieldState> {
     type Result = UseInputFieldResult<TElement, TFieldState>["inputElementProps"];
     const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
     const { state: fieldState, id: fieldId } = fieldResult;
@@ -183,6 +195,28 @@ export function useInputField<TElement extends InputElement, TFieldState extends
         [fieldId, store]
     );
 
+    const onSelect = useCallback<Result["onSelect"]>(
+        event => {
+            if (selectionUpdateGuard.updated) {
+                return;
+            }
+            event.persist();
+            store.update(updateHelpers => {
+                const storeFieldState = updateHelpers.selectField(fieldId);
+                assertFieldIsDefined(storeFieldState, fieldId);
+                const newSelection = extractTextSelection(event);
+                const textState = storeFieldState;
+
+                textState.data.selection = newSelection;
+                selectionUpdateGuard.markAsUpdated();
+            });
+        },
+        [fieldId, selectionUpdateGuard, store]
+    );
+
+    useFieldFocusEffect(fieldId, elementRef);
+    useFieldSelectionEffect(fieldId, elementRef);
+
     const value = getRenderValue(fieldState);
 
     return {
@@ -193,6 +227,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
             onChange,
             onFocus,
             onBlur,
+            onSelect,
             value
         }
     };

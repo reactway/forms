@@ -1,6 +1,8 @@
-import React, { useRef, useEffect, useLayoutEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { FieldState, Initial, getDefaultValues, assertFieldIsDefined, InputFieldData } from "@reactway/forms-core";
-import { useInputField, FieldRef, useInputFieldHelpers, extractTextSelection } from "../helpers";
+
+import { useInputField, FieldRef, useInputFieldHelpers } from "../helpers";
+
 import { useFieldContext, FieldContext } from "./field-context";
 
 export interface TextInputProps {
@@ -38,11 +40,15 @@ const initialState = (defaultValue: string, initialValue: string | undefined): I
 export const TextInput = (props: TextInputProps): JSX.Element => {
     const { name, defaultValue = "", initialValue, children, fieldRef, ...restProps } = props;
 
+    const textRef = useRef<HTMLInputElement>(null);
     const { store, permanent } = useFieldContext();
 
-    const { id: fieldId, inputElementProps, selectionUpdateGuard, renderId } = useInputField(name, fieldRef, () =>
-        initialState(defaultValue, initialValue)
-    );
+    const { id: fieldId, inputElementProps } = useInputField({
+        fieldName: name,
+        fieldRef: fieldRef,
+        elementRef: textRef,
+        initialStateFactory: () => initialState(defaultValue, initialValue)
+    });
     const helpers = useInputFieldHelpers(fieldId);
 
     useEffect(() => {
@@ -55,76 +61,10 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
         });
     }, [defaultValue, fieldId, initialValue, store]);
 
-    const textRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        const focusWhenActive = (): void => {
-            if (textRef.current == null) {
-                return;
-            }
-
-            const activeFieldId = store.helpers.getActiveFieldId();
-            if (activeFieldId === fieldId) {
-                textRef.current.focus();
-            }
-        };
-
-        focusWhenActive();
-
-        return store.addListener(() => {
-            focusWhenActive();
-        }, ["data.activeFieldId"]);
-    }, [fieldId, store]);
-
-    useLayoutEffect(() => {
-        const activeFieldId = store.helpers.getActiveFieldId();
-        if (textRef.current == null || activeFieldId !== fieldId) {
-            return;
-        }
-
-        const fieldState = store.helpers.selectField(fieldId);
-        assertFieldIsDefined(fieldState, fieldId);
-
-        const textState = fieldState as TextInputState;
-
-        const selection = textState.data.selection;
-        if (selection == null || textRef.current == null) {
-            return;
-        }
-
-        // If nothing has changed
-        if (
-            textRef.current.selectionStart === selection.selectionStart &&
-            textRef.current.selectionEnd === selection.selectionEnd &&
-            textRef.current.selectionDirection === selection.selectionDirection
-        ) {
-            // Bail out and do nothing.
-            return;
-        }
-
-        textRef.current.setSelectionRange(selection.selectionStart, selection.selectionEnd);
-    }, [fieldId, store.helpers]);
-
-    const onSelect: React.ReactEventHandler<HTMLInputElement> = event => {
-        if (selectionUpdateGuard.updated) {
-            return;
-        }
-        event.persist();
-        store.update(updateHelpers => {
-            const fieldState = updateHelpers.selectField(fieldId);
-            assertFieldIsDefined(fieldState, fieldId);
-            const newSelection = extractTextSelection(event);
-            const textState = fieldState as TextInputState;
-
-            textState.data.selection = newSelection;
-            selectionUpdateGuard.markAsUpdated();
-        });
-    };
-
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (
         <>
-            <input {...inputElementProps} type="text" {...restProps} onSelect={onSelect} ref={textRef} />
+            <input {...inputElementProps} type="text" {...restProps} ref={textRef} />
             {/* TODO: <FieldChildren>? */}
             <FieldContext.Provider
                 value={{
