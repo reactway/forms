@@ -24,7 +24,8 @@
         "@reactway/forms-core": "1.0.0-alpha.1",
         "@types/shortid": "^0.0.29",
         "immer": "^5.2.1",
-        "shortid": "^2.2.15"
+        "shortid": "^2.2.15",
+        "utility-types": "^3.10.0"
     },
     "peerDependencies": {
         "react": "^16.8.3"

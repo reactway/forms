@@ -1,18 +1,16 @@
-import React, { useRef } from "react";
-import { FieldState, Initial, getInitialInputData, InputFieldData } from "@reactway/forms-core";
-import { FieldRef, useFieldHelpers, useInputField, UseInputFieldEventHooks } from "../helpers";
+import React, { useRef, useMemo } from "react";
+import { FieldState, InputFieldData } from "@reactway/forms-core";
+import { FieldRef, useFieldHelpers, useInputField, UseInputFieldEventHooks, InitialInput } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
 
 export type SelectValue = string | string[];
 type SelectData = InputFieldData<SelectValue, SelectValue>;
 export type SelectState = FieldState<SelectValue, SelectData>;
 
-const initialState = (defaultValue: SelectValue, initialValue: SelectValue | undefined): Initial<SelectState> => {
+const initialState = (): InitialInput<SelectState> => {
     return {
         computedValue: false,
-        data: {
-            ...getInitialInputData(defaultValue, initialValue)
-        },
+        data: {},
         getValue: state => {
             return state.data.currentValue;
         },
@@ -70,12 +68,14 @@ interface SelectMultiple {
     multiple: true;
     defaultValue?: string[];
     initialValue?: string[];
+    value?: string[];
 }
 
 interface SelectNotMultiple {
     multiple?: false;
     defaultValue?: string;
     initialValue?: string;
+    value?: string;
 }
 
 interface SelectBaseProps {
@@ -88,23 +88,31 @@ export type SelectProps = SelectBaseProps & (SelectMultiple | SelectNotMultiple)
 
 export const Select = (props: SelectProps): JSX.Element => {
     // TODO: Check, where to put empty array.
-    const {
-        name,
-        defaultValue = props.multiple === true ? [] : "",
-        initialValue = resolveValueFromChildren(props.children, props.multiple),
-        fieldRef,
-        ...restProps
-    } = props;
+    const { name, defaultValue: propsDefaultValue, initialValue: propsInitialValue, value, fieldRef, ...restProps } = props;
+    const defaultValue = useMemo(() => {
+        if (propsDefaultValue == null) {
+            return props.multiple === true ? [] : "";
+        }
+        return propsDefaultValue;
+    }, [propsDefaultValue, props.multiple]);
+    const initialValue = useMemo(() => propsInitialValue ?? resolveValueFromChildren(props.children, props.multiple), [
+        propsInitialValue,
+        props.children,
+        props.multiple
+    ]);
 
     const selectRef = useRef<HTMLSelectElement>(null);
     const { store, permanent } = useFieldContext();
 
-    const { id: fieldId, inputElementProps } = useInputField({
+    const { id: fieldId, inputElementProps } = useInputField<HTMLSelectElement, SelectState>({
         fieldName: name,
         fieldRef: fieldRef,
         elementRef: selectRef,
-        initialStateFactory: () => initialState(defaultValue, initialValue),
-        eventHooks
+        initialStateFactory: () => initialState(),
+        eventHooks,
+        defaultValue: defaultValue,
+        initialValue: initialValue,
+        currentValue: value
     });
     const helpers = useFieldHelpers(fieldId);
 

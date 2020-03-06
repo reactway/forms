@@ -1,13 +1,7 @@
 import React, { useRef } from "react";
-import { FieldState, Initial, getInitialInputData, InputFieldData } from "@reactway/forms-core";
-import { useInputField, UseInputFieldEventHooks, FieldRef } from "../helpers";
-
-export interface CheckboxProps {
-    name: string;
-    fieldRef?: FieldRef;
-    defaultValue?: CheckboxValue;
-    initialValue?: CheckboxValue;
-}
+import { FieldState, InputFieldData } from "@reactway/forms-core";
+import { useInputField, UseInputFieldEventHooks, FieldRef, InitialInput } from "../helpers";
+import { createSecureContext } from "tls";
 
 export type CheckboxValue = boolean | null;
 
@@ -16,12 +10,10 @@ export interface CheckboxData extends InputFieldData<CheckboxValue, undefined> {
 
 export type CheckboxState = FieldState<CheckboxValue, CheckboxData>;
 
-const initialState = (defaultValue: CheckboxValue, initialValue: CheckboxValue | undefined): Initial<CheckboxState> => {
+const initialState = (): InitialInput<CheckboxState> => {
     return {
         computedValue: false,
-        data: {
-            ...getInitialInputData(defaultValue, initialValue)
-        },
+        data: {},
         getValue: state => {
             return state.data.currentValue;
         },
@@ -37,19 +29,30 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
     }
 };
 
+export interface CheckboxProps {
+    name: string;
+    fieldRef?: FieldRef;
+    defaultValue?: CheckboxValue;
+    initialValue?: CheckboxValue;
+    value?: CheckboxValue;
+}
+
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
-    const { name, defaultValue = false, initialValue, fieldRef } = props;
+    const { name, defaultValue = false, initialValue, value, fieldRef } = props;
 
     const checkboxRef = useRef<HTMLInputElement>(null);
     const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>({
         fieldName: name,
         fieldRef: fieldRef,
         elementRef: checkboxRef,
-        initialStateFactory: () => initialState(defaultValue, initialValue),
-        eventHooks
+        initialStateFactory: () => initialState(),
+        eventHooks,
+        defaultValue: defaultValue,
+        initialValue: initialValue,
+        currentValue: value
     });
 
-    const { value, ...rest } = inputElementProps;
+    const { value: elementValue, ...rest } = inputElementProps;
 
-    return <input {...rest} type="checkbox" checked={value != null ? value : undefined} ref={checkboxRef} />;
+    return <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} />;
 };

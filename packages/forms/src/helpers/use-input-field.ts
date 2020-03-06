@@ -12,8 +12,15 @@ import {
     InputFieldHelpers,
     TextSelection,
     TextSelectionDirection,
-    assertFieldIsDefined
+    assertFieldIsDefined,
+    OmitStrict,
+    PartialKeys,
+    InputValues,
+    getInitialInputData
 } from "@reactway/forms-core";
+
+// TODO: import type.
+import { Optional } from "utility-types";
 
 import { useFieldContext } from "../components";
 import { UseFieldResult, useField } from "./use-field";
@@ -21,6 +28,7 @@ import { useValidatorsOrderGuard, useModifiersOrderGuard } from "./use-order-gua
 import { useFieldFocusEffect } from "./use-field-focus-effect";
 import { useFieldSelectionEffect } from "./use-field-selection-effect";
 import { FieldRef } from "./use-field-ref";
+import { useFieldValueEffect } from "./use-field-value-effect";
 
 export interface InputElementProps<TElement, TFieldState extends FieldState<any, any>> {
     value: FieldStateValue<TFieldState> | RenderValue<FieldStateData<TFieldState>>;
@@ -98,9 +106,10 @@ export interface UseInputFieldEventHooks<TElement> {
     getValueFromChangeEvent?: (event: React.ChangeEvent<TElement>) => any;
 }
 
-export function getRenderValue<TFieldState extends FieldState<any, InputFieldData<any, any>>>(
-    fieldState: TFieldState
-): RenderValue<FieldStateData<TFieldState>> {
+export function getRenderValue<
+    TFieldState extends FieldState<any, TData>,
+    TData extends InputFieldData<any, any> = FieldStateData<TFieldState>
+>(fieldState: TFieldState): RenderValue<FieldStateData<TFieldState>> {
     if (fieldState.data.transientValue != null) {
         return fieldState.data.transientValue;
     }
@@ -126,21 +135,47 @@ export function getRenderValue<TFieldState extends FieldState<any, InputFieldDat
     return renderValue;
 }
 
-export interface InputFieldOptions<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>> {
+type InitialInputData<TFieldData extends InputFieldData<any, any>> = OmitStrict<
+    PartialKeys<TFieldData, keyof InputFieldData<any, any>>,
+    keyof InputValues<any, any>
+>;
+export type InitialInput<
+    TFieldState extends FieldState<any, TData>,
+    TData extends InputFieldData<any, any> = FieldStateData<TFieldState>
+> = Initial<OmitStrict<TFieldState, "data"> & { data: InitialInputData<TFieldState["data"]> }>;
+
+export interface InputFieldOptions<
+    TElement extends InputElement,
+    TFieldState extends FieldState<any, TData>,
+    TData extends InputFieldData<any, any> = FieldStateData<TFieldState>
+    // TODO: Resolve TRenderValue.
+    // TODO: Better to resolve what keys are optional.
+> extends Optional<InputValues<FieldStateValue<TFieldState>, any>, "initialValue" | "currentValue"> {
     fieldName: string;
     fieldRef: FieldRef | undefined;
     elementRef: React.RefObject<TElement>;
-    initialStateFactory: () => Initial<TFieldState>;
+    initialStateFactory: () => InitialInput<TFieldState, TData>;
     eventHooks?: UseInputFieldEventHooks<TElement>;
 }
 
-export function useInputField<TElement extends InputElement, TFieldState extends FieldState<any, InputFieldData<any, any>>>(
-    options: InputFieldOptions<TElement, TFieldState>
-): UseInputFieldResult<TElement, TFieldState> {
+export function useInputField<
+    TElement extends InputElement,
+    TFieldState extends FieldState<any, TData>,
+    TData extends InputFieldData<any, any> = FieldStateData<TFieldState>
+>(options: InputFieldOptions<TElement, TFieldState, TData>): UseInputFieldResult<TElement, TFieldState> {
     const { fieldName, fieldRef, elementRef, initialStateFactory, eventHooks } = options;
 
     type Result = UseInputFieldResult<TElement, TFieldState>["inputElementProps"];
-    const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
+    const fieldResult = useField<TElement, TFieldState, TData>(fieldName, fieldRef, () => {
+        const fieldState = initialStateFactory();
+
+        fieldState.data = {
+            ...getInitialInputData(options.defaultValue, options.initialValue, options.currentValue, options.transientValue),
+            ...fieldState.data
+        };
+
+        return fieldState;
+    });
     const { state: fieldState, id: fieldId } = fieldResult;
 
     const { store } = useFieldContext();
@@ -156,6 +191,7 @@ export function useInputField<TElement extends InputElement, TFieldState extends
     const onChange = useCallback<Result["onChange"]>(
         event => {
             const value = getValueFromChangeEvent(event);
+
             store.update(helpers => {
                 const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
                 const textSelection = isInputTextElement(event.currentTarget) ? extractTextSelection(event.currentTarget) : undefined;
@@ -216,8 +252,9 @@ export function useInputField<TElement extends InputElement, TFieldState extends
 
     useFieldSelectionEffect(fieldId, elementRef);
     useFieldFocusEffect(fieldId, elementRef);
+    useFieldValueEffect(fieldId, options.defaultValue, options.initialValue, options.currentValue);
 
-    const value = getRenderValue(fieldState);
+    const value = getRenderValue<TFieldState, TData>(fieldState);
 
     return {
         ...fieldResult,

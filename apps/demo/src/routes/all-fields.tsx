@@ -1,7 +1,7 @@
 import React from "react";
 import { RouteComponentProps } from "@reach/router";
 
-import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select } from "@reactway/forms";
+import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select, ClearButton } from "@reactway/forms";
 import { StoreResult } from "../components/store-result";
 import { FieldWrapper } from "../components/field-wrapper";
 import { LengthValidator } from "../validators/length-validator";
@@ -21,7 +21,7 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                     </TextInput>
                 </FieldWrapper>
                 <FieldWrapper label="Amount">
-                    <NumberInput name="amount" />
+                    <NumberInput name="amount" initialValue={4220} />
                 </FieldWrapper>
                 <FieldWrapper label="Sex">
                     <RadioGroup name="sex">
@@ -37,20 +37,21 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                 </FieldWrapper>
                 <FieldWrapper label="Cars">
                     <Select name="cars">
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
+                        <option value={1}>Volvo</option>
+                        <option value={2}>Saab</option>
                         <option value="mercedes">Mercedes</option>
                         <option value="audi">Audi</option>
                     </Select>
                 </FieldWrapper>
                 <FieldWrapper label="Cars Multiple">
                     <Select name="carsMultiple" multiple>
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
+                        <option value={1}>Volvo</option>
+                        <option value={2}>Saab</option>
                         <option value="mercedes">Mercedes</option>
                         <option value="audi">Audi</option>
                     </Select>
                 </FieldWrapper>
+                <ClearButton />
                 <StoreResult />
             </Form>
         </div>

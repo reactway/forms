@@ -5,7 +5,8 @@ import {
     StatusUpdater,
     FieldHelpers,
     constructFieldHelpers,
-    FieldSelector
+    FieldSelector,
+    FieldStateData
 } from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
@@ -45,7 +46,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
     return fieldId;
 }
 
-export function useField<TElement, TFieldState extends FieldState<any, any>>(
+export function useField<TElement, TFieldState extends FieldState<any, TData>, TData extends {} = FieldStateData<TFieldState>>(
     fieldName: string,
     fieldRef: FieldRef | undefined,
     initialStateFactory: () => Initial<TFieldState>

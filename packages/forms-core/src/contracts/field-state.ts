@@ -96,10 +96,16 @@ interface HydrationState<TState extends FieldState<any, any>, THydrationValue ex
     hydrate: (value: THydrationValue) => void;
 }
 
+// TODO: We are only using this outside.
 export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
-export type Initial<TFieldState extends FieldState<any, any>> = Omit<
-    PartialKeys<TFieldState, keyof DefaultFieldState>,
-    "id" | "name" | "fields"
+// export type Initial<TFieldState extends FieldState<any, any>> = Omit<
+//     PartialKeys<TFieldState, keyof DefaultFieldState>,
+//     "id" | "name" | "fields"
+// >;
+
+export type Initial<TFieldState extends FieldState<any, any>> = PartialKeys<
+    Pick<TFieldState, "computedValue" | "data" | "getValue" | "setValue" | "status" | "validation">,
+    "status" | "validation"
 >;
 
 // Partial<Pick<TFieldState, keyof DefaultFieldState>>;
