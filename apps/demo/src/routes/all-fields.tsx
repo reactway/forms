@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { RouteComponentProps } from "@reach/router";
 
-import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select, ClearButton } from "@reactway/forms";
+import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select, ClearButton, HiddenInput } from "@reactway/forms";
 import { StoreResult } from "../components/store-result";
 import { FieldWrapper } from "../components/field-wrapper";
 import { LengthValidator } from "../validators/length-validator";
 
 export const AllFields = (_props: RouteComponentProps): JSX.Element => {
+    const [counter, setCounter] = useState(0);
+
     return (
         <div>
+            <button type="button" onClick={() => setCounter(prevCount => prevCount + 1)}>
+                Counter: {counter}
+            </button>
             <Form>
+                <HiddenInput name="hidden" value={counter} />
                 <FieldWrapper label="First Name">
                     <TextInput name="firstName">
                         <LengthValidator max={10} errorMessages={{ tooLong: "FirstName is too long.", tooShort: "" }} />
