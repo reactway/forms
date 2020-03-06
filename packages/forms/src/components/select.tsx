@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useCallback } from "react";
 import { FieldState, InputFieldData } from "@reactway/forms-core";
 import { FieldRef, useFieldHelpers, useInputField, UseInputFieldEventHooks, InitialInput } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
@@ -64,6 +64,12 @@ function resolveValueFromChildren(children: React.ReactNode, multiple = false): 
     return options[0].value;
 }
 
+function resolveOptionValuesFromChildren(children: React.ReactNode): Array<{ value: string; selected: boolean }> {
+    return React.Children.toArray(children)
+        .filter(isOptionComponent)
+        .map(x => ({ value: x.props.value, selected: x.props.selected ?? false }));
+}
+
 interface SelectMultiple {
     multiple: true;
     defaultValue?: string[];
@@ -88,18 +94,45 @@ export type SelectProps = SelectBaseProps & (SelectMultiple | SelectNotMultiple)
 
 export const Select = (props: SelectProps): JSX.Element => {
     // TODO: Check, where to put empty array.
-    const { name, defaultValue: propsDefaultValue, initialValue: propsInitialValue, value, fieldRef, ...restProps } = props;
+    const {
+        name,
+        defaultValue: propsDefaultValue,
+        initialValue: propsInitialValue,
+        value,
+        fieldRef,
+        multiple = false,
+        ...restProps
+    } = props;
     const defaultValue = useMemo(() => {
         if (propsDefaultValue == null) {
             return props.multiple === true ? [] : "";
         }
         return propsDefaultValue;
     }, [propsDefaultValue, props.multiple]);
-    const initialValue = useMemo(() => propsInitialValue ?? resolveValueFromChildren(props.children, props.multiple), [
-        propsInitialValue,
-        props.children,
-        props.multiple
-    ]);
+
+    const selectOptions = resolveOptionValuesFromChildren(props.children);
+    const cachedOptions = useMemo(() => {
+        console.log("cachedOptions");
+        return selectOptions;
+    }, [JSON.stringify(selectOptions)]);
+
+    const initialValue = useMemo(() => {
+        console.log("initialValue");
+
+        if (propsInitialValue != null) {
+            return propsInitialValue;
+        }
+
+        if (multiple) {
+            return cachedOptions.filter(x => x.selected).map(x => x.value);
+        }
+
+        if (cachedOptions.length === 0) {
+            return defaultValue;
+        }
+
+        return cachedOptions[0].value;
+    }, [cachedOptions, defaultValue, multiple, propsInitialValue]);
 
     const selectRef = useRef<HTMLSelectElement>(null);
     const { store, permanent } = useFieldContext();
@@ -117,7 +150,7 @@ export const Select = (props: SelectProps): JSX.Element => {
     const helpers = useFieldHelpers(fieldId);
 
     return (
-        <select {...inputElementProps} {...restProps} ref={selectRef}>
+        <select multiple={multiple} {...inputElementProps} {...restProps} ref={selectRef}>
             <FieldContext.Provider
                 value={{
                     store: store,
