@@ -8,7 +8,7 @@
     "scripts": {
         "build": "tsc -b .",
         "test": "eslint \"src/**/*.ts*\"",
-        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly",
+        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly --declarationMap false",
         "watch": "tsc -b . -w"
     },
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
