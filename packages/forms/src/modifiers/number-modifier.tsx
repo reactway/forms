@@ -1,5 +1,7 @@
-import { ParseResult, ParseValue, DeepReadonly } from "@reactway/forms-core";
+import { ParseResult, ParseValue, DeepReadonly, formsLogger } from "@reactway/forms-core";
 import { useModifier } from "../helpers";
+
+const logger = formsLogger.extend("number-modifier");
 
 export interface NumberModifierProps {
     decimalSeparator?: string;
@@ -14,12 +16,12 @@ export function parseNumber(
     thousandsSeparator: string,
     takeLastSeparator = true
 ): ParseResult<string, number> {
-    console.log("parseNumber got selection:", current.caretPosition, previous.caretPosition);
+    logger("parseNumber got selection:", current.caretPosition, previous.caretPosition);
     if (typeof current.value !== "string") {
         // Fail-safe in case a number or something else comes.
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        current.value = value.toString();
+        current.value = current.value.toString();
     }
 
     // We try to minimize the effort and get the best result.
@@ -32,38 +34,56 @@ export function parseNumber(
 
     let parsedResult: ParseResult<string, number> | undefined;
 
-    console.log("1. Parsing as number...");
+    logger("1. Parsing as number...");
     // Short version of trying to parse the number. Return it if the parse is successful.
     parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition);
     if (parsedResult != null) {
         return parsedResult;
     }
 
-    console.log("2. Trying regex.");
+    logger("2. Trying regex.");
     // TODO: Use given decimalSeparator.
-    const regex = new RegExp("[-0-9.,]+", "g");
+    const regex = new RegExp("[-+0-9.,]+", "g");
 
     const matches = current.value.match(regex);
 
     if (matches == null) {
-        console.log("No characters matched...");
+        logger("No characters matched...");
         return {
             currentValue: 0
         };
     }
 
     let result = matches.join("").replaceAll(thousandsSeparator, "");
-    console.log(`Thousands separators removed: ${result}`);
+    logger(`Thousands separators removed: ${result}`);
 
     let negativeValue = false;
+    let plusSign = false;
     if (result.substring(0, 1) === "-") {
         negativeValue = true;
+    } else if (result.substring(0, 1) === "+") {
+        negativeValue = false;
+        plusSign = true;
     }
 
-    console.log(`Value is ${negativeValue ? "negative" : "positive"}`);
+    logger(`Value is ${negativeValue ? "negative" : "positive"}`);
 
     // Add leading minus sign if needed and remove all other ones, if any.
-    result = `${negativeValue ? "-" : ""}${result.replaceAll("-", "")}`;
+    result = `${negativeValue ? "-" : ""}${plusSign ? "+" : ""}${result.replaceAll("-", "").replaceAll("+", "")}`;
+
+    if (
+        result === decimalSeparator ||
+        result === "-" ||
+        result === `-${decimalSeparator}` ||
+        result === "+" ||
+        result === `+${decimalSeparator}`
+    ) {
+        return {
+            currentValue: 0,
+            transientValue: result,
+            caretPosition: current.caretPosition
+        };
+    }
 
     parsedResult = tryParsing(result, previous.value, current.caretPosition, previous.caretPosition);
     if (parsedResult != null) {
@@ -72,9 +92,9 @@ export function parseNumber(
 
     // Maybe there are multiple separators?
 
-    console.log(`Maybe there are multiple separators?`);
+    logger(`Maybe there are multiple separators?`);
     const parts = result.split(decimalSeparator);
-    console.log(`Parts:`, parts);
+    logger(`Parts:`, parts);
     // TODO: Make opinionated choice.
     if (takeLastSeparator) {
         result = parts.slice(0, -1).join("") + decimalSeparator + parts.slice(-1);
@@ -107,7 +127,8 @@ function tryParsing(
 ): ParseResult<string, number> | undefined {
     const parsedValue = Number(value);
     if (!Number.isNaN(parsedValue)) {
-        if (previousValue.toString() === parsedValue.toString()) {
+        logger("tryParsing", typeof previousValue, previousValue, typeof parsedValue, parsedValue);
+        if (previousValue.toString() === parsedValue.toString() && value[value.length - 1] !== ".") {
             return {
                 currentValue: parsedValue,
                 transientValue: parsedValue.toString() !== value ? value : undefined,
@@ -124,6 +145,27 @@ function tryParsing(
     return undefined;
 }
 
+function toFixed(value: number): string {
+    logger(`toFixed:${typeof value}:${value}`);
+    if (Math.abs(value) < 1.0) {
+        const e = parseInt(value.toString().split("e-")[1]);
+        if (!Number.isNaN(e)) {
+            value *= Math.pow(10, e - 1);
+            return `0.${new Array(e).join("0")}${value.toString().substring(2)}`;
+        }
+    } else {
+        let e = parseInt(value.toString().split("+")[1]);
+        if (e > 20) {
+            e -= 20;
+            value /= Math.pow(10, e);
+            return value + new Array(e + 1).join("0");
+        }
+    }
+
+    logger("Returning value.toString()");
+    return value.toString();
+}
+
 export const NumberModifier = (props: NumberModifierProps): null => {
     if (props.thousandsSeparator != null) {
         throw new Error("thousandsSeparator is not implemented.");
@@ -133,22 +175,20 @@ export const NumberModifier = (props: NumberModifierProps): null => {
     useModifier<number, string>(() => {
         return {
             format: currentValue => {
-                return currentValue.toString();
+                return toFixed(currentValue);
             },
             parse: (current, previous) => {
-                console.group(`Number modifier: ${current.value}`);
+                logger(`Number modifier: ${current.value}`);
                 const result = parseNumber(current, previous, decimalSeparator, thousandsSeparator);
-                console.log(`Parsed value:`);
-                console.log(Object.assign({}, result));
+                logger(`Parsed value:`);
+                logger(Object.assign({}, result));
 
                 // const updatedPosition = updateCursorPosition(result, current);
                 // if (updatedPosition != null) {
-                //     console.log("Updated position:");
-                //     console.log(updatedPosition);
+                //     logger("Updated position:");
+                //     logger(updatedPosition);
                 //     result.caretPosition = updatedPosition;
                 // }
-
-                console.groupEnd();
 
                 return result;
             }
