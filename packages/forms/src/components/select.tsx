@@ -144,9 +144,11 @@ export const Select = (props: SelectProps): JSX.Element => {
         elementRef: selectRef,
         initialStateFactory: () => initialState(),
         eventHooks,
-        defaultValue: defaultValue,
-        initialValue: initialValue,
-        currentValue: value
+        values: {
+            defaultValue: defaultValue,
+            initialValue: initialValue,
+            currentValue: value
+        }
     });
     const helpers = useFieldHelpers(fieldId);
 

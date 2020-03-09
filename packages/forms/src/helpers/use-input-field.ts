@@ -151,12 +151,13 @@ export interface InputFieldOptions<
     TData extends InputFieldData<any, any> = FieldStateData<TFieldState>
     // TODO: Resolve TRenderValue.
     // TODO: Better to resolve what keys are optional.
-> extends Optional<InputValues<FieldStateValue<TFieldState>, any>, "initialValue" | "currentValue"> {
+> {
     fieldName: string;
     fieldRef: FieldRef | undefined;
     elementRef: React.RefObject<TElement>;
     initialStateFactory: () => InitialInput<TFieldState, TData>;
     eventHooks?: UseInputFieldEventHooks<TElement>;
+    values?: Optional<InputValues<FieldStateValue<TFieldState>, any>, "initialValue" | "currentValue">;
 }
 
 export function useInputField<
@@ -171,7 +172,12 @@ export function useInputField<
         const fieldState = initialStateFactory();
 
         fieldState.data = {
-            ...getInitialInputData(options.defaultValue, options.initialValue, options.currentValue, options.transientValue),
+            ...getInitialInputData(
+                options.values?.defaultValue,
+                options.values?.initialValue,
+                options.values?.currentValue,
+                options.values?.transientValue
+            ),
             ...fieldState.data
         };
 
@@ -253,7 +259,7 @@ export function useInputField<
 
     useFieldSelectionEffect(fieldId, elementRef);
     useFieldFocusEffect(fieldId, elementRef);
-    useFieldValueEffect(fieldId, options.defaultValue, options.initialValue, options.currentValue);
+    useFieldValueEffect(fieldId, options.values?.defaultValue, options.values?.initialValue, options.values?.currentValue);
 
     const value = getRenderValue<TFieldState, TData>(fieldState);
 
