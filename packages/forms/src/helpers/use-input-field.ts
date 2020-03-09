@@ -139,6 +139,7 @@ type InitialInputData<TFieldData extends InputFieldData<any, any>> = OmitStrict<
     PartialKeys<TFieldData, keyof InputFieldData<any, any>>,
     keyof InputValues<any, any>
 >;
+
 export type InitialInput<
     TFieldState extends FieldState<any, TData>,
     TData extends InputFieldData<any, any> = FieldStateData<TFieldState>

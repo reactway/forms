@@ -1,13 +1,16 @@
 import { Store } from "../store";
-import { Dictionary, PartialKeys, JsonValue } from "./type-helpers";
+import { Dictionary, JsonValue } from "./type-helpers";
 import { ValidationUpdater, ValueUpdater, StatusUpdater } from "./state-updaters";
 import { ValidationResult, Validator, CancellationToken } from "./validation";
 import { UpdateStoreHelpers } from "./store-helpers";
 import { Modifier } from "./modifiers";
 
-export interface FieldState<TValue, TData extends {}> extends FieldValue<TValue, FieldState<TValue, TData>> {
+export interface FieldStateIdentifiers {
     id: string;
     name: string;
+}
+
+export interface FieldState<TValue, TData extends {}> extends FieldStateIdentifiers, FieldValue<TValue, FieldState<TValue, TData>> {
     status: FieldStatus;
 
     computedValue: boolean;
@@ -96,19 +99,10 @@ interface HydrationState<TState extends FieldState<any, any>, THydrationValue ex
     hydrate: (value: THydrationValue) => void;
 }
 
-// TODO: We are only using this outside.
 export type DefaultFieldState = Pick<FieldState<any, any>, "fields" | "status" | "validation">;
-// export type Initial<TFieldState extends FieldState<any, any>> = Omit<
-//     PartialKeys<TFieldState, keyof DefaultFieldState>,
-//     "id" | "name" | "fields"
-// >;
+// TODO: We need to improve this type without hardcoded keys.
+export type Initial<TFieldState extends FieldState<any, any>> = Pick<TFieldState, "computedValue" | "data" | "getValue" | "setValue">;
 
-export type Initial<TFieldState extends FieldState<any, any>> = PartialKeys<
-    Pick<TFieldState, "computedValue" | "data" | "getValue" | "setValue" | "status" | "validation">,
-    "status" | "validation"
->;
-
-// Partial<Pick<TFieldState, keyof DefaultFieldState>>;
 export type UpdaterId<TUpdater extends Updater> = TUpdater extends Updater<infer TId> ? TId : never;
 
 export type FieldStateValue<TFieldState extends FieldState<any, any>> = TFieldState extends FieldState<infer TValue, any> ? TValue : never;
