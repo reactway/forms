@@ -47,12 +47,8 @@ export function ValidationUpdaterFactory(
         },
         unregisterValidator: (fieldId, validatorId) => {
             const fieldState = helpers.selectField(fieldId);
-            if (fieldState == null) {
-                return;
-            }
-
-            if (fieldState.validation.validators[validatorId] == null) {
-                // Gracefully return if the validator is not found, no need to throw.
+            if (fieldState == null || fieldState.validation.validators[validatorId] == null) {
+                // Gracefully return if fieldState or validator is not found, no need to throw.
                 return;
             }
 
