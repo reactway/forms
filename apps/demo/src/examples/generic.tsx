@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import JSONTree from "react-json-tree";
 
 import {
@@ -14,13 +13,9 @@ import {
     Group
 } from "@reactway/forms";
 
-import { ErrorBoundary } from "./error-boundary";
-import { FormsRegistry } from "./forms-registry";
-import { LengthValidator } from "./validators/length-validator";
-import { ValidatorsOrderTest } from "./examples/validators-order-test";
-
-import "./app.scss";
-import { CustomShell } from "./examples/custom-shell";
+import { FormsRegistry } from "../forms-registry";
+import { LengthValidator } from "../validators/length-validator";
+import { ValidatorsOrderTest } from "./validators-order-test";
 
 const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
     const { children, ...restProps } = props;
@@ -116,7 +111,7 @@ const App = (): JSX.Element => {
     );
 };
 
-const LayoutShell = (): JSX.Element => {
+export const LayoutShell = (): JSX.Element => {
     return (
         <Layout>
             <App />
@@ -124,17 +119,10 @@ const LayoutShell = (): JSX.Element => {
     );
 };
 
-const FormShell = (): JSX.Element => {
+export const FormShell = (): JSX.Element => {
     return (
         <Form>
             <App />
         </Form>
     );
 };
-
-ReactDOM.render(
-    <ErrorBoundary>
-        <FormShell />
-    </ErrorBoundary>,
-    document.getElementById("root")
-);

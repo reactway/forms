@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import {
     Form,
     useFieldContext,
@@ -24,16 +23,14 @@ import {
     FieldSelector
 } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
-import { FormsRegistry } from "./forms-registry";
-import { ErrorBoundary } from "./error-boundary";
-import { LengthValidator } from "./validators/length-validator";
-import { UsernameValidator } from "./validators/username-validator";
-import { WaitValidator } from "./validators/wait-validator";
-import Loader from "./assets/loader.svg";
+import { FormsRegistry } from "../forms-registry";
+import { LengthValidator } from "../validators/length-validator";
+import { UsernameValidator } from "../validators/username-validator";
+import { WaitValidator } from "../validators/wait-validator";
+import Loader from "../assets/loader.svg";
 
-import "./app.scss";
-import { PersonContactsValidator } from "./validators/person-validator";
-import { Validator } from "./validators/validator";
+import { PersonContactsValidator } from "../validators/person-validator";
+import { Validator } from "../validators/validator";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const StoreStateJson = (props: any): JSX.Element => {
@@ -365,7 +362,7 @@ const ValidatorsOrderTest = (): JSX.Element => {
     );
 };
 
-const App = (): JSX.Element => {
+export const App = (): JSX.Element => {
     type FormValue = {
         person: {
             firstName: string;
@@ -410,10 +407,3 @@ const App = (): JSX.Element => {
         </>
     );
 };
-
-ReactDOM.render(
-    <ErrorBoundary>
-        <App />
-    </ErrorBoundary>,
-    document.getElementById("root")
-);

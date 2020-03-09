@@ -13,7 +13,7 @@ interface Props {
 export const FieldWrapper = (props: Props): JSX.Element => {
     const fieldName = props.children.props.name;
     if (fieldName === null) {
-        throw Error("FieldWrapper must be a field with name prop.");
+        throw Error("FieldWrapper's child must be a field with a name prop.");
     }
 
     return (
