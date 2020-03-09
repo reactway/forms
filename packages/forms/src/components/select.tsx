@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useCallback } from "react";
+import React, { useRef, useMemo } from "react";
 import { FieldState, InputFieldData } from "@reactway/forms-core";
 import { FieldRef, useFieldHelpers, useInputField, UseInputFieldEventHooks, InitialInput } from "../helpers";
 import { useFieldContext, FieldContext } from "./field-context";
@@ -27,6 +27,7 @@ const eventHooks: UseInputFieldEventHooks<HTMLSelectElement> = {
         if (multiple) {
             const newValue: string[] = [];
 
+            // Type 'HTMLOptionsCollection' is not an array type or a string type or does not have a '[Symbol.iterator]()' method that returns an iterator.ts(2549)
             // eslint-disable-next-line @typescript-eslint/prefer-for-of
             for (let i = 0; i < event.currentTarget.options.length; i++) {
                 const option = event.currentTarget.options[i];
