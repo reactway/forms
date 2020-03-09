@@ -1,9 +1,9 @@
 import React from "react";
 import classnames from "classnames";
 import { useFieldContext, useStoreState, useFieldId } from "@reactway/forms";
+import { ValidationResultType } from "@reactway/forms-core";
 
 import "./field-wrapper.scss";
-import { ValidationResultType } from "@reactway/forms-core";
 
 interface Props {
     label: string;
