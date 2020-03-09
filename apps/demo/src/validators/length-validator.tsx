@@ -28,13 +28,9 @@ export const LengthValidator = (props: LengthValidatorProps): null => {
                 shouldValidate: value => {
                     return value != null && value.length > 0;
                 },
-                validate: (value, helpers): ValidatorResult => {
+                validate: value => {
                     if (value.length < min) {
                         return [errorMessages.tooShort];
-                    }
-
-                    if (max != null && value.length > max - 2 && value.length <= max) {
-                        return [helpers.warning("Approaching the max length...")];
                     }
 
                     if (max != null && value.length > max) {
