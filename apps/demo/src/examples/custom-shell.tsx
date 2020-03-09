@@ -1,6 +1,6 @@
 import { useState, useRef, useLayoutEffect } from "react";
 import React from "react";
-import { parseNumber } from "@reactway/forms/src";
+import { parseNumber } from "@reactway/forms";
 
 export type InputState = {
     currentValue: number;

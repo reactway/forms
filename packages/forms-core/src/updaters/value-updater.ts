@@ -130,7 +130,9 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
         },
         unregisterModifier: (fieldId, modifierId) => {
             const fieldState = helpers.selectField(fieldId);
-            assertFieldIsDefined(fieldState, fieldId);
+            if (fieldState == null) {
+                return;
+            }
 
             if (!isInputFieldData(fieldState.data)) {
                 throw new Error("Not implemented.");

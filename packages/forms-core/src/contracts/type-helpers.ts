@@ -23,3 +23,5 @@ export type Mutable<T> = {
 export type DeepMutable<T> = {
     -readonly [TProperty in keyof T]: DeepMutable<T[TProperty]>;
 };
+
+export type OmitStrict<T, TKeys extends keyof T> = Omit<T, TKeys>;

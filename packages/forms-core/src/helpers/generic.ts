@@ -6,7 +6,8 @@ import {
     FieldState,
     Updater,
     DefaultFieldState,
-    FieldSelector
+    FieldSelector,
+    InputValues
 } from "../contracts";
 import { IdSeparator } from "../constants";
 import { ValueUpdaterFactory, ValidationUpdaterFactory, StatusUpdaterFactory } from "../updaters";
@@ -67,7 +68,31 @@ export function getDefaultStatuses(): FieldStatus {
     };
 }
 
-export function getDefaultValues<TValue, TRenderValue>(
+export function getInputValues<TValue, TRenderValue>(
+    defaultValue: TValue,
+    initialValue?: TValue,
+    currentValue?: TValue,
+    transientValue?: TRenderValue
+): InputValues<TValue, TRenderValue> {
+    // Triple equals to `undefined`, because `null` might be a valid value.
+    if (initialValue === undefined) {
+        initialValue = defaultValue;
+    }
+
+    // Triple equals to `undefined`, because `null` might be a valid value.
+    if (currentValue === undefined) {
+        currentValue = initialValue;
+    }
+
+    return {
+        defaultValue,
+        initialValue,
+        currentValue,
+        transientValue
+    };
+}
+
+export function getInitialInputData<TValue, TRenderValue>(
     defaultValue: TValue,
     initialValue?: TValue,
     currentValue?: TValue,

@@ -5,7 +5,8 @@ import {
     StatusUpdater,
     FieldHelpers,
     constructFieldHelpers,
-    FieldSelector
+    FieldSelector,
+    FieldStateData
 } from "@reactway/forms-core";
 import { useState, useEffect } from "react";
 import { useFieldContext } from "../components";
@@ -31,21 +32,21 @@ export interface UseFieldResult<TElement, TFieldState extends FieldState<any, an
 }
 
 export function useFieldId(fieldName: string, parentId: string | undefined): string {
-    const [fieldId] = useState(generateFieldId(fieldName, parentId));
+    const [fieldId] = useState(() => generateFieldId(fieldName, parentId));
 
-    // Compliance check.
-    useEffect(() => {
-        return () => {
-            throw new Error(
-                `Field name and its parentId should never change during the lifecycle of the field. parentId: ${parentId}, fieldName: ${fieldName}`
-            );
-        };
-    }, [fieldName, parentId]);
+    // TODO: Compliance check.
+    // useEffect(() => {
+    //     return () => {
+    //         throw new Error(
+    //             `Field name and its parentId should never change during the lifecycle of the field. parentId: ${parentId}, fieldName: ${fieldName}`
+    //         );
+    //     };
+    // }, [fieldName, parentId]);
 
     return fieldId;
 }
 
-export function useField<TElement, TFieldState extends FieldState<any, any>>(
+export function useField<TElement, TFieldState extends FieldState<any, TData>, TData extends {} = FieldStateData<TFieldState>>(
     fieldName: string,
     fieldRef: FieldRef | undefined,
     initialStateFactory: () => Initial<TFieldState>

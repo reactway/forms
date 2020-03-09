@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldState, Initial, getDefaultValues, InputFieldData } from "@reactway/forms-core";
+import { FieldState, Initial, getInitialInputData, InputFieldData } from "@reactway/forms-core";
 import { useField, FieldRef, useFieldHelpers } from "../helpers";
 import { FieldContext, useFieldContext } from "./field-context";
 
@@ -21,7 +21,7 @@ const initialState = (defaultValue: RadioGroupValue, initialValue: RadioGroupVal
     return {
         computedValue: false,
         data: {
-            ...getDefaultValues(defaultValue, initialValue)
+            ...getInitialInputData(defaultValue, initialValue)
         },
         getValue: state => {
             return state.data.currentValue;
