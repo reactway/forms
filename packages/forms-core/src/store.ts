@@ -13,9 +13,11 @@ let count = 0;
 let handlerCallsCount = 0;
 let handlersCount = 0;
 
-setInterval(() => {
-    console.log(`Total updates: ${count}, handlers: ${handlersCount}, handler calls: ${handlerCallsCount}`);
-}, 1000);
+if (process.env.NODE_ENV === "development") {
+    setInterval(() => {
+        console.log(`Total updates: ${count}, handlers: ${handlersCount}, handler calls: ${handlerCallsCount}`);
+    }, 1000);
+}
 
 export class Store<TState extends FieldState<any, any>> {
     constructor(initialStateFactory: () => TState, updatersFactories?: UpdatersFactories) {

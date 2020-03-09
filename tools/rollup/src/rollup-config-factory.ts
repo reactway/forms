@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import builtins from "builtin-modules";
 import { terser } from "rollup-plugin-terser";
+import replace from "@rollup/plugin-replace";
 
 export interface RollupConfigFactoryOptions {
     dependencies: string[];
@@ -12,7 +13,7 @@ export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputO
     return {
         input: "src/index.ts",
         output: [
-        {
+            {
                 file: "dist/index.js",
                 format: "cjs"
             },
@@ -28,6 +29,9 @@ export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputO
             typescript({
                 composite: false,
                 target: "ES2015"
+            }),
+            replace({
+                "process.env.NODE_ENV": `"production"`
             }),
             terser()
         ]
