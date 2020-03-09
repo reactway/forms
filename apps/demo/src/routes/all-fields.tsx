@@ -23,7 +23,10 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                 </FieldWrapper>
                 <FieldWrapper label="Password">
                     <TextInput type="password" name="password">
-                        <LengthValidator max={10} errorMessages={{ tooLong: "FirstName is too long.", tooShort: "" }} />
+                        <LengthValidator
+                            max={10}
+                            errorMessages={{ tooLong: "Password is too long.", tooShort: "Password is too short." }}
+                        />
                     </TextInput>
                 </FieldWrapper>
                 <FieldWrapper label="Amount">

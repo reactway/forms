@@ -47,9 +47,11 @@ export const Checkbox = (props: CheckboxProps): JSX.Element => {
         elementRef: checkboxRef,
         initialStateFactory: () => initialState(),
         eventHooks,
-        defaultValue: defaultValue,
-        initialValue: initialValue,
-        currentValue: value
+        values: {
+            defaultValue: defaultValue,
+            initialValue: initialValue,
+            currentValue: value
+        }
     });
 
     const { value: elementValue, ...rest } = inputElementProps;

@@ -55,9 +55,11 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
         fieldRef: fieldRef,
         elementRef: textRef,
         initialStateFactory: () => initialState(),
-        defaultValue: defaultValue,
-        initialValue: initialValue,
-        currentValue: value
+        values: {
+            defaultValue: defaultValue,
+            initialValue: initialValue,
+            currentValue: value
+        }
     });
     const helpers = useInputFieldHelpers(fieldId);
 
