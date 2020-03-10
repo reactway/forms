@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { useStoreState, useFieldRef, TextInput, ValidationResults, Group, ResetButton, ClearButton, SubmitButton } from "@reactway/forms";
 import { ValidationUpdater } from "@reactway/forms-core";
 import { StoreResult } from "../components/store-result";

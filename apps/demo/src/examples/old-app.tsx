@@ -109,7 +109,7 @@ const FormRender = (props: {
     return <>{props.children(state, store)}</>;
 };
 
-const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
+export const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
     const { children, ...restProps } = props;
     // setTimeout(() => console.clear());
     return (
@@ -126,7 +126,7 @@ const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element =
     );
 };
 
-const Test = (): JSX.Element => {
+export const Test = (): JSX.Element => {
     const [value, setValue] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onClick = (): void => {
@@ -375,7 +375,6 @@ export const App = (): JSX.Element => {
                 className="form-debug-container"
                 onSubmit={async (event, store, validationHelpers) => {
                     const formValue = store.helpers.getFormValue() as FormValue;
-                    console.log(JSON.stringify(formValue, null, 4));
 
                     await new Promise(resolve => setTimeout(resolve, 1000));
 
