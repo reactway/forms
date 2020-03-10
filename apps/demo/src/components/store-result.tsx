@@ -1,5 +1,5 @@
 import React from "react";
-import { useStoreState } from "@reactway/forms/src";
+import { useStoreState } from "@reactway/forms";
 
 export const StoreResult = (): JSX.Element => {
     const { state } = useStoreState(() => [], []);
