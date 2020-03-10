@@ -15,6 +15,7 @@ export interface TextInputProps {
     // TODO: AutoFocus?
     autoFocus?: boolean;
     inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
 
     children?: React.ReactNode;
 }
@@ -43,7 +44,17 @@ const initialState = (): InitialInput<TextInputState> => {
 };
 
 export const TextInput = (props: TextInputProps): JSX.Element => {
-    const { name, defaultValue = "", initialValue, value, children, fieldRef, type = "text", ...restProps } = props;
+    const {
+        name,
+        defaultValue = "",
+        initialValue,
+        value,
+        children,
+        fieldRef,
+        type = "text",
+        onBlur: onBlurFromProps,
+        ...restProps
+    } = props;
 
     // TODO: Check `type` prop if we support it. (Only text and password).
 
@@ -72,6 +83,14 @@ export const TextInput = (props: TextInputProps): JSX.Element => {
             textState.data.initialValue = initialValue ?? defaultValue;
         });
     }, [defaultValue, fieldId, initialValue, store]);
+
+    const onBlurFromInputElementProps = inputElementProps.onBlur;
+    inputElementProps.onBlur = event => {
+        onBlurFromInputElementProps(event);
+        if (!event.isPropagationStopped()) {
+            onBlurFromProps?.(event);
+        }
+    };
 
     // TODO: Handle defaultValue, initialValue and other prop changes.
     return (

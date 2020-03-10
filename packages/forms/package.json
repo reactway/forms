@@ -1,46 +1,48 @@
 {
     "name": "@reactway/forms",
-    "version": "1.0.0-alpha.1",
     "description": "React forms.",
-    "main": "dist/index.js",
-    "module": "dist/index.es.js",
-    "types": "dist/index.d.ts",
-    "scripts": {
-        "build": "tsc -b .",
-        "test": "eslint \"src/**/*.ts*\"",
-        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly --declarationMap false",
-        "watch": "tsc -b . -w"
-    },
+    "version": "1.0.0-alpha.1",
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
-    "license": "MIT",
-    "files": [
-        "dist",
-        "*.js",
-        "*.d.ts",
-        "!*.config.js",
-        "!dist/_debug*"
-    ],
     "dependencies": {
         "@reactway/forms-core": "1.0.0-alpha.1",
         "@types/shortid": "^0.0.29",
+        "debug": "^4.1.1",
         "immer": "^5.2.1",
         "shortid": "^2.2.15",
         "utility-types": "^3.10.0"
     },
-    "peerDependencies": {
-        "react": "^16.8.3"
-    },
     "devDependencies": {
         "@reactway-tools/rollup": "0.0.0",
-        "rollup": "1.32.0",
-        "@reactway/eslint-config": "1.0.1",
+        "@reactway/eslint-config": "^1.0.1",
+        "@types/debug": "^4.1.5",
         "@types/jest": "^24.0.25",
         "@types/node": "^13.1.6",
         "@types/react": "^16.9.17",
         "eslint": "^6.8.0",
         "jest": "^24.9.0",
         "prettier": "^1.19.1",
+        "rollup": "1.32.0",
         "ts-jest": "^24.3.0",
-        "typescript": "^3.7.5"
-    }
+        "typescript": "3.8.3"
+    },
+    "files": [
+        "!*.config.js",
+        "!dist/_debug*",
+        "*.d.ts",
+        "*.js",
+        "dist"
+    ],
+    "license": "MIT",
+    "main": "dist/index.js",
+    "module": "dist/index.es.js",
+    "peerDependencies": {
+        "react": "^16.12.0"
+    },
+    "scripts": {
+        "build": "tsc -b .",
+        "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly --declarationMap false",
+        "test": "eslint \"src/**/*.ts*\"",
+        "watch": "tsc -b . -w"
+    },
+    "types": "dist/index.d.ts"
 }
