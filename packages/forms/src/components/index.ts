@@ -12,3 +12,4 @@ export * from "./reset-button";
 export * from "./clear-button";
 export * from "./select";
 export * from "./hidden";
+export * from "./permanent";
