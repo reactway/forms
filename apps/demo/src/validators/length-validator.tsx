@@ -1,4 +1,3 @@
-import { ValidatorResult } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
 
 export interface LengthValidatorMessages {

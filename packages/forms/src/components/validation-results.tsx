@@ -1,13 +1,13 @@
 import React from "react";
 import { ValidationResultType, FieldSelector } from "@reactway/forms-core";
-import { useStoreState } from "../helpers";
+import { useFieldContext } from "./field-context";
 
 export interface ValidationResultsProps {
     fieldSelector: FieldSelector | undefined;
 }
 
 export const ValidationResults = (props: ValidationResultsProps): JSX.Element | null => {
-    const { store } = useStoreState();
+    const { store } = useFieldContext();
 
     if (props.fieldSelector == null) {
         return null;

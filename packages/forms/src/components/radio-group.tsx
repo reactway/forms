@@ -26,7 +26,7 @@ const initialState = (defaultValue: RadioGroupValue, initialValue: RadioGroupVal
         getValue: state => {
             return state.data.currentValue;
         },
-        setValue: (state, value) => {
+        setValue: (_state, _value) => {
             throw new Error("Not implemented.");
         }
     };

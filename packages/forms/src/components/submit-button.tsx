@@ -7,7 +7,7 @@ export interface SubmitProps {
 }
 
 export const SubmitButton = (props: SubmitProps): JSX.Element => {
-    const { state } = useStoreState();
+    const { state } = useStoreState(() => ["formData.data.isSubmitting"], []);
     const formData = state as FormState;
 
     const { children = "Submit" } = props;

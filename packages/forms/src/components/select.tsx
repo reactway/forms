@@ -14,7 +14,7 @@ const initialState = (): InitialInput<SelectState> => {
         getValue: state => {
             return state.data.currentValue;
         },
-        setValue: (state, value) => {
+        setValue: (_state, _value) => {
             throw new Error("Not implemented.");
         }
     };
@@ -46,23 +46,6 @@ const eventHooks: UseInputFieldEventHooks<HTMLSelectElement> = {
 function isOptionComponent(component: React.ReactNode): component is React.ReactElement<{ value: string; selected?: boolean }> {
     const x = component as any;
     return typeof x === "object" && x != null && x.type != null && typeof x.props.value === "string";
-}
-
-function resolveValueFromChildren(children: React.ReactNode, multiple = false): string | string[] | undefined {
-    const options = React.Children.toArray(children)
-        .filter(isOptionComponent)
-        .map(x => ({ value: x.props.value, selected: x.props.selected }));
-
-    if (multiple) {
-        return options.filter(x => x.selected === true).map(x => x.value);
-    }
-
-    if (options.length === 0) {
-        return undefined;
-    }
-
-    // If select does not have multiple options, then we need to get the first option value.
-    return options[0].value;
 }
 
 function resolveOptionValuesFromChildren(children: React.ReactNode): Array<{ value: string; selected: boolean }> {
@@ -113,13 +96,13 @@ export const Select = (props: SelectProps): JSX.Element => {
 
     const selectOptions = resolveOptionValuesFromChildren(props.children);
     const cachedOptions = useMemo(() => {
-        console.log("cachedOptions");
         return selectOptions;
+        // Making sure that all children are the same in primitive manner.
+        // If order is changed, we still need to make sure that we get correct first (initial) option.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(selectOptions)]);
 
     const initialValue = useMemo(() => {
-        console.log("initialValue");
-
         if (propsInitialValue != null) {
             return propsInitialValue;
         }

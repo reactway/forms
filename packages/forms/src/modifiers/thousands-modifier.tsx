@@ -1,4 +1,7 @@
+import { formsLogger } from "@reactway/forms-core";
 import { useModifier } from "../helpers";
+
+const logger = formsLogger.extend("ThousandsModifier");
 
 export interface ThousandsModifierProps {
     thousandsSeparator?: string;
@@ -7,12 +10,12 @@ export interface ThousandsModifierProps {
 export const ThousandsModifier = (props: ThousandsModifierProps): null => {
     const { thousandsSeparator = "," } = props;
 
-    console.error("DO NOT USE. FOR TESTING MODIFIERS ONLY. NOT PRODUCTION READY AT ALL.")
+    console.error("DO NOT USE. FOR TESTING MODIFIERS ONLY. NOT PRODUCTION READY AT ALL.");
 
     useModifier<string, string>(() => {
         return {
             format: currentValue => {
-                console.log(ThousandsModifier.name, currentValue);
+                logger(ThousandsModifier.name, currentValue);
                 const stringValue = currentValue.toString();
                 const parts = stringValue.split(".");
 
@@ -23,7 +26,7 @@ export const ThousandsModifier = (props: ThousandsModifierProps): null => {
                 }
                 return `${thousands}.${parts[1]}`;
             },
-            parse: (current, previous) => {
+            parse: current => {
                 let caretPosition: number | undefined = undefined;
                 if (current.caretPosition != null) {
                     caretPosition = current.caretPosition;

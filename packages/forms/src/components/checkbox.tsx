@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { FieldState, InputFieldData } from "@reactway/forms-core";
 import { useInputField, UseInputFieldEventHooks, FieldRef, InitialInput } from "../helpers";
-import { createSecureContext } from "tls";
 
 export type CheckboxValue = boolean | null;
 
@@ -17,7 +16,7 @@ const initialState = (): InitialInput<CheckboxState> => {
         getValue: state => {
             return state.data.currentValue;
         },
-        setValue: (state, value) => {
+        setValue: (_state, _value) => {
             throw new Error("Not implemented.");
         }
     };

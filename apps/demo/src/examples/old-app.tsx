@@ -13,21 +13,12 @@ import {
     FormProps,
     ClearButton
 } from "@reactway/forms";
-import {
-    FieldState,
-    Store,
-    ValidationResultType,
-    ValidationUpdater,
-    NestedDictionary,
-    ValidationResultOrString,
-    FieldSelector
-} from "@reactway/forms-core";
+import { ValidationUpdater, NestedDictionary, ValidationResultOrString } from "@reactway/forms-core";
 import JSONTree from "react-json-tree";
 import { FormsRegistry } from "../forms-registry";
 import { LengthValidator } from "../validators/length-validator";
 import { UsernameValidator } from "../validators/username-validator";
 import { WaitValidator } from "../validators/wait-validator";
-import Loader from "../assets/loader.svg";
 
 import { PersonContactsValidator } from "../validators/person-validator";
 import { Validator } from "../validators/validator";
@@ -96,20 +87,11 @@ const StoreStateJson = (props: any): JSX.Element => {
 };
 
 const StoreResult = (): JSX.Element => {
-    const { state } = useStoreState();
+    const { state } = useStoreState(() => [], []);
     return <pre className="store-result">{JSON.stringify(state.getValue(state), null, 4)}</pre>;
 };
 
-const FormRender = (props: {
-    fieldDeps?: FieldSelector[];
-    children: (state: FieldState<any, any>, store: Store<FieldState<any, any>>) => React.ReactNode;
-}): JSX.Element => {
-    const { state, store } = useStoreState();
-
-    return <>{props.children(state, store)}</>;
-};
-
-const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
+export const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element => {
     const { children, ...restProps } = props;
     // setTimeout(() => console.clear());
     return (
@@ -126,7 +108,7 @@ const Layout = (props: FormProps & { children: React.ReactNode }): JSX.Element =
     );
 };
 
-const Test = (): JSX.Element => {
+export const Test = (): JSX.Element => {
     const [value, setValue] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const onClick = (): void => {
@@ -153,65 +135,6 @@ const Test = (): JSX.Element => {
                         {/* <LengthValidatorAsync min={5} max={10} wait={500} /> */}
                     </TextInput>
                     <ResetButton />
-                    <FormRender fieldDeps={firstNameRef.fieldSelector == null ? undefined : [firstNameRef.fieldSelector]}>
-                        {(_state, store) => {
-                            {
-                                /* <FormRender fieldDeps={personGroupRef.fieldId == null ? undefined : [personGroupRef.fieldId]}> */
-                            }
-                            if (firstNameRef.fieldSelector == null) {
-                                return null;
-                            }
-
-                            const fieldState = store.helpers.selectField(firstNameRef.fieldSelector);
-                            if (fieldState == null) {
-                                return null;
-                            }
-
-                            const warnings = fieldState.validation.results.filter(x => x.type === ValidationResultType.Warning);
-                            const errors = fieldState.validation.results.filter(x => x.type === ValidationResultType.Error);
-
-                            const cancelButton = (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        fieldState.validation.currentValidation?.cancellationToken.cancel();
-                                    }}
-                                >
-                                    Cancel validation
-                                </button>
-                            );
-
-                            const loader =
-                                fieldState.validation.currentValidation != null ? (
-                                    <>
-                                        <img key="validation-loader" src={Loader.src} width={25} />
-                                        {cancelButton}
-                                    </>
-                                ) : null;
-
-                            return (
-                                <div>
-                                    {loader}
-                                    {warnings.length === 0 ? null : (
-                                        <div>
-                                            Warnings:
-                                            {warnings.map((warning, index) => (
-                                                <div key={`warning-${index}`}>{warning.message}</div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    {errors.length === 0 ? null : (
-                                        <div>
-                                            Errors:
-                                            {errors.map((error, index) => (
-                                                <div key={`error-${index}`}>{error.message}</div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        }}
-                    </FormRender>
                 </label>
                 <label>
                     Last name
@@ -257,7 +180,7 @@ const Test = (): JSX.Element => {
 };
 
 const ValidatorsOrderTest = (): JSX.Element => {
-    const { store } = useStoreState(["test"]);
+    const { store } = useFieldContext();
 
     const personFieldRef = useFieldRef();
     const firstNameRef = useFieldRef();
@@ -375,7 +298,6 @@ export const App = (): JSX.Element => {
                 className="form-debug-container"
                 onSubmit={async (event, store, validationHelpers) => {
                     const formValue = store.helpers.getFormValue() as FormValue;
-                    console.log(JSON.stringify(formValue, null, 4));
 
                     await new Promise(resolve => setTimeout(resolve, 1000));
 

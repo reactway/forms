@@ -15,7 +15,7 @@ let handlersCount = 0;
 
 if (process.env.NODE_ENV === "development") {
     setInterval(() => {
-        console.log(`Total updates: ${count}, handlers: ${handlersCount}, handler calls: ${handlerCallsCount}`);
+        console.info(`Total updates: ${count}, handlers: ${handlersCount}, handler calls: ${handlerCallsCount}`);
     }, 1000);
 }
 

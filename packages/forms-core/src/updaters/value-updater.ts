@@ -1,6 +1,7 @@
 import shortid from "shortid";
 import { ValueUpdater, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelection, ParseValue } from "../contracts";
 import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
+import { formsLogger } from "../logger";
 
 export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
     const valueUpdater: ValueUpdater = {
@@ -83,9 +84,7 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
 
             fieldState.data.currentValue = newValue;
             fieldState.data.transientValue = transientValue;
-            console.group("Setting new selection to:");
-            console.log(Object.assign({}, newSelection));
-            console.groupEnd();
+            formsLogger.log("Setting new selection to:", Object.assign({}, newSelection));
             fieldState.data.selection = newSelection;
         },
         resetFieldValue: fieldId => {
