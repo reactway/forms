@@ -17,7 +17,7 @@ const initialState = (defaultValue: unknown, initialValue: unknown | undefined, 
         getValue: state => {
             return state.data.currentValue;
         },
-        setValue: (state, value) => {
+        setValue: (_state, _value) => {
             throw new Error("Not implemented.");
         }
     };

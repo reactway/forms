@@ -10,6 +10,7 @@ export function StatusUpdaterFactory(helpers: UpdateStoreHelpers, state: FieldSt
 
             assertFieldIsDefined(fieldState, fieldSelector);
 
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             const prevStatus = produce(fieldState.status, () => {});
 
             let statusPatches: Patch[];

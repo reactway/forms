@@ -8,6 +8,4 @@
 //     initialStateFactory: () => Initial<TFieldState>
 // ): UseFieldResult<TElement, TFieldState> {
 //     const fieldResult = useField(fieldName, fieldRef, initialStateFactory);
-
-
 // }
