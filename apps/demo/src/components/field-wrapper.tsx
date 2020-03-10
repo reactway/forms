@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { useFieldContext, useStoreState, useFieldId } from "@reactway/forms";
+import { useFieldContext, useFieldId } from "@reactway/forms";
 import { ValidationResultType } from "@reactway/forms-core";
 
 import "./field-wrapper.scss";
@@ -26,8 +26,7 @@ export const FieldWrapper = (props: Props): JSX.Element => {
 };
 
 const ValidationContainer = (props: { fieldName: string }): JSX.Element | null => {
-    const { parentId } = useFieldContext();
-    const { store } = useStoreState();
+    const { parentId, store } = useFieldContext();
     const fieldId = useFieldId(props.fieldName, parentId);
     const fieldState = store.helpers.selectField(fieldId);
 

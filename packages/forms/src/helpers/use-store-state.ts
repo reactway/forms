@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
-import { FieldState, Store } from "@reactway/forms-core";
+import { useState, useEffect, DependencyList, useMemo } from "react";
+import { FieldState } from "@reactway/forms-core";
 import { useFieldContext } from "../components";
 
 export function useStoreState<TFieldState extends FieldState<any, any>>(
-    fieldDeps?: string[]
+    fieldDepsFactory: () => string[],
+    deps: DependencyList
 ): {
     state: FieldState<any, any>;
-    store: Store<FieldState<any, any>>;
 } {
     const { store } = useFieldContext();
     const [state, setState] = useState<TFieldState>(store.getState() as TFieldState);
+
+    const fieldDeps = useMemo(fieldDepsFactory, deps);
 
     useEffect(() => {
         const update = (): void => {
@@ -22,7 +24,6 @@ export function useStoreState<TFieldState extends FieldState<any, any>>(
     }, [fieldDeps, store]);
 
     return {
-        state,
-        store
+        state
     };
 }

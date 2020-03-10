@@ -83,7 +83,7 @@ const StoreStateJson = (props: any): JSX.Element => {
 };
 
 const StoreResult = (): JSX.Element => {
-    const { state } = useStoreState();
+    const { state } = useStoreState(() => [], []);
     return <pre className="store-result">{JSON.stringify(state.getValue(state), null, 4)}</pre>;
 };
 

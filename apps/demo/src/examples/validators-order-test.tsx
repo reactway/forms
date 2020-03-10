@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { useStoreState, useFieldRef, TextInput, ValidationResults, Group, ResetButton, ClearButton, SubmitButton } from "@reactway/forms";
+import { useFieldRef, TextInput, ValidationResults, Group, ResetButton, ClearButton, SubmitButton, useFieldContext } from "@reactway/forms";
 import { ValidationUpdater } from "@reactway/forms-core";
 import { StoreResult } from "../components/store-result";
 import { Validator } from "../validators/validator";
 import { WaitValidator } from "../validators/wait-validator";
 
 export const ValidatorsOrderTest = (): JSX.Element => {
-    const { store } = useStoreState(["test"]);
+    const { store } = useFieldContext();
 
     const personFieldRef = useFieldRef();
     const firstNameRef = useFieldRef();
