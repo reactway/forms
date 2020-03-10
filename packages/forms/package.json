@@ -41,7 +41,7 @@
     "scripts": {
         "build": "tsc -b .",
         "build:prod": "rollup -c && tsc -p . --emitDeclarationOnly --declarationMap false",
-        "test": "eslint \"src/**/*.ts*\"",
+        "test": "tsc -p . --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
         "watch": "tsc -b . -w"
     },
     "types": "dist/index.d.ts"
