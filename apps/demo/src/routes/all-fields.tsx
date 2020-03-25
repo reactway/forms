@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RouteComponentProps } from "@reach/router";
 
-import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select, ClearButton, HiddenInput } from "@reactway/forms";
+import { Form, TextInput, NumberInput, RadioGroup, RadioButton, Select, ClearButton, HiddenInput, FieldsArray } from "@reactway/forms";
 import { StoreResult } from "../components/store-result";
 import { FieldWrapper } from "../components/field-wrapper";
 import { LengthValidator } from "../validators/length-validator";
@@ -60,6 +60,15 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                         <option value="audi">Audi</option>
                     </Select>
                 </FieldWrapper>
+                <FieldsArray name="array">
+                    {({ name }) => {
+                        return (
+                            <FieldWrapper label={`FieldArray (${name})`}>
+                                <TextInput name={name} />
+                            </FieldWrapper>
+                        );
+                    }}
+                </FieldsArray>
                 <ClearButton />
                 <StoreResult />
             </Form>
