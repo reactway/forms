@@ -63,7 +63,7 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                 <FieldsArray name="array">
                     {({ name }) => {
                         return (
-                            <FieldWrapper label={`FieldArray (${name})`}>
+                            <FieldWrapper key={name} label={`FieldArray (${name})`}>
                                 <TextInput name={name} />
                             </FieldWrapper>
                         );

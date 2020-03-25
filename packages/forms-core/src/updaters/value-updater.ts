@@ -3,6 +3,8 @@ import { ValueUpdater, UpdateStoreHelpers, FieldModifier, Dictionary, TextSelect
 import { assertFieldIsDefined, isInputFieldData } from "../helpers/generic";
 import { formsLogger } from "../logger";
 
+const logger = formsLogger.extend("value-updater");
+
 export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
     const valueUpdater: ValueUpdater = {
         id: "value",
@@ -84,7 +86,7 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
 
             fieldState.data.currentValue = newValue;
             fieldState.data.transientValue = transientValue;
-            formsLogger("Setting new selection to:", Object.assign({}, newSelection));
+            logger("Setting new selection to:", Object.assign({}, newSelection));
             fieldState.data.selection = newSelection;
         },
         resetFieldValue: fieldId => {
