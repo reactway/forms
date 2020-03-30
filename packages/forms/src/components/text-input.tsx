@@ -5,21 +5,6 @@ import { useInputField, FieldRef, useInputFieldHelpers, InitialInput } from "../
 
 import { useFieldContext, FieldContext } from "./field-context";
 
-export interface TextInputProps {
-    name: string;
-    type?: "text" | "password";
-    fieldRef?: FieldRef;
-    initialValue?: string;
-    defaultValue?: string;
-    value?: string;
-    // TODO: AutoFocus?
-    autoFocus?: boolean;
-    inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
-    onBlur?: React.FocusEventHandler<HTMLInputElement>;
-
-    children?: React.ReactNode;
-}
-
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TextInputData extends InputFieldData<string, string> {
     strict: string;
@@ -42,6 +27,25 @@ const initialState = (): InitialInput<TextInputState> => {
         }
     };
 };
+
+interface BaseTextInputProps {
+    name: string;
+    type?: "text" | "password";
+    fieldRef?: FieldRef;
+    initialValue?: string;
+    defaultValue?: string;
+    value?: string;
+    // TODO: AutoFocus?
+    autoFocus?: boolean;
+    inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
+
+    children?: React.ReactNode;
+}
+
+type HTMLProps = Omit<React.HTMLProps<HTMLInputElement>, keyof BaseTextInputProps | "ref">;
+
+export interface TextInputProps extends BaseTextInputProps, HTMLProps {}
 
 export const TextInput = (props: TextInputProps): JSX.Element => {
     const {
