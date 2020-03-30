@@ -2,7 +2,7 @@ import { InputOptions, OutputOptions } from "rollup";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import builtins from "builtin-modules";
-import { terser } from "rollup-plugin-terser";
+// import { terser } from "rollup-plugin-terser";
 import replace from "@rollup/plugin-replace";
 
 export interface RollupConfigFactoryOptions {
@@ -33,7 +33,7 @@ export function rollupConfigFactory(options: RollupConfigFactoryOptions): InputO
             replace({
                 "process.env.NODE_ENV": `"production"`
             }),
-            terser()
+            // terser()
         ]
     };
 }
