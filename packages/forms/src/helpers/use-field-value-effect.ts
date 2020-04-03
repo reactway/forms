@@ -28,7 +28,9 @@ export function useFieldValueEffect<TValue>(fieldId: string, defaultValue: TValu
 
             fieldState.data.defaultValue = defaultValue;
             fieldState.data.initialValue = initialValue;
-            fieldState.data.currentValue = currentValue;
+            if (currentValue === undefined) {
+                fieldState.data.currentValue = currentValue;
+            }
         });
 
         setPrevValues({
