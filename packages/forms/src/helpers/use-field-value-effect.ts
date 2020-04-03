@@ -27,7 +27,7 @@ export function useFieldValueEffect<TValue>(fieldId: string, defaultValue: TValu
             assertFieldIsDefined(fieldState);
 
             fieldState.data.defaultValue = defaultValue;
-            fieldState.data.initialValue = initialValue;
+            fieldState.data.initialValue = initialValue === undefined ? defaultValue : initialValue;
             if (currentValue === undefined) {
                 fieldState.data.currentValue = currentValue;
             }
