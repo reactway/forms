@@ -30,7 +30,7 @@ export function useFieldValueEffect<TValue>(fieldId: string, defaultValue: TValu
             // initialValue coming from the prop can become undefined, but it is not a correct value.
             // Thus, it has to fallback to a defaultValue.
             fieldState.data.initialValue = initialValue === undefined ? defaultValue : initialValue;
-            if (currentValue === undefined) {
+            if (currentValue !== undefined) {
                 fieldState.data.currentValue = currentValue;
             }
         });
