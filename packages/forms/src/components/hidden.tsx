@@ -1,5 +1,5 @@
-import React from "react";
-import { FieldState, InputFieldData, Initial, getInitialInputData } from "@reactway/forms-core";
+import React, { useEffect } from "react";
+import { FieldState, InputFieldData, Initial, getInitialInputData, ValidationUpdater } from "@reactway/forms-core";
 
 import { FieldRef, useFieldHelpers, useField } from "../helpers";
 import { useFieldValueEffect } from "../helpers/use-field-value-effect";
@@ -35,10 +35,19 @@ export interface HiddenProps {
 export const HiddenInput = (props: HiddenProps): JSX.Element => {
     const { name, defaultValue = null, initialValue, value, fieldRef } = props;
     const { store, permanent } = useFieldContext();
-    const { id: fieldId } = useField<never, HiddenState>(name, fieldRef, () => initialState(defaultValue, initialValue, value));
+    const { id: fieldId, state } = useField<never, HiddenState>(name, fieldRef, () => initialState(defaultValue, initialValue, value));
     const helpers = useFieldHelpers(fieldId);
 
     useFieldValueEffect(fieldId, defaultValue, initialValue, value);
+
+    const { currentValue } = state.data;
+    useEffect(() => {
+        store.update(storeHelpers => {
+            const validationUpdater = storeHelpers.getUpdater<ValidationUpdater>("validation");
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            validationUpdater.validateField(fieldId);
+        });
+    }, [currentValue, store, fieldId]);
 
     return (
         <FieldContext.Provider
