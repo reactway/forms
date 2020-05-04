@@ -44,7 +44,7 @@ interface BaseTextInputProps {
     children?: React.ReactNode;
 }
 
-export interface TextInputProps extends BaseTextInputProps, HTMLProps<HTMLInputElement> {}
+export interface TextInputProps extends BaseTextInputProps, HTMLProps<HTMLInputElement, BaseTextInputProps> {}
 
 export const TextInput = (props: TextInputProps): JSX.Element => {
     const {
