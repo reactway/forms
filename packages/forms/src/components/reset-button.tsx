@@ -1,15 +1,18 @@
 import React from "react";
 import { ValueUpdater, FieldState, isInputFieldData } from "@reactway/forms-core";
+
+import { HTMLProps } from "../type-helpers";
+
 import { useFieldContext } from "./field-context";
 
-export interface ResetProps {
+export interface ResetProps extends HTMLProps<HTMLButtonElement> {
     children?: React.ReactNode;
 }
 
 export const ResetButton = (props: ResetProps): JSX.Element => {
     const { store } = useFieldContext();
 
-    const { children = "Reset" } = props;
+    const { children = "Reset", ...restProps } = props;
 
     const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
         store.update((helpers, draft) => {
@@ -19,7 +22,7 @@ export const ResetButton = (props: ResetProps): JSX.Element => {
     };
 
     return (
-        <button type="button" onClick={onClick}>
+        <button {...restProps} type="button" onClick={onClick}>
             {children}
         </button>
     );

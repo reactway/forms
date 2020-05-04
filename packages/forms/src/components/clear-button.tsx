@@ -1,15 +1,18 @@
 import React from "react";
 import { ValueUpdater, FieldState, isInputFieldData } from "@reactway/forms-core";
+
+import { HTMLProps } from "../type-helpers";
+
 import { useFieldContext } from "./field-context";
 
-export interface ClearButtonProps {
+export interface ClearButtonProps extends HTMLProps<HTMLButtonElement> {
     children?: React.ReactNode;
 }
 
 export const ClearButton = (props: ClearButtonProps): JSX.Element => {
     const { store } = useFieldContext();
 
-    const { children = "Clear" } = props;
+    const { children = "Clear", ...restProps } = props;
 
     const onClick: React.MouseEventHandler<HTMLButtonElement> = _ => {
         store.update((helpers, draft) => {
@@ -19,7 +22,7 @@ export const ClearButton = (props: ClearButtonProps): JSX.Element => {
     };
 
     return (
-        <button type="button" onClick={onClick}>
+        <button {...restProps} type="button" onClick={onClick}>
             {children}
         </button>
     );

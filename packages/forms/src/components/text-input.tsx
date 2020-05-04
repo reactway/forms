@@ -3,6 +3,7 @@ import { FieldState, assertFieldIsDefined, InputFieldData } from "@reactway/form
 
 import { useInputField, FieldRef, useInputFieldHelpers, InitialInput } from "../helpers";
 
+import { HTMLProps } from "../type-helpers";
 import { useFieldContext, FieldContext } from "./field-context";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -43,9 +44,7 @@ interface BaseTextInputProps {
     children?: React.ReactNode;
 }
 
-type HTMLProps = Omit<React.HTMLProps<HTMLInputElement>, keyof BaseTextInputProps | "ref">;
-
-export interface TextInputProps extends BaseTextInputProps, HTMLProps {}
+export interface TextInputProps extends BaseTextInputProps, HTMLProps<HTMLInputElement> {}
 
 export const TextInput = (props: TextInputProps): JSX.Element => {
     const {
