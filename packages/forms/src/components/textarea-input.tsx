@@ -45,6 +45,7 @@ interface BaseTextInputProps {
 
 export interface TextareaInputProps extends BaseTextInputProps, HTMLProps<HTMLTextAreaElement, BaseTextInputProps> {}
 
+// TODO: Copied from TextInput. We need to test more.
 export const TextareaInput = (props: TextareaInputProps): JSX.Element => {
     const {
         name,
