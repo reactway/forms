@@ -47,17 +47,7 @@ export interface TextareaInputProps extends BaseTextInputProps, HTMLProps<HTMLTe
 
 // TODO: Copied from TextInput. We need to test more.
 export const TextareaInput = (props: TextareaInputProps): JSX.Element => {
-    const {
-        name,
-        defaultValue = "",
-        initialValue,
-        value,
-        children,
-        fieldRef,
-        type = "text",
-        onBlur: onBlurFromProps,
-        ...restProps
-    } = props;
+    const { name, defaultValue = "", initialValue, value, children, fieldRef, onBlur: onBlurFromProps, ...restProps } = props;
 
     // TODO: Check `type` prop if we support it. (Only text and password).
 
