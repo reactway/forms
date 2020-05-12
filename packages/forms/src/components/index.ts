@@ -3,6 +3,7 @@ export * from "./group";
 export * from "./fields-array";
 export * from "./field-context";
 export * from "./text-input";
+export * from "./textarea-input";
 export * from "./number-input";
 export * from "./radio-group";
 export * from "./radio-button";
