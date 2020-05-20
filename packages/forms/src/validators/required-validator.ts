@@ -9,6 +9,7 @@ export interface RequiredValidatorProps {
     errorMessage?: string;
 }
 
+// TODO: Better way of getting not only value but whole data from FieldState.
 export const RequiredValidator = (props: RequiredValidatorProps): null => {
     const { errorMessage = DEFAULT_ERROR_MESSAGE } = props;
     const { store, parentId } = useFieldContext();
