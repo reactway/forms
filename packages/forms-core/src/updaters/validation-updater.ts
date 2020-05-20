@@ -66,7 +66,14 @@ export function ValidationUpdaterFactory(
             mutableValidatorsOrder.splice(validatorOrderIndex, 1);
         },
         setFormErrors: errors => {
+            // TODO: Rename this updater.
             setFormErrors(state, errors);
+        },
+        setFieldValidationResults: (fieldSelector, errors) => {
+            setFieldValidationResults(helpers, fieldSelector, errors);
+        },
+        resetFieldValidationResults: fieldSelector => {
+            resetFieldValidationResults(helpers, fieldSelector);
         }
     };
 }
@@ -276,4 +283,24 @@ function setFormErrors(state: FieldState<any, any>, errors: NestedDictionary<Val
 
         field.validation.results = validationResults;
     }
+}
+
+function setFieldValidationResults(helpers: UpdateStoreHelpers, fieldSelector: FieldSelector, errors: ValidationResultOrString[]): void {
+    const fieldState = helpers.selectField(fieldSelector);
+    assertFieldIsDefined(fieldState);
+
+    fieldState.validation.results = errors.map<ValidationResult>(result =>
+        typeof result !== "string"
+            ? result
+            : {
+                  message: result,
+                  type: ValidationResultType.Error
+              }
+    );
+}
+
+function resetFieldValidationResults(helpers: UpdateStoreHelpers, fieldSelector: FieldSelector): void {
+    const fieldState = helpers.selectField(fieldSelector);
+    assertFieldIsDefined(fieldState);
+    fieldState.validation.results = [];
 }

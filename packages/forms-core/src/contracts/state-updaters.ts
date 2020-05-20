@@ -24,4 +24,6 @@ export interface ValidationUpdater extends Updater<typeof ValidationUpdater> {
     unregisterValidator(fieldSelector: FieldSelector, validatorId: string): void;
     validateField(fieldSelector: FieldSelector): Promise<void>;
     setFormErrors(errors: NestedDictionary<ValidationResultOrString[]>): void;
+    setFieldValidationResults(fieldSelector: FieldSelector, errors: ValidationResultOrString[]): void;
+    resetFieldValidationResults(fieldSelector: FieldSelector): void;
 }
