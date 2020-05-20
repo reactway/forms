@@ -5,20 +5,32 @@ import { ValidationUpdater } from "@reactway/forms-core";
 
 import { FieldWrapper } from "../components/field-wrapper";
 
-const ValidateButton = (props: { fieldName: string }) => {
+const ValidationActionButtons = (props: { fieldName: string }) => {
     const { store } = useFieldContext();
 
-    const onClick = () => {
+    const onSet = () => {
         store.update(helpers => {
             const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
             validationUpdater.setFieldValidationResults(props.fieldName, ["Button click error result."]);
         });
     };
 
+    const onReset = () => {
+        store.update(helpers => {
+            const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+            validationUpdater.resetFieldValidationResults(props.fieldName);
+        });
+    };
+
     return (
-        <button type="button" onClick={onClick}>
-            Set errors
-        </button>
+        <>
+            <button type="button" onClick={onSet}>
+                Set errors
+            </button>
+            <button type="button" onClick={onReset}>
+                Reset errors
+            </button>
+        </>
     );
 };
 
@@ -26,7 +38,7 @@ export const Validation = (_props: RouteComponentProps): JSX.Element => {
     return (
         <div>
             <Form>
-                <ValidateButton fieldName="firstName" />
+                <ValidationActionButtons fieldName="firstName" />
                 <FieldWrapper label="First Name">
                     <TextInput name="firstName" />
                 </FieldWrapper>
