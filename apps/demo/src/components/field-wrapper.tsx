@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
-import { useFieldContext, useFieldId, useStoreState } from "@reactway/forms";
-import { ValidationResultType, constructStoreHelpers } from "@reactway/forms-core";
+import { useFieldContext, useFieldId, useStoreState, RequiredValidator } from "@reactway/forms";
+import { ValidationResultType } from "@reactway/forms-core";
 
 import "./field-wrapper.scss";
 
@@ -18,7 +18,9 @@ export const FieldWrapper = (props: Props): JSX.Element => {
 
     return (
         <label className="field-wrapper">
-            <span>{props.label}</span>
+            <span>
+                {props.label} <RequiredField fieldName={fieldName} />
+            </span>
             {props.children}
             <ValidationContainer fieldName={fieldName} />
         </label>
@@ -28,10 +30,9 @@ export const FieldWrapper = (props: Props): JSX.Element => {
 const ValidationContainer = (props: { fieldName: string }): JSX.Element | null => {
     const { parentId } = useFieldContext();
     const fieldId = useFieldId(props.fieldName, parentId);
-
     const { helpers } = useStoreState(() => [`${fieldId}`], [fieldId]);
-    const fieldState = helpers.selectField(fieldId);
 
+    const fieldState = helpers.selectField(fieldId);
     if (fieldState == null) {
         return null;
     }
@@ -51,4 +52,24 @@ const ValidationContainer = (props: { fieldName: string }): JSX.Element | null =
             ))}
         </div>
     );
+};
+
+const RequiredField = (props: { fieldName: string }): JSX.Element | null => {
+    const { parentId } = useFieldContext();
+    const fieldId = useFieldId(props.fieldName, parentId);
+    const { helpers } = useStoreState(() => [`${fieldId}`], [fieldId]);
+    const fieldState = helpers.selectField(fieldId);
+    if (fieldState == null) {
+        return null;
+    }
+
+    const validators = fieldState.validation.validators;
+
+    const requiredValidatorExists = Object.keys(validators).some(x => validators[x]?.name === RequiredValidator.name);
+
+    if (!requiredValidatorExists) {
+        return null;
+    }
+
+    return <span style={{ color: "red" }}>*</span>;
 };
