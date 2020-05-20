@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
-import { useFieldContext, useFieldId, useStoreState } from "@reactway/forms";
-import { ValidationResultType, constructStoreHelpers } from "@reactway/forms-core";
+import { useFieldContext, useFieldId, useStoreState, RequiredValidator } from "@reactway/forms";
+import { ValidationResultType } from "@reactway/forms-core";
 
 import "./field-wrapper.scss";
 
@@ -57,16 +57,12 @@ const ValidationContainer = (props: { fieldName: string }): JSX.Element | null =
 const RequiredField = (props: { fieldName: string }): JSX.Element | null => {
     const { parentId } = useFieldContext();
     const fieldId = useFieldId(props.fieldName, parentId);
-    const { state } = useStoreState(() => [`${fieldId}`], [fieldId]);
-    if (state == null) {
-        return null;
-    }
-
-    const helpers = constructStoreHelpers(state, {});
+    const { helpers } = useStoreState(() => [`${fieldId}`], [fieldId]);
     const fieldState = helpers.selectField(fieldId);
     if (fieldState == null) {
         return null;
     }
+
     const validators = fieldState.validation.validators;
 
     const requiredValidatorExists = Object.keys(validators).some(x => validators[x]?.name === RequiredValidator.name);
