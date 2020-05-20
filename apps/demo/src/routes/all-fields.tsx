@@ -11,7 +11,8 @@ import {
     Select,
     ClearButton,
     HiddenInput,
-    FieldsArray
+    FieldsArray,
+    RequiredValidator
 } from "@reactway/forms";
 import { StoreResult } from "../components/store-result";
 import { FieldWrapper } from "../components/field-wrapper";
@@ -29,6 +30,7 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                 <HiddenInput name="hidden" value={counter} />
                 <FieldWrapper label="First Name">
                     <TextInput name="firstName">
+                        <RequiredValidator />
                         <LengthValidator max={10} errorMessages={{ tooLong: "FirstName is too long.", tooShort: "" }} />
                     </TextInput>
                 </FieldWrapper>
