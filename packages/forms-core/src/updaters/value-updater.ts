@@ -84,6 +84,7 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
                 };
             }
 
+            fieldState.validation.results = [];
             fieldState.data.currentValue = newValue;
             fieldState.data.transientValue = transientValue;
             logger("Setting new selection to:", Object.assign({}, newSelection));
