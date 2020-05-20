@@ -28,13 +28,10 @@ export const FieldWrapper = (props: Props): JSX.Element => {
 const ValidationContainer = (props: { fieldName: string }): JSX.Element | null => {
     const { parentId } = useFieldContext();
     const fieldId = useFieldId(props.fieldName, parentId);
-    const { state } = useStoreState(() => [`${fieldId}`], [fieldId]);
-    if (state == null) {
-        return null;
-    }
 
-    const helpers = constructStoreHelpers(state, {});
+    const { helpers } = useStoreState(() => [`${fieldId}`], [fieldId]);
     const fieldState = helpers.selectField(fieldId);
+
     if (fieldState == null) {
         return null;
     }
