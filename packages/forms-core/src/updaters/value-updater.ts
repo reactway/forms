@@ -17,8 +17,9 @@ export function ValueUpdaterFactory(helpers: UpdateStoreHelpers): ValueUpdater {
                 throw new Error("Not implemented.");
             }
 
-            const modifiers = fieldState.data.modifiers;
+            fieldState.validation.results = [];
 
+            const modifiers = fieldState.data.modifiers;
             const modifiersKeys = Object.keys(modifiers);
             if (modifiersKeys.length === 0) {
                 // No modifiers found, thus a value is set directly to currentValue.
