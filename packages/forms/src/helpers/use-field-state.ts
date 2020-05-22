@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FieldState, FormSelector } from "@reactway/forms-core";
 import { FieldRef, InternalFieldRef } from "./use-field-ref";
 
-export function useFieldState<TFieldState extends FieldState<any, any>>(fieldRef: FieldRef): TFieldState | undefined {
+export function useFieldState(fieldRef: FieldRef): FieldState<any, any> | undefined {
     const [fieldState, setFieldState] = useState<FieldState<any, any> | undefined>();
     const internalFieldRef = fieldRef as InternalFieldRef & FieldRef;
 
@@ -22,5 +22,5 @@ export function useFieldState<TFieldState extends FieldState<any, any>>(fieldRef
         }, storeListenerDeps);
     }, [internalFieldRef.fieldSelector, internalFieldRef.__internal__store]);
 
-    return fieldState as TFieldState;
+    return fieldState;
 }

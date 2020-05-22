@@ -1,9 +1,8 @@
 import React from "react";
 import { FieldRef, useFieldState } from "@reactway/forms";
-import { FieldState } from "@reactway/forms-core";
 
 interface Props {
-    fieldRef: FieldRef<FieldState<any, any>>;
+    fieldRef: FieldRef;
 }
 
 export const FieldValue = (props: Props) => {
