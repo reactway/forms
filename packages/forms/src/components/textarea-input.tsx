@@ -31,7 +31,7 @@ const initialState = (): InitialInput<TextareaInputState> => {
 
 interface BaseTextInputProps {
     name: string;
-    fieldRef?: FieldRef;
+    fieldRef?: FieldRef<TextareaInputState>;
     initialValue?: string;
     defaultValue?: string;
     value?: string;

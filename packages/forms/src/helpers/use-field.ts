@@ -48,7 +48,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
 
 export function useField<TElement, TFieldState extends FieldState<any, TData>, TData extends {} = FieldStateData<TFieldState>>(
     fieldName: string,
-    fieldRef: FieldRef | undefined,
+    fieldRef: FieldRef<TFieldState> | undefined,
     initialStateFactory: () => Initial<TFieldState>
 ): UseFieldResult<TElement, TFieldState> {
     fieldNameCompliance(fieldName);
@@ -72,14 +72,14 @@ export function useField<TElement, TFieldState extends FieldState<any, TData>, T
     });
 
     if (fieldRef != null) {
-        const mutableRef = fieldRef as MutableFieldRef;
+        const mutableRef = fieldRef as MutableFieldRef<TFieldState>;
         mutableRef.setFieldId(fieldId, store);
     }
 
     useEffect(() => {
         return () => {
             if (fieldRef != null) {
-                const mutableRef = fieldRef as MutableFieldRef;
+                const mutableRef = fieldRef as MutableFieldRef<TFieldState>;
                 mutableRef.setFieldId(undefined, undefined);
             }
         };
