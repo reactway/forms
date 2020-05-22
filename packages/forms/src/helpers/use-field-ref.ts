@@ -6,7 +6,8 @@ type AnyFieldStore = Store<FieldState<any, any>>;
 
 /** @internal */
 export interface InternalFieldRef {
-    __internal__store: AnyStore | undefined;
+    __internal__store: AnyFieldStore | undefined;
+
 }
 
 export interface MutableFieldRef extends FieldRef<FieldState<any, any>> {
