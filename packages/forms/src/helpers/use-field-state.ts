@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { FieldState, FormSelector } from "@reactway/forms-core";
 import { FieldRef, InternalFieldRef } from "./use-field-ref";
 
-export function useFieldState<TFieldState extends FieldState<any, any>>(fieldRef: FieldRef<TFieldState>): TFieldState | undefined {
+export function useFieldState<TFieldState extends FieldState<any, any>>(fieldRef: FieldRef): TFieldState | undefined {
     const [fieldState, setFieldState] = useState<FieldState<any, any> | undefined>();
-    const internalFieldRef = fieldRef as InternalFieldRef & FieldRef<TFieldState>;
+    const internalFieldRef = fieldRef as InternalFieldRef & FieldRef;
 
     useEffect(() => {
         const store = internalFieldRef.__internal__store;

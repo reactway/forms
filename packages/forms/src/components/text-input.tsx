@@ -32,7 +32,7 @@ const initialState = (): InitialInput<TextInputState> => {
 interface BaseTextInputProps {
     name: string;
     type?: "text" | "password";
-    fieldRef?: FieldRef<TextInputState>;
+    fieldRef?: FieldRef;
     initialValue?: string;
     defaultValue?: string;
     value?: string;

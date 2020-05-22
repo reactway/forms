@@ -1,12 +1,12 @@
 import React from "react";
 import { RouteComponentProps } from "@reach/router";
-import { Form, TextInput, useFieldRef, TextInputState } from "@reactway/forms";
+import { Form, TextInput, useFieldRef } from "@reactway/forms";
 
 import { FieldWrapper } from "../components/field-wrapper";
 import { FieldValue } from "../components/field-value";
 
 export const FieldRef = (_props: RouteComponentProps) => {
-    const textField = useFieldRef<TextInputState>();
+    const textField = useFieldRef();
 
     return (
         <div>

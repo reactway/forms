@@ -153,7 +153,7 @@ export interface InputFieldOptions<
     // TODO: Better to resolve what keys are optional.
 > {
     fieldName: string;
-    fieldRef: FieldRef<TFieldState> | undefined;
+    fieldRef: FieldRef | undefined;
     elementRef: React.RefObject<TElement>;
     initialStateFactory: () => InitialInput<TFieldState, TData>;
     eventHooks?: UseInputFieldEventHooks<TElement>;

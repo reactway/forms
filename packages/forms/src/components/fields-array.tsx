@@ -45,7 +45,7 @@ export interface FieldsArrayItem {
 
 export interface FieldsArrayProps {
     name: string;
-    fieldRef?: FieldRef<FieldsArrayState>;
+    fieldRef?: FieldRef;
     permanent?: boolean;
 
     initialCount?: number;

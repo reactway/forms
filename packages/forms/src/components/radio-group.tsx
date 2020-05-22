@@ -7,7 +7,7 @@ export type RadioGroupValue = string | number | null;
 
 export interface RadioGroupProps {
     name: string;
-    fieldRef?: FieldRef<RadioGroupState>;
+    fieldRef?: FieldRef;
     defaultValue?: RadioGroupValue;
     initialValue?: RadioGroupValue;
 }

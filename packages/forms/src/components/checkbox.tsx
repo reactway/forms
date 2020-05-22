@@ -30,7 +30,7 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
 
 export interface CheckboxProps {
     name: string;
-    fieldRef?: FieldRef<CheckboxState>;
+    fieldRef?: FieldRef;
     defaultValue?: CheckboxValue;
     initialValue?: CheckboxValue;
     value?: CheckboxValue;
