@@ -48,7 +48,7 @@ export function useFieldId(fieldName: string, parentId: string | undefined): str
 
 export function useField<TElement, TFieldState extends FieldState<any, TData>, TData extends {} = FieldStateData<TFieldState>>(
     fieldName: string,
-    fieldRef: FieldRef | undefined,
+    fieldRef: FieldRef<TFieldState> | undefined,
     initialStateFactory: () => Initial<TFieldState>
 ): UseFieldResult<TElement, TFieldState> {
     fieldNameCompliance(fieldName);
@@ -72,15 +72,15 @@ export function useField<TElement, TFieldState extends FieldState<any, TData>, T
     });
 
     if (fieldRef != null) {
-        const mutableRef = fieldRef as MutableFieldRef;
-        mutableRef.setFieldId(fieldId);
+        const mutableRef = fieldRef as MutableFieldRef<TFieldState>;
+        mutableRef.setFieldId(fieldId, store);
     }
 
     useEffect(() => {
         return () => {
             if (fieldRef != null) {
-                const mutableRef = fieldRef as MutableFieldRef;
-                mutableRef.setFieldId(undefined);
+                const mutableRef = fieldRef as MutableFieldRef<TFieldState>;
+                mutableRef.setFieldId(undefined, undefined);
             }
         };
         // Adding fieldRef to deps array sets fieldId to a proper value and to undefined immediately after.

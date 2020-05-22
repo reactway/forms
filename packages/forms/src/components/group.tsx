@@ -5,7 +5,7 @@ import { FieldContext, useFieldContext } from "./field-context";
 
 export interface GroupProps {
     name: string;
-    fieldRef?: FieldRef;
+    fieldRef?: FieldRef<GroupState>;
     permanent?: boolean;
     children?: React.ReactNode;
 }

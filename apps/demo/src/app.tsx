@@ -9,6 +9,7 @@ import { NavigationBar } from "./components/navigation-bar";
 import { Index } from "./routes/index";
 import { AllFields } from "./routes/all-fields";
 import { Validation } from "./routes/validation";
+import { FieldRef } from "./routes/field-ref";
 
 import "./app.scss";
 
@@ -22,6 +23,7 @@ const App = (): JSX.Element => {
                 <Index path="/" />
                 <AllFields path="/all-fields" />
                 <Validation path="/validation" />
+                <FieldRef path="/field-ref" />
             </Router>
         </ErrorBoundary>
     );

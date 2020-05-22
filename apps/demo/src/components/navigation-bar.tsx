@@ -17,6 +17,7 @@ export const NavigationBar = (): JSX.Element => {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/all-fields">All Fields</NavLink>
             <NavLink to="/validation">Validation</NavLink>
+            <NavLink to="/field-ref">Field Ref</NavLink>
         </div>
     );
 };
