@@ -10,7 +10,8 @@ export interface InternalFieldRef {
 }
 
 export interface MutableFieldRef extends FieldRef<FieldState<any, any>> {
-    setFieldId: (id: string | undefined, store: AnyStore | undefined) => void;
+    setFieldId: (id: string | undefined, store: AnyFieldStore | undefined) => void;
+
 }
 
 export interface FieldRef<TFieldState extends FieldState<any, any>> {
