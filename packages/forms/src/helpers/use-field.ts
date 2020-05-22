@@ -73,14 +73,14 @@ export function useField<TElement, TFieldState extends FieldState<any, TData>, T
 
     if (fieldRef != null) {
         const mutableRef = fieldRef as MutableFieldRef;
-        mutableRef.setFieldId(fieldId);
+        mutableRef.setFieldId(fieldId, store);
     }
 
     useEffect(() => {
         return () => {
             if (fieldRef != null) {
                 const mutableRef = fieldRef as MutableFieldRef;
-                mutableRef.setFieldId(undefined);
+                mutableRef.setFieldId(undefined, undefined);
             }
         };
         // Adding fieldRef to deps array sets fieldId to a proper value and to undefined immediately after.
