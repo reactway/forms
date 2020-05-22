@@ -21,7 +21,8 @@ export interface FieldRef<TFieldState extends FieldState<any, any>> {
 
 interface State {
     fieldId: string | undefined;
-    store: AnyStore | undefined;
+    store: AnyFieldStore | undefined;
+
 }
 
 export function useFieldRef<TFieldState extends FieldState<any, any> = FieldState<any, any>>(): FieldRef<TFieldState> {
