@@ -70,7 +70,7 @@ interface SelectNotMultiple {
 
 interface SelectBaseProps {
     name: string;
-    fieldRef?: FieldRef;
+    fieldRef?: FieldRef<SelectState>;
     children?: React.ReactNode;
 }
 

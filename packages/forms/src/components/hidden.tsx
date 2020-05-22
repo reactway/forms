@@ -29,7 +29,7 @@ export interface HiddenProps {
     initialValue?: unknown;
     value?: unknown;
     children?: React.ReactNode;
-    fieldRef?: FieldRef;
+    fieldRef?: FieldRef<HiddenState>;
 }
 
 export const HiddenInput = (props: HiddenProps): JSX.Element => {
