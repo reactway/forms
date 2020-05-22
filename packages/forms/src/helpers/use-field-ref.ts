@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { FieldSelector, FieldState, Store } from "@reactway/forms-core";
 
-type AnyStore = Store<FieldState<any, any>>;
+type AnyFieldStore = Store<FieldState<any, any>>;
 
 /** @internal */
 export interface InternalFieldRef {
-    __internal__store: AnyStore | undefined;
+    __internal__store: AnyFieldStore | undefined;
 }
 
 export interface MutableFieldRef extends FieldRef {
-    setFieldId: (id: string | undefined, store: AnyStore | undefined) => void;
+    setFieldId: (id: string | undefined, store: AnyFieldStore | undefined) => void;
 }
 
 export interface FieldRef {
@@ -18,10 +18,10 @@ export interface FieldRef {
 
 interface State {
     fieldId: string | undefined;
-    store: AnyStore | undefined;
+    store: AnyFieldStore | undefined;
 }
 
-export function useFieldRef<TFieldState>(): FieldRef {
+export function useFieldRef(): FieldRef {
     const [state, setState] = useState<State>(() => ({ fieldId: undefined, store: undefined }));
 
     const mutableFieldRef: MutableFieldRef & InternalFieldRef = {
