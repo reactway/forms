@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FieldSelector, FieldState, Store } from "@reactway/forms-core";
 
-type AnyStore = Store<FieldState<any, any>>;
+type AnyFieldStore = Store<FieldState<any, any>>;
+
 
 /** @internal */
 export interface InternalFieldRef {
