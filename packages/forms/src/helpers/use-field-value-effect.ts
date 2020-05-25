@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { InputFieldData, FieldState, assertFieldIsDefined } from "@reactway/forms-core";
+import { InputFieldData, FieldState, assertFieldIsDefined, ValueUpdater, ValidationUpdater } from "@reactway/forms-core";
 import { useFieldContext } from "../components/field-context";
 
 type InputFieldState = FieldState<unknown, InputFieldData<unknown, unknown>> | undefined;
@@ -31,7 +31,12 @@ export function useFieldValueEffect<TValue>(fieldId: string, defaultValue: TValu
             // Thus, it has to fallback to a defaultValue.
             fieldState.data.initialValue = initialValue === undefined ? defaultValue : initialValue;
             if (currentValue !== undefined) {
-                fieldState.data.currentValue = currentValue;
+                const valueUpdater = helpers.getUpdater<ValueUpdater>("value");
+                valueUpdater.updateFieldValue(fieldState.id, currentValue);
+
+                const validationUpdater = helpers.getUpdater<ValidationUpdater>("validation");
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                validationUpdater.validateField(fieldId);
             }
         });
 
