@@ -196,19 +196,21 @@ export function constructValidatorHelpers(
 ): ValidatorHelpers;
 export function constructValidatorHelpers(origin: ValidationResultOrigin, validatorName: string | undefined): ValidatorHelpers {
     return {
-        error: (message, code) => ({
+        error: (message, code, data) => ({
             type: ValidationResultType.Error,
             message: message,
             code: code,
             origin: origin,
-            validatorName: validatorName
+            validatorName: validatorName,
+            data: data
         }),
-        warning: (message, code) => ({
+        warning: (message, code, data) => ({
             type: ValidationResultType.Warning,
             message: message,
             code: code,
             origin: origin,
-            validatorName: validatorName
+            validatorName: validatorName,
+            data: data
         })
     };
 }
