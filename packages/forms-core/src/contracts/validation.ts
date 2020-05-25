@@ -1,6 +1,8 @@
 // These comments originated in the v4 codebase and are kept for historical purpose:
 // https://github.com/SimplrJS/react-forms/blame/e8443591f215fbd3fa76898520c8490d5c6673b6/packages/simplr-forms/src/contracts/error.ts
 
+import { Dictionary } from "./type-helpers";
+
 // 2017-04-09 Future-self might love usage of an object with message property instead of a plain string.
 
 export interface Validator<TValue> {
@@ -14,8 +16,8 @@ export interface Validator<TValue> {
 export type ValidatorFactory<TValue> = Pick<Validator<TValue>, "validate"> & Partial<Pick<Validator<TValue>, "shouldValidate">>;
 
 export interface ValidatorHelpers {
-    error: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Error };
-    warning: (message: string, code?: string) => ValidationResult & { type: ValidationResultType.Warning };
+    error: (message: string, code?: string, data?: Dictionary<any>) => ValidationResult & { type: ValidationResultType.Error };
+    warning: (message: string, code?: string, data?: Dictionary<any>) => ValidationResult & { type: ValidationResultType.Warning };
 }
 
 export interface ValidationResult {
@@ -25,6 +27,7 @@ export interface ValidationResult {
     type: ValidationResultType;
     origin?: ValidationResultOrigin;
     validatorName?: string;
+    data?: Dictionary<any>;
     code?: string;
 }
 
