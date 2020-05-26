@@ -43,6 +43,8 @@ export function ValidationUpdaterFactory(
             const mutableValidatorsOrder = fieldState.validation.validatorsOrder as string[];
             mutableValidatorsOrder.push(id);
 
+            fieldState.validation.results = [];
+
             return id;
         },
         unregisterValidator: (fieldId, validatorId) => {
@@ -64,6 +66,8 @@ export function ValidationUpdaterFactory(
 
             const mutableValidatorsOrder = fieldState.validation.validatorsOrder as string[];
             mutableValidatorsOrder.splice(validatorOrderIndex, 1);
+
+            fieldState.validation.results = [];
         },
         setFormErrors: errors => {
             // TODO: Rename this updater.
