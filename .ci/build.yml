@@ -23,7 +23,7 @@ steps:
       displayName: "npm test"
 
     - script: |
-          npx lerna version 0.0.0-canary.$(git rev-parse --short HEAD) --no-push --no-git-tag-version --no-commit-hooks -y
+          npx lerna version 0.0.0-canary.$(git rev-parse --short HEAD) --exact --no-push --no-git-tag-version --no-commit-hooks -y
           npm run pack
       displayName: "Set canary version and pack"
       condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), eq(variables['BUILD_TYPE'], 'canary')))
