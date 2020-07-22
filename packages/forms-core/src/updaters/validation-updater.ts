@@ -54,10 +54,14 @@ export function ValidationUpdaterFactory(
                 return;
             }
 
+            fieldState.validation.currentValidation?.cancellationToken?.cancel();
+
             const mutableValidators = fieldState.validation.validators as Dictionary<FieldValidator<any>>;
 
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete mutableValidators[validatorId];
+
+            fieldState.validation.results = [];
 
             const validatorOrderIndex = fieldState.validation.validatorsOrder.findIndex(x => x === validatorId);
             if (validatorOrderIndex === -1) {
@@ -66,8 +70,6 @@ export function ValidationUpdaterFactory(
 
             const mutableValidatorsOrder = fieldState.validation.validatorsOrder as string[];
             mutableValidatorsOrder.splice(validatorOrderIndex, 1);
-
-            fieldState.validation.results = [];
         },
         setFormErrors: errors => {
             // TODO: Rename this updater.
