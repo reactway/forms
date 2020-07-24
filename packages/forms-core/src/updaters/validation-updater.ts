@@ -188,6 +188,10 @@ async function validateField(
             const mutableValidationResults = state.validation.results as ValidationResult[];
             mutableValidationResults.push(...validationResults);
         });
+
+        if (validationResults.some(x => x.type === ValidationResultType.Error)) {
+            cancellationToken.cancel();
+        }
     }
 
     updateFieldAsync(fieldSelector, store, cancellationToken, state => {
