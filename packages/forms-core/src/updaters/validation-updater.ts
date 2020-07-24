@@ -189,7 +189,9 @@ async function validateField(
             mutableValidationResults.push(...validationResults);
         });
 
-        cancellationToken.cancel();
+        if (validationResults.some(x => x.type === ValidationResultType.Error)) {
+            cancellationToken.cancel();
+        }
     }
 
     updateFieldAsync(fieldSelector, store, cancellationToken, state => {
