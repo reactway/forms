@@ -188,6 +188,8 @@ async function validateField(
             const mutableValidationResults = state.validation.results as ValidationResult[];
             mutableValidationResults.push(...validationResults);
         });
+
+        cancellationToken.cancel();
     }
 
     updateFieldAsync(fieldSelector, store, cancellationToken, state => {
