@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { FieldState, InputFieldData } from "@reactway/forms-core";
-import { useInputField, UseInputFieldEventHooks, FieldRef, InitialInput } from "../helpers";
+import { useInputField, UseInputFieldEventHooks, FieldRef, InitialInput, useFieldHelpers } from "../helpers";
+import { FieldContext, useFieldContext } from "./field-context";
 
 export type CheckboxValue = boolean | null;
 
@@ -39,9 +40,10 @@ export interface CheckboxProps {
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
     const { name, defaultValue = false, initialValue, value, fieldRef, children = null } = props;
+    const { store, permanent } = useFieldContext();
 
     const checkboxRef = useRef<HTMLInputElement>(null);
-    const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>({
+    const { id: fieldId, inputElementProps } = useInputField<HTMLInputElement, CheckboxState>({
         fieldName: name,
         fieldRef: fieldRef,
         elementRef: checkboxRef,
@@ -55,11 +57,21 @@ export const Checkbox = (props: CheckboxProps): JSX.Element => {
     });
 
     const { value: elementValue, ...rest } = inputElementProps;
+    const helpers = useFieldHelpers(fieldId);
 
     return (
         <>
             <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} />
-            {children}
+            <FieldContext.Provider
+                value={{
+                    store: store,
+                    parentId: fieldId,
+                    permanent,
+                    parentHelpers: helpers
+                }}
+            >
+                {children}
+            </FieldContext.Provider>
         </>
     );
 };
