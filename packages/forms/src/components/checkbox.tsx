@@ -34,10 +34,11 @@ export interface CheckboxProps {
     defaultValue?: CheckboxValue;
     initialValue?: CheckboxValue;
     value?: CheckboxValue;
+    children?: React.ReactNode;
 }
 
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
-    const { name, defaultValue = false, initialValue, value, fieldRef } = props;
+    const { name, defaultValue = false, initialValue, value, fieldRef, children = null } = props;
 
     const checkboxRef = useRef<HTMLInputElement>(null);
     const { inputElementProps } = useInputField<HTMLInputElement, CheckboxState>({
@@ -55,5 +56,10 @@ export const Checkbox = (props: CheckboxProps): JSX.Element => {
 
     const { value: elementValue, ...rest } = inputElementProps;
 
-    return <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} />;
+    return (
+        <>
+            <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} />
+            {children}
+        </>
+    );
 };
