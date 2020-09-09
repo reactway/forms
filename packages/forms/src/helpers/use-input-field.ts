@@ -284,28 +284,32 @@ export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
 }
 
 export function extractTextSelection(element: InputTextElement): TextSelection | undefined {
-    if (element.type === "checkbox") {
-        return undefined;
-    }
+    const handler = (): TextSelection | undefined => {
+        const selectionStart = element.selectionStart;
+        const selectionEnd = element.selectionEnd;
 
-    const selectionStart = element.selectionStart;
-    const selectionEnd = element.selectionEnd;
+        let selectionDirection: TextSelectionDirection = "none";
 
-    let selectionDirection: TextSelectionDirection = "none";
+        if (element.selectionDirection != null) {
+            selectionDirection = element.selectionDirection as TextSelectionDirection;
+        }
 
-    if (element.selectionDirection != null) {
-        selectionDirection = element.selectionDirection as TextSelectionDirection;
-    }
+        if (selectionStart == null || selectionEnd == null) {
+            return undefined;
+        }
 
-    if (selectionStart == null || selectionEnd == null) {
-        return undefined;
-    }
-
-    return {
-        selectionStart: selectionStart,
-        selectionEnd: selectionEnd,
-        selectionDirection: selectionDirection
+        return {
+            selectionStart: selectionStart,
+            selectionEnd: selectionEnd,
+            selectionDirection: selectionDirection
+        };
     };
+
+    try {
+        handler();
+    } catch {
+        return undefined;
+    }
 }
 
 export class SingleUpdateGuard {
