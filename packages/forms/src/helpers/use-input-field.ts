@@ -284,6 +284,10 @@ export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
 }
 
 export function extractTextSelection(element: InputTextElement): TextSelection | undefined {
+    if (element.type === "checkbox") {
+        return undefined;
+    }
+
     const selectionStart = element.selectionStart;
     const selectionEnd = element.selectionEnd;
 
