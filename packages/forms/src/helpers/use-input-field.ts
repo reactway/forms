@@ -284,24 +284,32 @@ export function useInputFieldHelpers(fieldId: string): InputFieldHelpers {
 }
 
 export function extractTextSelection(element: InputTextElement): TextSelection | undefined {
-    const selectionStart = element.selectionStart;
-    const selectionEnd = element.selectionEnd;
+    const handler = (): TextSelection | undefined => {
+        const selectionStart = element.selectionStart;
+        const selectionEnd = element.selectionEnd;
 
-    let selectionDirection: TextSelectionDirection = "none";
+        let selectionDirection: TextSelectionDirection = "none";
 
-    if (element.selectionDirection != null) {
-        selectionDirection = element.selectionDirection as TextSelectionDirection;
-    }
+        if (element.selectionDirection != null) {
+            selectionDirection = element.selectionDirection as TextSelectionDirection;
+        }
 
-    if (selectionStart == null || selectionEnd == null) {
+        if (selectionStart == null || selectionEnd == null) {
+            return undefined;
+        }
+
+        return {
+            selectionStart: selectionStart,
+            selectionEnd: selectionEnd,
+            selectionDirection: selectionDirection
+        };
+    };
+
+    try {
+        handler();
+    } catch {
         return undefined;
     }
-
-    return {
-        selectionStart: selectionStart,
-        selectionEnd: selectionEnd,
-        selectionDirection: selectionDirection
-    };
 }
 
 export class SingleUpdateGuard {
