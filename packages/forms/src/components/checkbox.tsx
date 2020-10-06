@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { FieldState, InputFieldData } from "@reactway/forms-core";
 import { useInputField, UseInputFieldEventHooks, FieldRef, InitialInput, useFieldHelpers } from "../helpers";
+import { HTMLProps } from "../type-helpers";
 import { FieldContext, useFieldContext } from "./field-context";
 
 export type CheckboxValue = boolean | null;
@@ -29,7 +30,7 @@ const eventHooks: UseInputFieldEventHooks<HTMLInputElement> = {
     }
 };
 
-export interface CheckboxProps {
+export interface CheckboxInputProps {
     name: string;
     fieldRef?: FieldRef<CheckboxState>;
     defaultValue?: CheckboxValue;
@@ -38,8 +39,12 @@ export interface CheckboxProps {
     children?: React.ReactNode;
 }
 
+export interface CheckboxProps
+    extends CheckboxInputProps,
+        Omit<HTMLProps<HTMLInputElement, CheckboxInputProps>, "checked" | "defaultChecked"> {}
+
 export const Checkbox = (props: CheckboxProps): JSX.Element => {
-    const { name, defaultValue = false, initialValue, value, fieldRef, children = null } = props;
+    const { name, defaultValue = false, initialValue, value, fieldRef, children = null, ...restProps } = props;
     const { store, permanent } = useFieldContext();
 
     const checkboxRef = useRef<HTMLInputElement>(null);
@@ -61,7 +66,7 @@ export const Checkbox = (props: CheckboxProps): JSX.Element => {
 
     return (
         <>
-            <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} />
+            <input {...rest} type="checkbox" checked={elementValue != null ? elementValue : undefined} ref={checkboxRef} {...restProps} />
             <FieldContext.Provider
                 value={{
                     store: store,
