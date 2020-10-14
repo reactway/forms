@@ -10,6 +10,7 @@ export type LengthValidatorProps = {
     min?: number;
     max: number;
     errorMessages?: LengthValidatorMessages;
+    warningMessage?: string;
 };
 
 const defaultErrorMessages: LengthValidatorMessages = {
@@ -17,10 +18,13 @@ const defaultErrorMessages: LengthValidatorMessages = {
     tooLong: "Too long."
 };
 
+const defaultWarningMessage = "Approaching the max length...";
+
 // FIXME: Something's off with this validator.
 export const LengthValidator = (props: LengthValidatorProps): null => {
     const { min = 0, max } = props;
     const errorMessages = props.errorMessages ?? defaultErrorMessages;
+    const warningMessage = props.warningMessage ?? defaultWarningMessage;
 
     useValidator<string>(
         LengthValidator.name,
@@ -35,7 +39,7 @@ export const LengthValidator = (props: LengthValidatorProps): null => {
                     }
 
                     if (max != null && value.length > max - 2 && value.length <= max) {
-                        return [helpers.warning("Approaching the max length...")];
+                        return [helpers.warning(warningMessage)];
                     }
 
                     if (max != null && value.length > max) {
