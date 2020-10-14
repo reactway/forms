@@ -11,7 +11,7 @@ export const FieldNullValidator = (props: BaseValidatorProps): null => {
         FieldNullValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value == null;
                 },
                 validate: (value): ValidatorResult => {

@@ -13,7 +13,7 @@ export const IbanValidator = (props: BaseValidatorProps): null => {
         IbanValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.trim.length === 0;
                 },
                 validate: (value): ValidatorResult => {

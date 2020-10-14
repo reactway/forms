@@ -12,7 +12,7 @@ export const VatCodeLtValidator = (props: BaseValidatorProps): null => {
         VatCodeLtValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.trim().length > 0;
                 },
                 validate: (value): ValidatorResult => {

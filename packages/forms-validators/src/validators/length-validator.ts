@@ -30,7 +30,7 @@ export const LengthValidator = (props: LengthValidatorProps): null => {
         LengthValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.length > 0;
                 },
                 validate: (value, helpers): ValidatorResult => {

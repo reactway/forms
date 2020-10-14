@@ -12,7 +12,7 @@ export const MultiSelectValidator = (props: BaseValidatorProps): null => {
         MultiSelectValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.length === 0;
                 },
                 validate: (value): ValidatorResult => {

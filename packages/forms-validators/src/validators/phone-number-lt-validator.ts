@@ -22,7 +22,7 @@ export const PhoneNumberLtValidator = (props: PhoneNumberValidatorProps): null =
         PhoneNumberLtValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.trim.length === 0;
                 },
                 validate: (value): ValidatorResult => {

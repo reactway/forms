@@ -35,7 +35,7 @@ export const PersonalIdLtValidator = (props: PersonalIdValidatorPops): null => {
         PersonalIdLtValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value !== "";
                 },
                 validate: (value): ValidatorResult => {

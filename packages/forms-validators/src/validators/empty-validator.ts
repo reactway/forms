@@ -12,7 +12,7 @@ export const EmptyValidator = (props: BaseValidatorProps): null => {
         EmptyValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     // somehow if we are using `EmptyValidator` for `react-select` with `multi`, `value` comes not as a string.
                     return typeof value === "string" && value != null && value.trim().length === 0;
                 },

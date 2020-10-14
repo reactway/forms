@@ -14,7 +14,7 @@ export const EmailValidator = (props: BaseValidatorProps): null => {
         EmailValidator.name,
         () => {
             return {
-                shouldValidate: (value) => {
+                shouldValidate: value => {
                     return value != null && value.length > 0;
                 },
                 validate: (value): ValidatorResult => {
