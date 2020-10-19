@@ -38,8 +38,8 @@
         "ts-jest": "24.3.0"
     },
     "dependencies": {
-        "@reactway/forms": "^1.0.0-alpha.2",
-        "@reactway/forms-core": "^1.0.0-alpha.2",
+        "@reactway/forms": "1.0.0-alpha.2",
+        "@reactway/forms-core": "1.0.0-alpha.2",
         "iban": "^0.0.14",
         "lodash.debounce": "^4.0.8",
         "react": "^16.13.1",

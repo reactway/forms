@@ -4,7 +4,7 @@
     "version": "1.0.0-alpha.2",
     "author": "Reactway <dev@reactway.com> (https://github.com/reactway)",
     "dependencies": {
-        "@reactway/forms-core": "^1.0.0-alpha.2",
+        "@reactway/forms-core": "1.0.0-alpha.2",
         "@types/shortid": "^0.0.29",
         "debug": "^4.1.1",
         "immer": "^5.2.1",
