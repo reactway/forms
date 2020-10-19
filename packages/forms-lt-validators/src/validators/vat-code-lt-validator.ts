@@ -1,22 +1,21 @@
 import { useValidator } from "@reactway/forms";
+import { BaseValidatorProps } from "@reactway/forms-validators";
 import { ValidatorResult } from "@reactway/forms-core";
 
-import { BaseValidatorProps } from "../constants";
+const defaultErrorMessage = "Incorrect VAT code.";
 
-const defaultErrorMessage = "validations:error.blank-input";
-
-export const MultiSelectValidator = (props: BaseValidatorProps): null => {
+export const VatCodeLtValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
-    useValidator<unknown[]>(
-        MultiSelectValidator.name,
+    useValidator<string>(
+        VatCodeLtValidator.name,
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value.length === 0;
+                    return value != null && value.trim().length > 0;
                 },
                 validate: (value): ValidatorResult => {
-                    if (value.length === 0) {
+                    if (!/^LT\d{8,12}$/.test(value)) {
                         return [errorMessage];
                     }
                 }

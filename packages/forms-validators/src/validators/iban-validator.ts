@@ -14,7 +14,7 @@ export const IbanValidator = (props: BaseValidatorProps): null => {
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value.trim.length === 0;
+                    return typeof value === "string" && value.trim().length > 0;
                 },
                 validate: (value): ValidatorResult => {
                     if (!IBAN.isValid(value)) {

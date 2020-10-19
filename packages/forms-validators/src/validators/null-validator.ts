@@ -4,16 +4,13 @@ import { BaseValidatorProps } from "../constants";
 
 const defaultErrorMessage = "Field is required.";
 
-export const FieldNullValidator = (props: BaseValidatorProps): null => {
+export const NullValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
     useValidator<string>(
-        FieldNullValidator.name,
+        NullValidator.name,
         () => {
             return {
-                shouldValidate: value => {
-                    return value == null;
-                },
                 validate: (value): ValidatorResult => {
                     if (value == null) {
                         return [errorMessage];

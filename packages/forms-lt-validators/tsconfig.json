@@ -1,0 +1,19 @@
+{
+    "extends": "../../tsconfig-lib.json",
+    "compilerOptions": {
+        "lib": ["dom", "es6", "es2015.iterable", "ES2019"],
+        "rootDir": "src",
+        "outDir": "dist"
+    },
+    "references": [
+        {
+            "path": "../forms"
+        },
+        {
+            "path": "../forms-core"
+        },
+        {
+            "path": "../forms-validators"
+        }
+    ]
+}

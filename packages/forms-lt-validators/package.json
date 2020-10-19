@@ -1,5 +1,5 @@
 {
-    "name": "@reactway/forms-validators",
+    "name": "@reactway/forms-lt-validators",
     "version": "1.0.0-alpha.2",
     "description": "Default validators to use with ReactWay forms",
     "main": "dist/index.js",
@@ -40,6 +40,7 @@
     "dependencies": {
         "@reactway/forms": "^1.0.0-alpha.2",
         "@reactway/forms-core": "^1.0.0-alpha.2",
+        "@reactway/forms-validators": "^1.0.0-alpha.2",
         "iban": "^0.0.14",
         "lodash.debounce": "^4.0.8",
         "react": "^16.13.1",
