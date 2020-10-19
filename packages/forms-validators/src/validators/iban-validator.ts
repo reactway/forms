@@ -2,7 +2,7 @@ import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
 import IBAN from "iban";
 
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Invalid IBAN.";
 

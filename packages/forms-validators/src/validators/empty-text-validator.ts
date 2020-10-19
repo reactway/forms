@@ -1,15 +1,15 @@
 import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
 
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Input cannot be blank.";
 
-export const EmptyValidator = (props: BaseValidatorProps): null => {
+export const EmptyTextValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
     useValidator<string>(
-        EmptyValidator.name,
+        EmptyTextValidator.name,
         () => {
             return {
                 shouldValidate: value => {

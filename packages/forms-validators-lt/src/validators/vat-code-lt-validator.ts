@@ -1,6 +1,6 @@
 import { useValidator } from "@reactway/forms";
-import { BaseValidatorProps } from "@reactway/forms-validators";
 import { ValidatorResult } from "@reactway/forms-core";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Incorrect VAT code.";
 

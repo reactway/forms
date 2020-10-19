@@ -1,7 +1,7 @@
 import { ValidatorResult } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
 
-interface PersonalIdValidatorPops {
+interface PersonalIdValidatorProps {
     errorMsg?: string;
 }
 
@@ -28,7 +28,7 @@ export function getLtChecksumDigit(code: string): number {
     else return 0;
 }
 
-export const PersonalIdLtValidator = (props: PersonalIdValidatorPops): null => {
+export const PersonalIdLtValidator = (props: PersonalIdValidatorProps): null => {
     const errorMessage = props.errorMsg ?? "Incorrect personal code";
 
     useValidator<string>(

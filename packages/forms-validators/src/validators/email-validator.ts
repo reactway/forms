@@ -2,10 +2,10 @@ import { ValidatorResult } from "@reactway/forms-core";
 import { useValidator } from "@reactway/forms";
 import isEmail from "validator/lib/isEmail";
 
-import { RESTRICTED_SYMBOL } from "../constants";
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Email is not valid.";
+const RESTRICTED_SYMBOL = "*";
 
 export const EmailValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;

@@ -1,6 +1,6 @@
 import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Field is required.";
 
