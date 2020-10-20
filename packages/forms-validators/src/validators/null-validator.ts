@@ -1,22 +1,18 @@
 import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
+import { BaseValidatorProps } from "../contracts";
 
-import { BaseValidatorProps } from "../constants";
+const defaultErrorMessage = "Field is required.";
 
-const defaultErrorMessage = "validations:error.blank-input";
-
-export const MultiSelectValidator = (props: BaseValidatorProps): null => {
+export const NullValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
-    useValidator<unknown[]>(
-        MultiSelectValidator.name,
+    useValidator<string>(
+        NullValidator.name,
         () => {
             return {
-                shouldValidate: value => {
-                    return value != null && value.length === 0;
-                },
                 validate: (value): ValidatorResult => {
-                    if (value.length === 0) {
+                    if (value == null) {
                         return [errorMessage];
                     }
                 }

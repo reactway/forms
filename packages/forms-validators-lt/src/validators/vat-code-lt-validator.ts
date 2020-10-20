@@ -1,21 +1,21 @@
 import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
-const defaultErrorMessage = "Field is required.";
+const defaultErrorMessage = "Incorrect VAT code.";
 
-export const FieldNullValidator = (props: BaseValidatorProps): null => {
+export const VatCodeLtValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
     useValidator<string>(
-        FieldNullValidator.name,
+        VatCodeLtValidator.name,
         () => {
             return {
                 shouldValidate: value => {
-                    return value == null;
+                    return typeof value === "string" && value !== "";
                 },
                 validate: (value): ValidatorResult => {
-                    if (value == null) {
+                    if (!/^LT\d{8,12}$/.test(value)) {
                         return [errorMessage];
                     }
                 }

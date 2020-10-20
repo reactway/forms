@@ -1,7 +1,7 @@
 {
-    "name": "@reactway/forms-validators",
+    "name": "@reactway/forms-validators-lt",
     "version": "1.0.0-alpha.2",
-    "description": "Default validators to use with ReactWay forms",
+    "description": "Validators specific to Lithuania for use with ReactWay forms",
     "main": "dist/index.js",
     "module": "dist/index.es.js",
     "scripts": {

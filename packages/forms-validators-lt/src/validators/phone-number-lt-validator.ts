@@ -23,7 +23,7 @@ export const PhoneNumberLtValidator = (props: PhoneNumberValidatorProps): null =
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value.trim.length === 0;
+                    return typeof value === "string" && value !== "";
                 },
                 validate: (value): ValidatorResult => {
                     const trimmedNumber = value.replace(/\s/g, "");

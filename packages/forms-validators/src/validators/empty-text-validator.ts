@@ -1,20 +1,19 @@
 import { useValidator } from "@reactway/forms";
 import { ValidatorResult } from "@reactway/forms-core";
 
-import { BaseValidatorProps } from "../constants";
+import { BaseValidatorProps } from "../contracts";
 
 const defaultErrorMessage = "Input cannot be blank.";
 
-export const EmptyValidator = (props: BaseValidatorProps): null => {
+export const EmptyTextValidator = (props: BaseValidatorProps): null => {
     const errorMessage = props.errorMessage ?? defaultErrorMessage;
 
     useValidator<string>(
-        EmptyValidator.name,
+        EmptyTextValidator.name,
         () => {
             return {
                 shouldValidate: value => {
-                    // somehow if we are using `EmptyValidator` for `react-select` with `multi`, `value` comes not as a string.
-                    return typeof value === "string" && value != null && value.trim().length === 0;
+                    return typeof value === "string";
                 },
                 validate: (value): ValidatorResult => {
                     if (value.trim().length === 0) {
