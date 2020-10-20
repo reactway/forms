@@ -12,7 +12,7 @@ export const VatCodeLtValidator = (props: BaseValidatorProps): null => {
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value.trim().length > 0;
+                    return typeof value === "string" && value !== "";
                 },
                 validate: (value): ValidatorResult => {
                     if (!/^LT\d{8,12}$/.test(value)) {

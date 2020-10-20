@@ -34,7 +34,7 @@ export const PersonalIdLtValidator = (props: BaseValidatorProps): null => {
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value !== "";
+                    return typeof value === "string" && value !== "";
                 },
                 validate: (value): ValidatorResult => {
                     if (!/^\d{11}$/.test(value)) {

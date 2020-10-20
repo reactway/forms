@@ -15,7 +15,7 @@ export const EmailValidator = (props: BaseValidatorProps): null => {
         () => {
             return {
                 shouldValidate: value => {
-                    return value != null && value.length > 0;
+                    return typeof value === "string" && value !== "";
                 },
                 validate: (value): ValidatorResult => {
                     if (!isEmail(value) || value.includes(RESTRICTED_SYMBOL)) {
