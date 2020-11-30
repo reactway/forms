@@ -1,5 +1,5 @@
 import React from "react";
-import { selectField, ValueUpdater } from "@reactway/forms-core";
+import { generateFieldId, selectField, ValueUpdater } from "@reactway/forms-core";
 import { useFieldContext } from "./field-context";
 import { RadioGroupState, RadioGroup } from "./radio-group";
 
@@ -22,9 +22,11 @@ export const RadioButton = (props: RadioProps): JSX.Element => {
         throw new Error(`Radio must be inside ${RadioGroup.name}.`);
     }
 
+    const formId = store.getState().id;
+
     return (
         <input
-            name={parent.name}
+            name={generateFieldId(parent.id, formId)}
             type="radio"
             checked={parent.data.currentValue === props.value}
             onChange={event => {
