@@ -80,7 +80,6 @@ export function parseNumber(
         result === "+" ||
         result === `+${decimalSeparator}`
     ) {
-        debugger;
         return {
             currentValue: 0,
             transientValue: result,
@@ -136,7 +135,6 @@ function tryParsing(
         if (!allowNegative) {
             parsedValue = Math.abs(parsedValue);
             value = value[0] === "-" ? value.substr(1) : value;
-            debugger;
         }
 
         if (previousValue.toString() === parsedValue.toString() && value[value.length - 1] !== ".") {
