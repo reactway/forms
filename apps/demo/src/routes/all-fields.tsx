@@ -43,7 +43,7 @@ export const AllFields = (_props: RouteComponentProps): JSX.Element => {
                     </TextInput>
                 </FieldWrapper>
                 <FieldWrapper label="Amount">
-                    <NumberInput name="amount" initialValue={4220} />
+                    <NumberInput name="amount" allowNegative={false} initialValue={4220} />
                 </FieldWrapper>
                 <FieldWrapper label="Sex">
                     <RadioGroup name="sex">
