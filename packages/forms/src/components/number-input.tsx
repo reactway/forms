@@ -12,7 +12,7 @@ export interface NumberFieldProps extends Omit<TextInputProps, "initialValue" | 
 }
 
 export const NumberInput = (props: NumberFieldProps): JSX.Element => {
-    const { initialValue, defaultValue = 0, inputMode = "decimal", ...restProps } = props;
+    const { initialValue, defaultValue = 0, inputMode = "decimal", allowNegative, ...restProps } = props;
     const textFieldRef = useFieldRef();
     const { store } = useFieldContext();
 
@@ -43,7 +43,7 @@ export const NumberInput = (props: NumberFieldProps): JSX.Element => {
             onBlur={onBlur}
             {...restProps}
         >
-            <NumberModifier />
+            <NumberModifier allowNegative={allowNegative} />
         </TextInput>
     );
 };

@@ -6,6 +6,7 @@ const logger = formsLogger.extend("number-modifier");
 export interface NumberModifierProps {
     decimalSeparator?: string;
     thousandsSeparator?: string;
+    allowNegative?: boolean;
 }
 
 // TODO: Unexport
@@ -14,7 +15,8 @@ export function parseNumber(
     previous: DeepReadonly<ParseValue<number | string>>,
     decimalSeparator: string,
     thousandsSeparator: string,
-    takeLastSeparator = true
+    takeLastSeparator = true,
+    allowNegative = true
 ): ParseResult<string, number> {
     logger("parseNumber got selection:", current.caretPosition, previous.caretPosition);
     if (typeof current.value !== "string") {
@@ -36,7 +38,7 @@ export function parseNumber(
 
     logger("1. Parsing as number...");
     // Short version of trying to parse the number. Return it if the parse is successful.
-    parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition);
+    parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition, allowNegative);
     if (parsedResult != null) {
         return parsedResult;
     }
@@ -59,7 +61,7 @@ export function parseNumber(
 
     let negativeValue = false;
     let plusSign = false;
-    if (result.substring(0, 1) === "-") {
+    if (result.substring(0, 1) === "-" && allowNegative) {
         negativeValue = true;
     } else if (result.substring(0, 1) === "+") {
         negativeValue = false;
@@ -123,11 +125,18 @@ function tryParsing(
     value: string,
     previousValue: string | number,
     currentCaretPosition: number | undefined,
-    previousCaretPosition: number | undefined
+    previousCaretPosition: number | undefined,
+    allowNegative = true
 ): ParseResult<string, number> | undefined {
-    const parsedValue = Number(value);
+    let parsedValue = Number(value);
     if (!Number.isNaN(parsedValue)) {
         logger("tryParsing", typeof previousValue, previousValue, typeof parsedValue, parsedValue);
+
+        if (!allowNegative) {
+            parsedValue = Math.abs(parsedValue);
+            value = value[0] === "-" ? value.substr(1) : value;
+        }
+
         if (previousValue.toString() === parsedValue.toString() && value[value.length - 1] !== ".") {
             return {
                 currentValue: parsedValue,
@@ -170,7 +179,7 @@ export const NumberModifier = (props: NumberModifierProps): null => {
     if (props.thousandsSeparator != null) {
         throw new Error("thousandsSeparator is not implemented.");
     }
-    const { decimalSeparator = ".", thousandsSeparator = "," } = props;
+    const { decimalSeparator = ".", thousandsSeparator = ",", allowNegative } = props;
 
     useModifier<number, string>(() => {
         return {
@@ -179,7 +188,7 @@ export const NumberModifier = (props: NumberModifierProps): null => {
             },
             parse: (current, previous) => {
                 logger(`Number modifier: ${current.value}`);
-                const result = parseNumber(current, previous, decimalSeparator, thousandsSeparator);
+                const result = parseNumber(current, previous, decimalSeparator, thousandsSeparator, undefined, allowNegative);
                 logger(`Parsed value:`);
                 logger(Object.assign({}, result));
 
@@ -193,7 +202,7 @@ export const NumberModifier = (props: NumberModifierProps): null => {
                 return result;
             }
         };
-    }, [decimalSeparator, thousandsSeparator]);
+    }, [decimalSeparator, thousandsSeparator, allowNegative]);
 
     return null;
 };
