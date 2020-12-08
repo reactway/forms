@@ -38,7 +38,7 @@ export function parseNumber(
 
     logger("1. Parsing as number...");
     // Short version of trying to parse the number. Return it if the parse is successful.
-    parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition);
+    parsedResult = tryParsing(current.value, previous.value, current.caretPosition, previous.caretPosition, allowNegative);
     if (parsedResult != null) {
         return parsedResult;
     }
@@ -71,7 +71,6 @@ export function parseNumber(
     logger(`Value is ${negativeValue ? "negative" : "positive"}`);
 
     // Add leading minus sign if needed and remove all other ones, if any.
-    debugger;
     result = `${negativeValue ? "-" : ""}${plusSign ? "+" : ""}${result.replaceAll("-", "").replaceAll("+", "")}`;
 
     if (
@@ -81,6 +80,7 @@ export function parseNumber(
         result === "+" ||
         result === `+${decimalSeparator}`
     ) {
+        debugger;
         return {
             currentValue: 0,
             transientValue: result,
@@ -126,11 +126,19 @@ function tryParsing(
     value: string,
     previousValue: string | number,
     currentCaretPosition: number | undefined,
-    previousCaretPosition: number | undefined
+    previousCaretPosition: number | undefined,
+    allowNegative = true
 ): ParseResult<string, number> | undefined {
-    const parsedValue = Number(value);
+    let parsedValue = Number(value);
     if (!Number.isNaN(parsedValue)) {
         logger("tryParsing", typeof previousValue, previousValue, typeof parsedValue, parsedValue);
+
+        if (!allowNegative) {
+            parsedValue = Math.abs(parsedValue);
+            value = value[0] === "-" ? value.substr(1) : value;
+            debugger;
+        }
+
         if (previousValue.toString() === parsedValue.toString() && value[value.length - 1] !== ".") {
             return {
                 currentValue: parsedValue,
@@ -182,7 +190,7 @@ export const NumberModifier = (props: NumberModifierProps): null => {
             },
             parse: (current, previous) => {
                 logger(`Number modifier: ${current.value}`);
-                const result = parseNumber(current, previous, decimalSeparator, thousandsSeparator, allowNegative);
+                const result = parseNumber(current, previous, decimalSeparator, thousandsSeparator, undefined, allowNegative);
                 logger(`Parsed value:`);
                 logger(Object.assign({}, result));
 
