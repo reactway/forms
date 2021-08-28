@@ -1,6 +1,0 @@
-{
-    "extends": ["@reactway/eslint-config/react"],
-    "parserOptions": {
-        "project": "./tsconfig.json"
-    }
-}
