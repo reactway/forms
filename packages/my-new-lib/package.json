@@ -1,6 +1,9 @@
 {
     "name": "my-new-lib",
     "packageManager": "yarn@3.0.1",
+    "scripts": {
+        "build": "tsc -p ."
+    },
     "dependencies": {
         "typescript": "^4.4.2"
     }
