@@ -1,0 +1,16 @@
+{
+    "name": "forms-workspace",
+    "packageManager": "yarn@3.0.1",
+    "workspaces": [
+        "packages/*",
+        "tools/*"
+    ],
+    "scripts": {
+        "format": "prettier --write \"{,!(yarn.lock)**/}*\""
+    },
+    "devDependencies": {
+        "@types/prettier": "^2",
+        "prettier": "^2.3.2",
+        "typescript": "^4.4.2"
+    }
+}

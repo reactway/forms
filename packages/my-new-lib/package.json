@@ -1,0 +1,7 @@
+{
+    "name": "my-new-lib",
+    "packageManager": "yarn@3.0.1",
+    "dependencies": {
+        "typescript": "^4.4.2"
+    }
+}
